@@ -94,7 +94,7 @@ export default function HeroSection() {
                   <div className="space-y-3">
                     <Card className="p-4 border-l-4 border-l-purple-500">
                       <h4 className="font-medium text-sm mb-2">
-                        Develop Home Page
+                        Call Lead 
                       </h4>
                       <div className="flex items-center space-x-2">
                         <div className="w-6 h-6 bg-slate-800 rounded-full"></div>
@@ -103,7 +103,7 @@ export default function HeroSection() {
                     </Card>
                     <Card className="p-4 bg-gradient-to-r from-purple-100 to-blue-100">
                       <h4 className="font-medium text-sm mb-2">
-                        UX New pricing page
+                        Meeting with Sales  Team
                       </h4>
                       <div className="flex items-center space-x-2">
                         <div className="w-6 h-6 bg-slate-800 rounded-full"></div>

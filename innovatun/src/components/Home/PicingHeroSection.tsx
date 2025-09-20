@@ -9,8 +9,16 @@ export default function PicingHeroSection() {
           A smarter way to build, launch and maintain a ERP site
         </h1>
         <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto text-pretty">
-          The ultimate creative collaboration with a dedicated account manager
-          and a team of designers and ERP experts that know more than just HTML.
+          We're not just a digital agency – we're your partners in technological evolution. At Innovatun, we blend cutting-edge technology with creative excellence to transform businesses for the digital age.
+
+          Our Vision
+          To pioneer digital transformation across industries, making advanced technology accessible and impactful for businesses of all sizes.
+
+          Innovation Score
+          98%
+          Client Satisfaction
+          100%
+
         </p>
 
         {/* Features Grid */}
@@ -75,9 +83,7 @@ export default function PicingHeroSection() {
             ))}
           </div>
           <p className="text-gray-700 mb-4 text-sm">
-            "I'm so happy with this team and absolutely recommend. Not only is
-            the work top notch, but they deliver they builds in a way that we
-            can easily update and maintain on our end."
+            "We’re extremely happy with this ERP SaaS team and highly recommend them. The solution is top-notch, and they deliver builds in a way that makes it simple for us to update and maintain everything on our own"
           </p>
           <div className="text-center">
             <div className="w-10 h-10 bg-gray-300 rounded-full mx-auto mb-2"></div>
