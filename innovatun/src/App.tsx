@@ -9,6 +9,10 @@ function App() {
         <div>
           <Button>Hello</Button>
           <Input placeholder="Enter your name" />
+          <div className="bg-indigo-500 w-full h-[100px] rounded-md">
+            {" "}
+            welcome vai{" "}
+          </div>
         </div>
       </FrappeProvider>
     </div>
