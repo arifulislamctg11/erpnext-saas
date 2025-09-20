@@ -1,0 +1,57 @@
+import { Button } from "../../components/ui/button";
+import Logo from "../../assets/images/innovatun_logo_bg_less.png";
+export default function Header() {
+  return (
+    <div className="container">
+      {/* Header */}
+      <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-16 h-12  rounded-lg flex items-center justify-center">
+              {/* <span className="text-white font-bold text-sm"></span> */}
+              <img src={Logo} alt="Innovatun" className=""></img>
+            </div>
+            {/* <span className="text-xl font-bold">Innovatun</span> */}
+          </div>
+
+          <nav className="hidden md:flex items-center space-x-8">
+            <a
+              href="#"
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
+              Home
+            </a>
+            <a
+              href="#"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Recent Work
+            </a>
+            <a
+              href="#"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Benefits
+            </a>
+            <a
+              href="#"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Pricing
+            </a>
+            <a
+              href="#"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              FAQs
+            </a>
+          </nav>
+
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            Register
+          </Button>
+        </div>
+      </header>
+    </div>
+  );
+}
