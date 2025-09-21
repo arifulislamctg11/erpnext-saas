@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+erpnext_saas/public/erpnext_saas
+erpnext_saas/public/erpnext_saas/node_modules
+erpnext_saas/www/innovatun.html
