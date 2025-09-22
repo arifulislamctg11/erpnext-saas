@@ -9,7 +9,7 @@ export default function FaQSection() {
   return (
     <div>
       <section className="px-6 py-16 bg-white">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">
               FREQUENTLY ASKED QUESTIONS

@@ -1,5 +1,6 @@
 import { Button } from "../../components/ui/button";
 import Logo from "../../assets/images/innovatun_logo_bg_less.png";
+import { Link } from "react-router-dom";
 export default function Header() {
   return (
     <div className="container">
@@ -15,18 +16,18 @@ export default function Header() {
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <a
-              href="#"
+            <Link
+              to={"/home"}
               className="text-sm font-medium hover:text-primary transition-colors"
             >
               Home
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to={"/about"}
               className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               Recent Work
-            </a>
+            </Link>
             <a
               href="#"
               className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
