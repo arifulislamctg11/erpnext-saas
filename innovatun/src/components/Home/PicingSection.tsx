@@ -2,13 +2,35 @@ import { Button } from "../ui/button";
 import { Check } from "lucide-react";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { Link } from "react-router-dom";
 
 export default function PicingSection() {
   const plans = [
     {
+      title: "Enterprise ERP",
+      price: "Free Trial",
+      description:
+        "For enterprises needing advanced, tailored ERP systems with white-glove support.",
+      features: [
+        "Everything in Starter & Pro",
+        "Bespoke ERP module development",
+        "Unlimited revisions & customization requests",
+        "Advanced integrations (Payment gateways, Logistics, BI Tools, etc.)",
+        "Cloud deployment & security hardening",
+        "Dedicated ERP consultant & support team",
+        "Private Slack/Teams channel for direct communication",
+        "On-demand training sessions for your staff",
+        "Advanced analytics & custom reports",
+      ],
+      note: "📌 Best for large enterprises with complex operations and global teams.",
+      buttonText: "Get Start Free",
+      buttonStyle: "bg-blue-600 hover:bg-blue-700 text-white",
+    },
+    {
       title: "Starter ERP",
       price: "$3,000 / month",
-      description: "Perfect for small to mid-sized businesses starting their ERP journey.",
+      description:
+        "Perfect for small to mid-sized businesses starting their ERP journey.",
       features: [
         "Core ERP setup & configuration (HR, Accounting, Inventory, CRM)",
         "Native ERP customizations",
@@ -26,7 +48,8 @@ export default function PicingSection() {
     {
       title: "Pro ERP (Most Popular)",
       price: "$4,500 / month",
-      description: "Designed for growing businesses that need deeper customization & support.",
+      description:
+        "Designed for growing businesses that need deeper customization & support.",
       features: [
         "Everything in Starter ERP",
         "Figma-driven ERP UI/UX design",
@@ -45,7 +68,8 @@ export default function PicingSection() {
     {
       title: "Enterprise ERP",
       price: "$6,000+ / month",
-      description: "For enterprises needing advanced, tailored ERP systems with white-glove support.",
+      description:
+        "For enterprises needing advanced, tailored ERP systems with white-glove support.",
       features: [
         "Everything in Starter & Pro",
         "Bespoke ERP module development",
@@ -73,7 +97,7 @@ export default function PicingSection() {
   return (
     <div>
       <section className="px-6 py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-[1450px] mx-auto">
           <div className="text-center mb-12">
             <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">
               FLEXIBLE APPROACH
@@ -86,12 +110,14 @@ export default function PicingSection() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-4">
             {plans.map((plan, index) => (
               <Card
                 key={index}
                 className={`p-8 ${
-                  plan.badge ? "bg-gray-900 text-white shadow-lg relative" : "bg-white border-0 shadow-sm"
+                  plan.badge
+                    ? "bg-gray-900  text-white shadow-lg relative"
+                    : "bg-white border-0 shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg relative"
                 }`}
               >
                 {plan.badge && (
@@ -118,7 +144,9 @@ export default function PicingSection() {
                       <li
                         key={idx}
                         className={`flex items-center text-sm ${
-                          plan.badge ? "text-gray-300" : "text-gray-600"
+                          plan.badge
+                            ? "text-gray-300"
+                            : "text-gray-600 group-hover:text-white"
                         }`}
                       >
                         <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
@@ -127,10 +155,12 @@ export default function PicingSection() {
                     ))}
                   </ul>
                 </div>
+                <Link to={"/register"}>
+                  <Button className={`w-full ${plan.buttonStyle}`}>
+                    {plan.buttonText}
+                  </Button>
+                </Link>
 
-                <Button className={`w-full ${plan.buttonStyle}`}>
-                  {plan.buttonText}
-                </Button>
                 <p className="text-sm mt-4 text-gray-500">{plan.note}</p>
               </Card>
             ))}
@@ -141,7 +171,7 @@ export default function PicingSection() {
             <h3 className="text-xl font-bold text-gray-900 mb-4">
               ⚡ Optional Add-ons
             </h3>
-            <ul className="list-disc pl-5 text-sm text-gray-600">
+            <ul className=" pl-5 text-sm text-gray-600">
               {addOns.map((addOn, index) => (
                 <li key={index}>{addOn}</li>
               ))}
