@@ -1,12 +1,13 @@
 "use client";
+import { useNavigate } from "react-router-dom";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-// import { Building2 } from "lucide-react";
+
 import { Button } from "../../../components/ui/button";
-// import { Separator } from "@radix-ui/react-separator";
+
 import {
   Form,
   FormControl,
@@ -42,6 +43,8 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function Register() {
+ 
+
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<FormData>({
@@ -62,11 +65,15 @@ export default function Register() {
     },
   });
 
+  const navigate = useNavigate();
+
   const onSubmit = async (values: FormData) => {
     setIsLoading(true);
     // Simulate API call
     console.log("submited", values);
     setIsLoading(false);
+
+  navigate("/checkout");
   };
 
   return (

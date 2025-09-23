@@ -5,9 +5,7 @@ import router from "./routes/routes";
 function App() {
   return (
     <div>
-      <FrappeProvider 
-      
-      >
+      <FrappeProvider  >
         <RouterProvider router={router} />
       </FrappeProvider>
     </div>
