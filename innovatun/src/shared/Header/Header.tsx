@@ -48,16 +48,17 @@ export default function Header() {
             >
               FAQs
             </a>
-          </nav>
-
-         <div className="flex items-center gap-2">
-           {user && (
+            {user && (
              <Link to={"/dashboard"}>
-               <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+               <Button className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                  Dashboard
                </Button>
              </Link>
-           )}
+           )} 
+          </nav>
+
+         <div className="flex items-center gap-2">
+          
            <Link to={user ? "/checkout" : "/register"}>
              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                Get Started
