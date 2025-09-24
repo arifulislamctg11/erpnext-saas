@@ -37,7 +37,7 @@ const CheckoutForm: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/create-payment-intent", {
+      const res = await fetch("https://backend-ten-red-40.vercel.app/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: 5000 }), 
