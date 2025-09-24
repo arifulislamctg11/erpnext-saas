@@ -19,6 +19,10 @@ const CheckoutForm: React.FC = () => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [cardholderName, setCardholderName] = useState("");
+  const [country, setCountry] = useState("US");
+  const [postalCode, setPostalCode] = useState("");
 
   useEffect(() => {
     const regData = localStorage.getItem("registrationData");
@@ -47,7 +51,18 @@ const CheckoutForm: React.FC = () => {
       const clientSecret: string = data.clientSecret;
 
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: { card: cardElement },
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: cardholderName || undefined,
+            email: email || undefined,
+            address: {
+              country: country || undefined,
+              postal_code: postalCode || undefined,
+            },
+          },
+        },
+        receipt_email: email || undefined,
       });
 
       if (error) {
@@ -65,25 +80,81 @@ const CheckoutForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handlePayment} className="space-y-4">
-      <CardElement
-        options={{
-          style: {
-            base: {
-              fontSize: "16px",
-              color: "#424770",
-              "::placeholder": { color: "#aab7c4" },
-            },
-            invalid: { color: "#9e2146" },
-          },
-        }}
-      />
+    <form onSubmit={handlePayment} className="space-y-5">
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Email</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+          className="w-full h-11 rounded-md border border-gray-300 px-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Card information</label>
+        <div className="w-full rounded-md border border-gray-300 p-3">
+          <CardElement
+            options={{
+              style: {
+                base: {
+                  fontSize: "16px",
+                  color: "#1f2937",
+                  '::placeholder': { color: "#9ca3af" },
+                },
+                invalid: { color: "#b91c1c" },
+              },
+              hidePostalCode: true,
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Name on card</label>
+        <input
+          type="text"
+          value={cardholderName}
+          onChange={(e) => setCardholderName(e.target.value)}
+          placeholder="Name on card"
+          className="w-full h-11 rounded-md border border-gray-300 px-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Country or region</label>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <select
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            className="h-11 rounded-md border border-gray-300 px-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="US">United States</option>
+            <option value="CA">Canada</option>
+            <option value="GB">United Kingdom</option>
+            <option value="AU">Australia</option>
+            <option value="IN">India</option>
+          </select>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={postalCode}
+            onChange={(e) => setPostalCode(e.target.value)}
+            placeholder="Postal code"
+            className="h-11 rounded-md border border-gray-300 px-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+      </div>
+
       <button
         type="submit"
         disabled={!stripe || loading}
-        className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+        className="w-full h-12 rounded-md bg-indigo-600 text-white font-medium disabled:opacity-50 flex items-center justify-center gap-2"
       >
-        {loading ? "Processing..." : "Pay"}
+        {loading ? "Processing…" : "Pay"}
+        <span aria-hidden>🔒</span>
       </button>
     </form>
   );
@@ -92,8 +163,8 @@ const CheckoutForm: React.FC = () => {
 const CheckoutPage: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="p-6 shadow rounded bg-white w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">Checkout</h2>
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl border border-gray-100">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Checkout</h2>
         <Elements stripe={stripePromise}>
           <CheckoutForm />
         </Elements>
