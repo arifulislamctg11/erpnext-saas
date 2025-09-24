@@ -1,7 +1,9 @@
 import { Button } from "../../components/ui/button";
 import Logo from "../../assets/images/innovatun_logo_bg_less.png";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/use-auth";
 export default function Header() {
+  const { user } = useAuth();
   return (
     <div className="container">
       {/* Header */}
@@ -46,11 +48,24 @@ export default function Header() {
             >
               FAQs
             </a>
+            {user && (
+             <Link to={"/dashboard"}>
+               <Button className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                 Dashboard
+               </Button>
+             </Link>
+           )} 
           </nav>
 
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-            Register
-          </Button>
+         <div className="flex items-center gap-2">
+          
+           <Link to={user ? "/checkout" : "/register"}>
+             <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+               Get Started
+             </Button>
+           </Link>
+         </div>
+          
         </div>
       </header>
     </div>
