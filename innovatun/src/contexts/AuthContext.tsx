@@ -1,9 +1,38 @@
+import { useEffect, useMemo, useState } from "react";
+import type { User } from "firebase/auth";
+import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { auth } from "../firebase/firebase";
+import { AuthContext, type AuthContextValue } from "./auth-context";
 
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-function AuthContext() {
-  return (
-    <div>AuthContext</div>
-  )
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+    });
+    return () => unsub();
+  }, []);
+
+  const signupWithEmail = async (email: string, password: string) => {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    return cred.user;
+  };
+
+  const signinWithEmail = async (email: string, password: string) => {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    return cred.user;
+  };
+
+  const signout = async () => {
+    await signOut(auth);
+  };
+
+  const value = useMemo<AuthContextValue>(() => ({ user, loading, signupWithEmail, signinWithEmail, signout }), [user, loading]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export default AuthContext
+// hook moved to ./use-auth to satisfy fast refresh rule

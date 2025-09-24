@@ -6,8 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import { Button } from "../../../components/ui/button";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../firebase/firebase";
+import { useAuth } from "../../../contexts/use-auth";
 
 import {
   Form,
@@ -68,17 +67,14 @@ export default function Register() {
   });
 
   const navigate = useNavigate();
+  const { signupWithEmail } = useAuth();
 
   const onSubmit = async (values: FormData) => {
     setIsLoading(true);
     setSubmitError(null);
     try {
-      const credential = await createUserWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password
-      );
-      console.log("Firebase user created:", credential.user.uid);
+      const user = await signupWithEmail(values.email, values.password);
+      console.log("Firebase user created:", user.uid);
       navigate("/checkout");
     } catch (error) {
       const message = (error as { message?: string })?.message || "Failed to create account";
