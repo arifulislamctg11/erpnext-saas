@@ -48,9 +48,12 @@ export default function Header() {
             </a>
           </nav>
 
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-            Register
+         <Link to={"/register"}>
+         <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          Get Started
           </Button>
+         </Link>
+          
         </div>
       </header>
     </div>
