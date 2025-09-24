@@ -3,8 +3,10 @@ import { Check } from "lucide-react";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/use-auth";
 
 export default function PicingSection() {
+  const { user } = useAuth();
   const plans = [
     {
       title: "Enterprise ERP",
@@ -155,11 +157,12 @@ export default function PicingSection() {
                     ))}
                   </ul>
                 </div>
-                <Link to={"/register"}>
-                  <Button className={`w-full ${plan.buttonStyle}`}>
-                    {plan.buttonText}
-                  </Button>
-                </Link>
+               
+                <Link to={user ? "/checkout" : "/register"}>
+             <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+               Get Started
+             </Button>
+           </Link>
 
                 <p className="text-sm mt-4 text-gray-500">{plan.note}</p>
               </Card>
