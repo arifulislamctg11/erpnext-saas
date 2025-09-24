@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import type { Stripe } from "@stripe/stripe-js";
@@ -9,6 +7,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { toast } from "sonner";
 
 
 const stripePromise: Promise<Stripe | null> = loadStripe(
@@ -23,6 +22,14 @@ const CheckoutForm: React.FC = () => {
   const [cardholderName, setCardholderName] = useState("");
   const [country, setCountry] = useState("US");
   const [postalCode, setPostalCode] = useState("");
+  const postalDigitsByCountry: Record<string, number> = {
+    US: 5,
+    IN: 6,
+    AU: 4,
+    GB: 6,
+    CA: 6,
+  };
+  const requiredPostalDigits = postalDigitsByCountry[country] || 6;
 
   useEffect(() => {
     const regData = localStorage.getItem("registrationData");
@@ -67,13 +74,13 @@ const CheckoutForm: React.FC = () => {
 
       if (error) {
         console.error(error);
-        alert("Payment failed: " + error.message);
+        toast.error(`Payment failed: ${error.message}`);
       } else if (paymentIntent?.status === "succeeded") {
-        alert("Payment successful! ✅");
+        toast.success("Payment successful! ✅");
       }
     } catch (err: unknown) {
       console.error(err);
-      alert("Payment error");
+      toast.error("Payment error");
     } finally {
       setLoading(false);
     }
@@ -141,10 +148,15 @@ const CheckoutForm: React.FC = () => {
             type="text"
             inputMode="numeric"
             value={postalCode}
-            onChange={(e) => setPostalCode(e.target.value)}
-            placeholder="Postal code"
+            onChange={(e) =>
+              setPostalCode(
+                e.target.value.replace(/\D/g, "").slice(0, requiredPostalDigits)
+              )
+            }
+            placeholder={"".padEnd(requiredPostalDigits, "0")}
             className="h-11 rounded-md border border-gray-300 px-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
+          <p className="text-xs text-gray-500 sm:col-span-2">Enter {requiredPostalDigits}-digit postal code</p>
         </div>
       </div>
 

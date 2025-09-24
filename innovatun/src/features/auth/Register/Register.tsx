@@ -1,4 +1,3 @@
-"use client";
 import { useNavigate } from "react-router-dom";
 
 import { useState } from "react";
@@ -69,7 +68,7 @@ export default function Register() {
 
   const onSubmit = async (values: FormData) => {
     setIsLoading(true);
-    // Simulate API call
+
     console.log("submited", values);
     setIsLoading(false);
 
