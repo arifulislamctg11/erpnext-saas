@@ -23,6 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
+import {  useNavigate } from "react-router-dom";
+import Payments from './../../../pages/StripePayments/[Payments]';
 
 const formSchema = z.object({
   companyName: z.string().min(2, "Company name must be at least 2 characters"),
@@ -43,6 +45,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
+   const navigate = useNavigate();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -64,9 +67,13 @@ export default function Register() {
 
   const onSubmit = async (values: FormData) => {
     setIsLoading(true);
+    if(values){
+      setIsLoading(false);
+      console.log("submited", values);
+      navigate('/Payments/id');
+    }
     // Simulate API call
     console.log("submited", values);
-    setIsLoading(false);
   };
 
   return (

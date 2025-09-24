@@ -3,6 +3,7 @@ import Home from "../pages/Home/Home";
 import Main from "../layout/Main/Main";
 import About from "../pages/About/About";
 import Register from "../features/auth/Register/Register";
+import Payments from "../pages/StripePayments/[Payments]";
 
 const router = createBrowserRouter([
   {
@@ -21,9 +22,13 @@ const router = createBrowserRouter([
         path: "/about",
         element: <About />,
       },
-            {
+      {
         path: "/register",
         element: <Register />,
+      },
+      {
+        path: "/payments/:id",
+        element: <Payments />,
       },
     ],
   },
