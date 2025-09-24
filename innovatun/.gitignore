@@ -26,3 +26,6 @@ dist-ssr
 erpnext_saas/public/erpnext_saas
 erpnext_saas/public/erpnext_saas/node_modules
 erpnext_saas/www/innovatun.html
+.env
+.env.*
+!.env.example
