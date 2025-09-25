@@ -1,9 +1,20 @@
 import { Button } from "../../components/ui/button";
 import Logo from "../../assets/images/innovatun_logo_bg_less.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/use-auth";
 export default function Header() {
-  const { user } = useAuth();
+  const { user, signout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signout();
+      navigate("/home");
+    } catch (error) {
+      // optionally handle error
+      console.error(error);
+    }
+  };
   return (
     <div className="container">
       {/* Header */}
@@ -50,7 +61,7 @@ export default function Header() {
             </a>
             {user && (
              <Link to={"/dashboard"}>
-               <Button className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+               <Button className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors text-black">
                  Dashboard
                </Button>
              </Link>
@@ -58,12 +69,17 @@ export default function Header() {
           </nav>
 
          <div className="flex items-center gap-2">
-          
-           <Link to={user ? "/checkout" : "/register"}>
-             <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-               Get Started
+           {user ? (
+             <Button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-black ">
+               Logout
              </Button>
-           </Link>
+           ) : (
+             <Link to="/register">
+               <Button className="bg-blue-600 hover:bg-blue-700 text-black">
+                 Get Started
+               </Button>
+             </Link>
+           )}
          </div>
           
         </div>
