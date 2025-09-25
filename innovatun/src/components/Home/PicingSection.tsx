@@ -9,6 +9,7 @@ export default function PicingSection() {
   const { user } = useAuth();
   const plans = [
     {
+      slug: "free-trial",
       title: "Enterprise ERP",
       price: "Free Trial",
       description:
@@ -29,6 +30,7 @@ export default function PicingSection() {
       buttonStyle: "bg-blue-600 hover:bg-blue-700 text-white",
     },
     {
+      slug: "starter-erp",
       title: "Starter ERP",
       price: "$3,000 / month",
       description:
@@ -48,6 +50,7 @@ export default function PicingSection() {
       buttonStyle: "bg-blue-600 hover:bg-blue-700 text-white",
     },
     {
+      slug: "pro-erp",
       title: "Pro ERP (Most Popular)",
       price: "$4,500 / month",
       description:
@@ -68,6 +71,7 @@ export default function PicingSection() {
       badge: "MOST POPULAR",
     },
     {
+      slug: "enterprise-erp",
       title: "Enterprise ERP",
       price: "$6,000+ / month",
       description:
@@ -158,11 +162,11 @@ export default function PicingSection() {
                   </ul>
                 </div>
                
-                <Link to={user ? "/checkout" : "/register"}>
-             <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-               Get Started
-             </Button>
-           </Link>
+                <Link to={user ? `/checkout?plan=${encodeURIComponent(plan.slug)}` : "/register"}>
+                  <Button className={plan.buttonStyle}>
+                    {plan.buttonText}
+                  </Button>
+                </Link>
 
                 <p className="text-sm mt-4 text-gray-500">{plan.note}</p>
               </Card>
