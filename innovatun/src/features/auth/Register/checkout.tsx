@@ -9,6 +9,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { toast } from "sonner";
+// import { api } from "../../../api/index";
 
 
 const stripePromise: Promise<Stripe | null> = loadStripe(

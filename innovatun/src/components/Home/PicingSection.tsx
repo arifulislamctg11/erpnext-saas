@@ -2,16 +2,46 @@ import { Button } from "../ui/button";
 import { Check } from "lucide-react";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../../contexts/use-auth";
+import { api } from "../../api";
 
 export default function PicingSection() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubscription = async (priceId: string) => {
+    if (!user) {
+      navigate("/register");
+      return;
+    }
+    try {
+      const res = await fetch(
+        `${api.baseUrl}${api.createCheckoutSession}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ priceId}),
+        }
+      );
+      const data = await res.json();
+      if (res.ok && data?.url) {
+        window.location.href = data.url as string;
+        return;
+      }
+      throw new Error(data?.message || "Failed to create checkout session");
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to start subscription. Please try again.");
+    }
+  };
   const plans = [
     {
       slug: "free-trial",
       title: "Enterprise ERP",
       price: "Free Trial",
+      priceId: "price_1SBGoXBhJuA7Ng1FK9jJt1p0",
       description:
         "For enterprises needing advanced, tailored ERP systems with white-glove support.",
       features: [
@@ -33,6 +63,7 @@ export default function PicingSection() {
       slug: "starter-erp",
       title: "Starter ERP",
       price: "$3,000 / month",
+      priceId: "price_1SBGpcBhJuA7Ng1FCNpbrJcA",
       description:
         "Perfect for small to mid-sized businesses starting their ERP journey.",
       features: [
@@ -53,6 +84,7 @@ export default function PicingSection() {
       slug: "pro-erp",
       title: "Pro ERP (Most Popular)",
       price: "$4,500 / month",
+      priceId: "price_1SBGtTBhJuA7Ng1FCzYOWyDL",
       description:
         "Designed for growing businesses that need deeper customization & support.",
       features: [
@@ -74,6 +106,7 @@ export default function PicingSection() {
       slug: "enterprise-erp",
       title: "Enterprise ERP",
       price: "$6,000+ / month",
+      priceId: "price_1SBGuBBhJuA7Ng1F77C4XZIx",
       description:
         "For enterprises needing advanced, tailored ERP systems with white-glove support.",
       features: [
@@ -161,12 +194,13 @@ export default function PicingSection() {
                     ))}
                   </ul>
                 </div>
-               
-                <Link to={user ? `/checkout?plan=${encodeURIComponent(plan.slug)}` : "/register"}>
-                  <Button className={plan.buttonStyle}>
-                    {plan.buttonText}
-                  </Button>
-                </Link>
+                
+                <Button
+                  className={plan.buttonStyle}
+                  onClick={() => handleSubscription(plan.priceId)}
+                >
+                  {plan.buttonText}
+                </Button>
 
                 <p className="text-sm mt-4 text-gray-500">{plan.note}</p>
               </Card>
