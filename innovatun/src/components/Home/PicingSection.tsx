@@ -3,7 +3,9 @@ import { Check } from "lucide-react";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../../contexts/use-auth";
+import { api } from "../../api";
 
 export default function PicingSection() {
   const { user } = useAuth();
@@ -14,8 +16,30 @@ export default function PicingSection() {
       navigate("/register");
       return;
     }
-    // Navigate to checkout page with the priceId as a parameter
-    navigate(`/checkout?priceId=${encodeURIComponent(priceId)}`);
+    try {
+      const res = await fetch(
+        `${api.baseUrl}${api.createCheckoutSession}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            priceId, 
+            customerEmail: user.email,
+            successUrl: `${window.location.origin}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: `${window.location.origin}/home`
+          }),
+        }
+      );
+      const data = await res.json();
+      if (res.ok && data?.url) {
+        window.location.href = data.url as string;
+        return;
+      }
+      throw new Error(data?.message || "Failed to create checkout session");
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to start subscription. Please try again.");
+    }
   };
   const plans = [
     {

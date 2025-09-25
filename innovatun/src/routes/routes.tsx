@@ -3,7 +3,7 @@ import Home from "../pages/Home/Home";
 import Main from "../layout/Main/Main";
 import About from "../pages/About/About";
 import Register from "../features/auth/Register/Register";
-import CheckoutPage from "../features/auth/Register/checkout";
+// import CheckoutPage from "../features/auth/Register/checkout";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import SuccessPage from "../pages/Success/Success";
@@ -30,11 +30,11 @@ const router = createBrowserRouter([
         path: "/register",
         element: <Register />,
       },
-       {
-        path: "/checkout",
-        element: <CheckoutPage />,
+      //  {
+      //   path: "/checkout",
+      //   element: <CheckoutPage />,
 
-      },
+      // },
        {
         path: "/success",
         element: <SuccessPage />,
