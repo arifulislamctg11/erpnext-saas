@@ -1,13 +1,28 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "../../shared/Header/Header";
 import { Footer } from "../../shared/Footer/Footer";
 
 export default function Main() {
+  const { pathname } = useLocation();
   return (
     <div>
-      <Header />
+      <div className={`${pathname.includes("/dashboard") ? "hidden" : ""}`}>
+        <Header />
+      </div>
       <Outlet />
-      <Footer />
+      <div
+        className={`${
+          pathname === "/dashboard" ||
+          pathname === "/dashboard/profile" ||
+          pathname === "/dashboard/current-plan" ||
+          pathname === "/dashboard/subscriptions" ||
+          pathname === "/dashboard/billing"
+            ? "hidden"
+            : ""
+        }`}
+      >
+        <Footer />
+      </div>
     </div>
   );
 }
