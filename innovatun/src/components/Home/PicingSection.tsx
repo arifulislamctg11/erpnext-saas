@@ -25,8 +25,8 @@ export default function PicingSection() {
           body: JSON.stringify({ 
             priceId, 
             customerEmail: user.email,
-            successUrl: `${window.location.origin}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-            cancelUrl: `${window.location.origin}/home`
+            successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: `${window.location.origin}/cancel`
           }),
         }
       );
