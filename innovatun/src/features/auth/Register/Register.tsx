@@ -75,7 +75,7 @@ export default function Register() {
     try {
       const user = await signupWithEmail(values.email, values.password);
       console.log("Firebase user created:", user.uid);
-      navigate("/checkout");
+      navigate("/home");
     } catch (error) {
       const message = (error as { message?: string })?.message || "Failed to create account";
       setSubmitError(message);

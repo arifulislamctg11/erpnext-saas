@@ -190,6 +190,11 @@ const CheckoutPage: React.FC = () => {
     const qs = new URLSearchParams(location.search);
     return qs.get("plan") || "";
   }, [location.search]);
+  
+  const priceIdFromUrl = useMemo(() => {
+    const qs = new URLSearchParams(location.search);
+    return qs.get("priceId") || "";
+  }, [location.search]);
 
   const plans: Record<string, { title: string; priceDisplay: string; amountCents: number; subText: string; illustration: string }> = {
     starter: { title: "Starter", priceDisplay: "$12", amountCents: 1200, subText: "per month", illustration: "🎯" },
@@ -207,7 +212,6 @@ const CheckoutPage: React.FC = () => {
   }, [planFromPricing]);
 
   const plan = plans[selectedPlan];
-  const displayTitle = planFromPricing || plan.title;
   // const showSelector = planFromPricing === ""; // selector hidden in this design
   const slugMap: Record<string, { title: string; priceDisplay: string; amountCents: number; subText: string }> = {
     "free-trial": { title: "Enterprise ERP", priceDisplay: "Free Trial", amountCents: 0, subText: "per month" },
@@ -215,10 +219,20 @@ const CheckoutPage: React.FC = () => {
     "pro-erp": { title: "Pro ERP (Most Popular)", priceDisplay: "$4,500", amountCents: 450000, subText: "per month" },
     "enterprise-erp": { title: "Enterprise ERP", priceDisplay: "$6,000+", amountCents: 600000, subText: "per month" },
   };
+  
+  const priceIdMap: Record<string, { title: string; priceDisplay: string; amountCents: number; subText: string }> = {
+    "price_1SBGoXBhJuA7Ng1FK9jJt1p0": { title: "Enterprise ERP", priceDisplay: "Free Trial", amountCents: 0, subText: "per month" },
+    "price_1SBGpcBhJuA7Ng1FCNpbrJcA": { title: "Starter ERP", priceDisplay: "$3,000", amountCents: 300000, subText: "per month" },
+    "price_1SBGtTBhJuA7Ng1FCzYOWyDL": { title: "Pro ERP (Most Popular)", priceDisplay: "$4,500", amountCents: 450000, subText: "per month" },
+    "price_1SBGuBBhJuA7Ng1F77C4XZIx": { title: "Enterprise ERP", priceDisplay: "$6,000+", amountCents: 600000, subText: "per month" },
+  };
   const slugInfo = slugMap[planFromPricing];
-  const amountCentsForCheckout = slugInfo ? slugInfo.amountCents : plan.amountCents;
-  // const priceDisplay = slugInfo ? slugInfo.priceDisplay : plan.priceDisplay;
-  // const subTextDisplay = slugInfo ? slugInfo.subText : plans[selectedPlan].subText;
+  const priceIdInfo = priceIdMap[priceIdFromUrl];
+  const planInfo = priceIdInfo || slugInfo;
+  const amountCentsForCheckout = planInfo ? planInfo.amountCents : plan.amountCents;
+  const displayTitle = planInfo ? planInfo.title : (planFromPricing || plan.title);
+  // const priceDisplay = planInfo ? planInfo.priceDisplay : plan.priceDisplay;
+  // const subTextDisplay = planInfo ? planInfo.subText : plans[selectedPlan].subText;
   const priceNumber = Math.max(0, Math.round(amountCentsForCheckout) / 100);
   const tax = +(priceNumber * 0.1).toFixed(2);
   const total = +(priceNumber + tax).toFixed(2);

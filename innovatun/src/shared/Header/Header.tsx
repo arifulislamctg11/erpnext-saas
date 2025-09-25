@@ -69,11 +69,11 @@ export default function Header() {
           </nav>
 
          <div className="flex items-center gap-2">
-           {user ? (
-             <Button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-black ">
-               Logout
-             </Button>
-           ) : (
+          {user ? (
+            <Button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-black ">
+              Logout
+            </Button>
+          ) : (
              <Link to="/register">
                <Button className="bg-blue-600 hover:bg-blue-700 text-black">
                  Get Started

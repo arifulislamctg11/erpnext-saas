@@ -6,6 +6,8 @@ import Register from "../features/auth/Register/Register";
 import CheckoutPage from "../features/auth/Register/checkout";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
+import SuccessPage from "../pages/Success/Success";
+import CancelPage from "../pages/Cancel/Cancel";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +33,17 @@ const router = createBrowserRouter([
        {
         path: "/checkout",
         element: <CheckoutPage />,
+
       },
+       {
+        path: "/success",
+        element: <SuccessPage />,
+      },
+      {
+        path: "/cancel",
+        element: <CancelPage/>,
+      },
+      
       {
         path: "/dashboard",
         element: (
