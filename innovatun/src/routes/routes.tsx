@@ -4,17 +4,24 @@ import Main from "../layout/Main/Main";
 import About from "../pages/About/About";
 import Register from "../features/auth/Register/Register";
 
+
 import Payments from "../pages/StripePayments/[Payments]";
 
-import CheckoutPage from "../features/auth/Register/checkout";
+// import CheckoutPage from "../features/auth/Register/checkout";
 // import Dashboard from "../pages/Dashboard/Dashboard";
-import ProtectedRoute from "./ProtectedRoute";
+// import ProtectedRoute from "./ProtectedRoute";
 import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome";
 import Profile from "../pages/Dashboard/Profile/Profile";
 import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
 import Billing from "../pages/Dashboard/Billing/Billing";
 import CurrentPlan from "../pages/Dashboard/CurrentPlan/CurrentPlan";
 import Subscription from "../pages/Dashboard/Subscriptions/Subscription";
+
+// import CheckoutPage from "../features/auth/Register/checkout";
+// import Dashboard from "../pages/Dashboard/Dashboard";
+import ProtectedRoute from "./ProtectedRoute";
+import SuccessPage from "../pages/Success/Success";
+import CancelPage from "../pages/Cancel/Cancel";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +45,7 @@ const router = createBrowserRouter([
         element: <Register />,
       },
 
+
       {
         path: "/payments/:id",
         element: <Payments />,
@@ -45,8 +53,22 @@ const router = createBrowserRouter([
 
       {
         path: "/checkout",
-        element: <CheckoutPage />,
+        // element: <CheckoutPage />,
       },
+      //  {
+      //   path: "/checkout",
+      //   element: <CheckoutPage />,
+
+      // },
+       {
+        path: "/success",
+        element: <SuccessPage />,
+      },
+      {
+        path: "/cancel",
+        element: <CancelPage/>,
+      },
+      
       {
         path: "/dashboard",
         element: (
