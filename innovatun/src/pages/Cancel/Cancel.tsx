@@ -1,18 +1,17 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 const CancelPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    Swal.fire({
-      title: "Payment Cancelled ❌",
-      text: "Your payment was not completed. Please try again.",
-      icon: "error",
-      confirmButtonText: "Back to Checkout",
-    }).then(() => {
-      navigate("/checkout");
+    toast.error("Payment Cancelled ❌", {
+      description: "Your payment was not completed. Please try again.",
+      action: {
+        label: "Back to Checkout",
+        onClick: () => navigate("/checkout"),
+      },
     });
   }, [navigate]);
 

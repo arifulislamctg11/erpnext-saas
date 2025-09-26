@@ -25,6 +25,7 @@ export default function PicingSection() {
           body: JSON.stringify({ 
             priceId, 
             customerEmail: user.email,
+            planName: plans.find(p => p.priceId === priceId)?.title || 'Unknown Plan',
             successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancelUrl: `${window.location.origin}/cancel`
           }),
@@ -32,6 +33,16 @@ export default function PicingSection() {
       );
       const data = await res.json();
       if (res.ok && data?.url) {
+        
+        const selectedPlan = plans.find(p => p.priceId === priceId);
+        if (selectedPlan) {
+          localStorage.setItem('purchasedPlan', selectedPlan.title);
+          localStorage.setItem('purchasedPlanDetails', JSON.stringify({
+            name: selectedPlan.title,
+            price: selectedPlan.price,
+            duration: '1 month'
+          }));
+        }
         window.location.href = data.url as string;
         return;
       }

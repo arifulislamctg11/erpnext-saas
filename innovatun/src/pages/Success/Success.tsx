@@ -1,29 +1,105 @@
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 const SuccessPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const sessionId = searchParams.get("session_id");
+  const planName = localStorage.getItem('purchasedPlan');
 
   useEffect(() => {
-    Swal.fire({
-      title: "Payment Successful 🎉",
-      text: "Thank you for your purchase!",
-      icon: "success",
-      confirmButtonText: "Go to Dashboard",
-    }).then(() => {
-      navigate("/dashboard");
+    // Get plan details from localStorage
+    const planDetails = localStorage.getItem('purchasedPlanDetails');
+    let planInfo = { name: planName || 'your plan', price: '', duration: '1 month' };
+    
+    if (planDetails) {
+      try {
+        planInfo = JSON.parse(planDetails);
+      } catch (e) {
+        console.error('Error parsing plan details:', e);
+      }
+    }
+    
+    toast.success(`Payment Successful 🎉`, {
+      description: `You have successfully subscribed to ${planInfo.name} for ${planInfo.duration}${planInfo.price ? ` (${planInfo.price})` : ''}! Redirecting to dashboard...`,
     });
-  }, [navigate]);
+    
+    // Clean up localStorage
+    localStorage.removeItem('purchasedPlan');
+    localStorage.removeItem('purchasedPlanDetails');
+    
+    // Navigate to dashboard after showing toast
+    const timer = setTimeout(() => {
+      navigate("/dashboard");
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }, [navigate, planName]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-green-50">
-      <h1 className="text-2xl font-bold text-green-600">Processing your order...</h1>
-      {sessionId && (
-        <p className="mt-2 text-gray-500">Session ID: {sessionId}</p>
-      )}
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full">
+        {/* Success Card */}
+        <div className="bg-white rounded-2xl shadow-2xl p-8 text-center relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-green-100 rounded-full -translate-y-16 translate-x-16"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-100 rounded-full translate-y-12 -translate-x-12"></div>
+          
+          {/* Success icon */}
+          <div className="relative z-10 mb-6">
+            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div className="text-4xl mb-2">🎉</div>
+          </div>
+
+          {/* Success message */}
+          <div className="relative z-10">
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h1>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              You have successfully subscribed to <span className="font-semibold text-green-600">{planName || 'your plan'}</span> for 1 month!
+            </p>
+
+            {/* Plan details card */}
+            <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="text-left">
+                  <p className="text-sm text-gray-500">Plan</p>
+                  <p className="font-semibold text-gray-800">{planName || 'Your Plan'}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">Duration</p>
+                  <p className="font-semibold text-gray-800">1 Month</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Session ID */}
+            {sessionId && (
+              <div className="bg-blue-50 rounded-lg p-3 mb-6 border border-blue-200">
+                <p className="text-xs text-blue-600 font-medium">Transaction ID</p>
+                <p className="text-sm text-blue-800 font-mono break-all">{sessionId}</p>
+              </div>
+            )}
+
+            {/* Redirect message */}
+            <div className="flex items-center justify-center space-x-2 text-gray-500">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-green-500"></div>
+              <p className="text-sm">Redirecting to dashboard...</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional info card */}
+        <div className="mt-6 bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center">
+          <p className="text-sm text-gray-600">
+            Welcome to your new subscription! You can manage your account from the dashboard.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
