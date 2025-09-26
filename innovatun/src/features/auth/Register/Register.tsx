@@ -393,9 +393,9 @@ export default function Register() {
           {/* Sign in link */}
           <div className="text-center mt-6">
             <span className="text-gray-600">Already have an account? </span>
-            <button className="text-black hover:underline font-medium">
+            <a href="/login" className="text-black hover:underline font-medium">
               Sign in
-            </button>
+            </a>
           </div>
         </div>
       </div>
