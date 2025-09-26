@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/assets/erpnext_saas/innovatun/ && yarn copy-html-entry",
+    "build": "vite build --base=/assets/erpnext_saas/innovatun/ && npm run copy-html-entry",
+    "build:hosting": "vite build --outDir=dist --base=/",
     "lint": "eslint .",
     "preview": "vite preview",
-    "copy-html-entry": "cp ../erpnext_saas/public/innovatun/index.html ../erpnext_saas/www/innovatun.html"
+    "copy-html-entry": "node scripts/copy-html-entry.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
