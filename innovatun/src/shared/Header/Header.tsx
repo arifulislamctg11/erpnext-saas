@@ -68,18 +68,34 @@ export default function Header() {
            )} 
           </nav>
 
-         <div className="flex items-center gap-2">
+         <div className="flex items-center gap-3">
           {user ? (
-            <Button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-black ">
-              Logout
-            </Button>
+            <>
+              <Link to="/dashboard" className="inline-flex items-center">
+                {user.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt={user.displayName || user.email || "User"}
+                    className="w-9 h-9 rounded-full object-cover border border-gray-200"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm font-semibold">
+                    {(user.displayName?.[0] || user.email?.[0] || "U").toUpperCase()}
+                  </div>
+                )}
+              </Link>
+              <Button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-black ">
+                Logout
+              </Button>
+            </>
           ) : (
-             <Link to="/register">
-               <Button className="bg-blue-600 hover:bg-blue-700 text-black">
-                 Get Started
-               </Button>
-             </Link>
-           )}
+            <Link to="/register">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-black">
+                Get Started
+              </Button>
+            </Link>
+          )}
          </div>
           
         </div>

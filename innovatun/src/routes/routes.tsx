@@ -3,25 +3,19 @@ import Home from "../pages/Home/Home";
 import Main from "../layout/Main/Main";
 import About from "../pages/About/About";
 import Register from "../features/auth/Register/Register";
-
-
-import Payments from "../pages/StripePayments/[Payments]";
-
-// import CheckoutPage from "../features/auth/Register/checkout";
-// import Dashboard from "../pages/Dashboard/Dashboard";
-// import ProtectedRoute from "./ProtectedRoute";
-import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome";
-import Profile from "../pages/Dashboard/Profile/Profile";
-import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
-import Billing from "../pages/Dashboard/Billing/Billing";
-import CurrentPlan from "../pages/Dashboard/CurrentPlan/CurrentPlan";
-import Subscription from "../pages/Dashboard/Subscriptions/Subscription";
-
 // import CheckoutPage from "../features/auth/Register/checkout";
 // import Dashboard from "../pages/Dashboard/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import SuccessPage from "../pages/Success/Success";
 import CancelPage from "../pages/Cancel/Cancel";
+import Login from "../features/auth/Register/Login";
+import Payments from "../pages/StripePayments/[Payments]";
+import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
+import Billing from "../pages/Dashboard/Billing/Billing";
+import Profile from "../pages/Dashboard/Profile/Profile";
+import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome";
+import CurrentPlan from "../pages/Dashboard/CurrentPlan/CurrentPlan";
+import Subscription from "../pages/Dashboard/Subscriptions/Subscription";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "/about",
         element: <About />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
       },
       {
         path: "/register",
@@ -86,6 +84,8 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+]
+
+);
 
 export default router;
