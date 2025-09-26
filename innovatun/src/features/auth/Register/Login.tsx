@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/use-auth";
 import { api } from "../../../api";
+import Lottie from "lottie-react";
+import loginAnimation from "../../../assets/login-animation.json";
 
 type LocationState = { from?: { pathname?: string } } | null;
 
@@ -43,7 +45,7 @@ export default function Login() {
       try {
         await requestJwt(formData.email);
       } catch (jwtErr) {
-        // Non-blocking: proceed even if JWT request fails
+        
         console.warn("JWT request failed", jwtErr);
       }
       navigate(fromPath);
@@ -178,9 +180,8 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Right side intentionally left simple (no theme, no Lottie) */}
         <div className="items-center justify-center flex-1 hidden p-4 md:flex">
-          <div className="w-full h-64 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100" />
+          <Lottie animationData={loginAnimation} loop={true} aria-hidden="true" />
         </div>
       </div>
     </div>
