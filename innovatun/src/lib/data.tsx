@@ -1,14 +1,10 @@
-// import {
-//   BarChart3,
-//   Users,
-//   FileText,
-//   LifeBuoy,
-//   Settings,
-//   PieChart,
-//   FolderOpen,
-//   MoreHorizontal,
-//   Plus,
-// } from "lucide-react";
+import {
+House ,
+User ,
+Podcast ,
+Fuel ,
+Venus 
+} from "lucide-react";
 
 
 const  menuItems = [
@@ -17,31 +13,31 @@ const  menuItems = [
         id: 1,
         name: "Dashboard",
         link: "/dashboard",
-        icon: "BarChart",
+        icon: <House />,
     },
     {
         id: 2,
         name: "Profile",
         link: "/dashboard/profile",
-        icon: "User",
+        icon: <User />,
     },
         {
         id: 3,
         name: "Subscriptions",
         link: "/dashboard/subscriptions",
-        icon: "Clock",
+        icon:  <Podcast />,
     },
      {
         id: 4,
         name: "Billing",
         link: "/dashboard/billing",
-        icon: "Clock",
+        icon: <Fuel />,
     },
      {
         id: 5,
         name: "Current Plan",
         link: "/dashboard/current-plan",
-        icon: "Clock",
+        icon: <Venus />,
     },
     //  {
     //     id: 3,

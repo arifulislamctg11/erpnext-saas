@@ -155,11 +155,11 @@ export default function DashboardHome() {
   };
 
   return (
-    <div className="flex  overflow-hidden bg-background">
+    <div className="flex h-screen  overflow-hidden bg-background">
       {/* Dashboard Content */}
-      <main className="flex-1 p-6 overflow-hidden bg-gray-300 overflow-y-auto space-y-6">
+      <main className="flex-1 p-3   h-screen   bg-gray-300 overflow-y-auto space-y-3">
         {/* Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           <MetricCard
             title="Total Revenue"
             value="$1,250.00"
@@ -193,7 +193,7 @@ export default function DashboardHome() {
             icon={<Activity className="h-4 w-4" />}
           />
         </div>
-        <div>
+        <div className=" mb-10  flex flex-col gap-3">
           {/* Chart Section */}
           <Card>
             <CardHeader>
@@ -257,6 +257,7 @@ export default function DashboardHome() {
           </Card>
 
           {/* Bottom Section with Tabs */}
+          <div className="mb-10">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -309,7 +310,7 @@ export default function DashboardHome() {
                       {tableData.map((row, index) => (
                         <div
                           key={index}
-                          className="grid grid-cols-6 gap-4 p-4 border-b last:border-b-0 hover:bg-muted/50"
+                          className="grid grid-cols-6 gap-4 p-4 border-b last:border-b-0 "
                         >
                           <div className="font-medium">{row.header}</div>
                           <div className="text-muted-foreground">
@@ -341,6 +342,8 @@ export default function DashboardHome() {
               </div>
             </CardHeader>
           </Card>
+          </div>
+
         </div>
       </main>
     </div>
