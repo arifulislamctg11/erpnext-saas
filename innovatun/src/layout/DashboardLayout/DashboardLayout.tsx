@@ -4,7 +4,7 @@ import Header from "../../components/Dashboard/Header";
 
 export default function DashboardLayout() {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen">
       {/* Sidebar */}
       <Sidebar />
 
@@ -13,7 +13,7 @@ export default function DashboardLayout() {
         <div>
           <Header/>
         </div>
-        <div className=" bg-[#d9d9d9]">
+        <div className="bg-[#d9d9d9] min-h-full">
         <Outlet /> {/* child pages render here */}
         </div>
       </main>

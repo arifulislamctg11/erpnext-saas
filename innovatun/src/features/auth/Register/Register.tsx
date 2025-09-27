@@ -9,6 +9,8 @@ import * as z from "zod";
 
 import { Button } from "../../../components/ui/button";
 import { useAuth } from "../../../contexts/use-auth";
+import { api } from "../../../api";
+import { toast } from "sonner";
 
 import {
   Form,
@@ -34,11 +36,11 @@ const formSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  currency: z.string().min(1, "Please select a country"),
-  abbr: z.string().min(1, "Please select a country"),
-  tax_id: z.string().min(1, "Please select a country"),
-  domain: z.string().min(1, "Please select a country"),
-  date_established: z.string().min(1, "Please select a country"),
+  currency: z.string().min(1, "Please select a currency"),
+  abbr: z.string().min(1, "Please enter abbreviation"),
+  tax_id: z.string().min(1, "Please enter tax ID"),
+  domain: z.string().min(1, "Please enter domain"),
+  date_established: z.string().min(1, "Please enter date of establishment"),
   country: z.string().min(1, "Please select a country"),
 });
 
@@ -71,25 +73,76 @@ export default function Register() {
   const { signupWithEmail } = useAuth();
 
   const onSubmit = async (values: FormData) => {
+    console.log('onSubmit called with values:', values);
     setIsLoading(true);
-
-    if (values) {
-      setIsLoading(false);
-      console.log("submited", values);
-      navigate("/Payments/id");
-    }
-    // Simulate API call
-    console.log("submited", values);
-
     setSubmitError(null);
+
     try {
+      console.log('Attempting to register user:', values.email);
+      console.log('API URL:', `${api.baseUrl}${api.register}`);
+
+      console.log("➡️ Fetching:", `${api.baseUrl}${api.register}`);
+
+
+      // First, register user in MongoDB via backend API
+      const response = await fetch(`${api.baseUrl}${api.register}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server error response:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Registration response:', data);
+
+      // If MongoDB registration successful, create Firebase user
       const user = await signupWithEmail(values.email, values.password);
       console.log("Firebase user created:", user.uid);
+      console.log("MongoDB user created:", data.userId);
+
+      // Show success message
+      toast.success("Account created successfully!", {
+        description: "Welcome to ERPNext SaaS!"
+      });
+
+      // Navigate to home page
       navigate("/home");
+
     } catch (error) {
-      const message =
-        (error as { message?: string })?.message || "Failed to create account";
-      setSubmitError(message);
+      console.error("Registration error:", error);
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch')) {
+          const message = "Unable to connect to registration server. Please check your internet connection and try again.";
+          setSubmitError(message);
+          toast.error("Network Error", {
+            description: message
+          });
+        } else {
+          const message = error.message || "Failed to create account";
+          setSubmitError(message);
+          toast.error("Registration failed", {
+            description: message
+          });
+        }
+      } else {
+        const message = "Failed to create account";
+        setSubmitError(message);
+        toast.error("Registration failed", {
+          description: message
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +161,10 @@ export default function Register() {
 
           {/* Form */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={(e) => {
+              console.log('Form submitted');
+              form.handleSubmit(onSubmit)(e);
+            }} className="space-y-4">
               <FormField
                 control={form.control}
                 name="companyName"
@@ -341,20 +397,20 @@ export default function Register() {
                     >
                       <FormControl className="w-[300px]">
                         <SelectTrigger className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0">
-                          <SelectValue placeholder="Select currency" />
+                          <SelectValue placeholder="Select country" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white">
-                        <SelectItem value="USD">USD - US Dollar</SelectItem>
-                        <SelectItem value="EUR">EUR - Euro</SelectItem>
-                        <SelectItem value="GBP">GBP - British Pound</SelectItem>
-                        <SelectItem value="JPY">JPY - Japanese Yen</SelectItem>
-                        <SelectItem value="CAD">
-                          CAD - Canadian Dollar
-                        </SelectItem>
-                        <SelectItem value="AUD">
-                          AUD - Australian Dollar
-                        </SelectItem>
+                        <SelectItem value="US">United States</SelectItem>
+                        <SelectItem value="CA">Canada</SelectItem>
+                        <SelectItem value="GB">United Kingdom</SelectItem>
+                        <SelectItem value="DE">Germany</SelectItem>
+                        <SelectItem value="FR">France</SelectItem>
+                        <SelectItem value="AU">Australia</SelectItem>
+                        <SelectItem value="JP">Japan</SelectItem>
+                        <SelectItem value="IN">India</SelectItem>
+                        <SelectItem value="BR">Brazil</SelectItem>
+                        <SelectItem value="MX">Mexico</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

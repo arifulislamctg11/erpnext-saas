@@ -39,7 +39,8 @@ export default function PicingSection() {
             priceId, 
             customerEmail: user.email,
             planName: selectedPlan.title,
-            successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+            planAmount: selectedPlan.price,
+            successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}&plan_name=${encodeURIComponent(selectedPlan.title)}&plan_amount=${encodeURIComponent(selectedPlan.price)}`,
             cancelUrl: `${window.location.origin}/cancel`
           }),
         }
@@ -56,12 +57,6 @@ export default function PicingSection() {
       const data = await res.json();
       if (data?.url) {
      
-        localStorage.setItem('purchasedPlan', selectedPlan.title);
-        localStorage.setItem('purchasedPlanDetails', JSON.stringify({
-          name: selectedPlan.title,
-          price: selectedPlan.price,
-          duration: '1 month'
-        }));
         
   
         toast.success(`Redirecting to payment for ${selectedPlan.title}`, {
