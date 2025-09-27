@@ -13,7 +13,7 @@ export default function DashboardLayout() {
         <div>
           <Header/>
         </div>
-        <div className=" bg-slate-300">
+        <div className=" bg-[#d9d9d9]">
         <Outlet /> {/* child pages render here */}
         </div>
       </main>
