@@ -31,7 +31,7 @@ const SuccessPage: React.FC = () => {
     
     // Navigate to dashboard after showing toast
     const timer = setTimeout(() => {
-      navigate("/dashboard");
+      navigate("/dashboard/subscriptions");
     }, 3000);
     
     return () => clearTimeout(timer);
