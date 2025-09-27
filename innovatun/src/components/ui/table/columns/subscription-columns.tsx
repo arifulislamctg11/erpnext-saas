@@ -1,6 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "./badge"
-import { Button } from "./button"
+import { Badge } from "../../badge"
+import { Button } from "../../button"
 import { ArrowUpDown, Calendar, DollarSign, CreditCard, Clock } from "lucide-react"
 
 export interface Subscription {

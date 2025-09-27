@@ -5,8 +5,8 @@ import { api } from "../../../api";
 import { Card } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
 import { toast } from "sonner";
-import { SubscriptionTable } from "../../../components/ui/subscription-table";
-import type { Subscription } from "../../../components/ui/subscription-table-columns";
+import { SubscriptionTable } from "../../../components/ui/table/subscription-table";
+import type { Subscription } from "../../../components/ui/table/columns/subscription-columns";
 
 export default function Subscription() {
   const { user } = useAuth();

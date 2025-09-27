@@ -1,5 +1,5 @@
-import { DataTable } from "./data-table"
-import { subscriptionColumns, type Subscription } from "./subscription-table-columns"
+import { DataTable } from "./components/data-table"
+import { subscriptionColumns, type Subscription } from "./columns/subscription-columns"
 
 interface SubscriptionTableProps {
   data: Subscription[]

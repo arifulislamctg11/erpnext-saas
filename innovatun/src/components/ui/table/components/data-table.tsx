@@ -17,14 +17,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 
-import { Button } from "./button"
+import { Button } from "../../button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "./dropdown-menu"
-import { Input } from "./input"
+} from "../../dropdown-menu"
+import { Input } from "../../input"
 import {
   Table,
   TableBody,
@@ -32,7 +32,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./table"
+} from "../../table"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
