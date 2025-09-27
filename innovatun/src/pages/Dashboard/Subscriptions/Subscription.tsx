@@ -65,25 +65,27 @@ export default function Subscription() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">My Subscriptions</h1>
-        <Button onClick={fetchSubscriptions} variant="outline">
-          Refresh
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">My Subscriptions</h1>
+          <Button onClick={fetchSubscriptions} variant="outline">
+            Refresh
+          </Button>
+        </div>
 
-      {subscriptions.length === 0 ? (
-        <Card className="p-8 text-center">
-          <div className="text-gray-500">
-            <div className="text-4xl mb-4">📋</div>
-            <h3 className="text-lg font-medium mb-2">No subscriptions found</h3>
-            <p className="text-sm">You haven't subscribed to any plans yet.</p>
-          </div>
-        </Card>
-      ) : (
-        <SubscriptionTable data={subscriptions} isLoading={loading} />
-      )}
+        {subscriptions.length === 0 ? (
+          <Card className="p-8 text-center">
+            <div className="text-gray-500">
+              <div className="text-4xl mb-4">📋</div>
+              <h3 className="text-lg font-medium mb-2">No subscriptions found</h3>
+              <p className="text-sm">You haven't subscribed to any plans yet.</p>
+            </div>
+          </Card>
+        ) : (
+          <SubscriptionTable data={subscriptions} isLoading={loading} />
+        )}
+      </div>
     </div>
   );
 }

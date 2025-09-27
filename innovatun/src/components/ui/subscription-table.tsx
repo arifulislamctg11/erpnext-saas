@@ -23,6 +23,11 @@ export function SubscriptionTable({ data, isLoading }: SubscriptionTableProps) {
     );
   }
 
+  // Calculate actual active plans count
+  const activePlansCount = data.filter(subscription => 
+    subscription.status.toLowerCase() === 'active'
+  ).length;
+
   return (
     <div className="space-y-6">
       {/* Header Section */}
@@ -33,7 +38,7 @@ export function SubscriptionTable({ data, isLoading }: SubscriptionTableProps) {
             <p className="text-blue-100">Manage and track your active subscriptions</p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold">{data.length}</div>
+            <div className="text-3xl font-bold">{activePlansCount}</div>
             <div className="text-blue-100 text-sm">Active Plans</div>
           </div>
         </div>
