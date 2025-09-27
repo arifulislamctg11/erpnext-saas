@@ -6,4 +6,5 @@ export const api = {
       : "https://backend-ten-red-40.vercel.app"),
   createCheckoutSession: "/create-checkout-session",
   createPaymentIntent: "/create-payment-intent",
+  register: "/register",
 };
