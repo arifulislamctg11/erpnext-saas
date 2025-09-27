@@ -16,7 +16,20 @@ export default function PicingSection() {
       navigate("/register");
       return;
     }
+    
+    const selectedPlan = plans.find(p => p.priceId === priceId);
+    if (!selectedPlan) {
+      toast.error("Plan not found. Please try again.");
+      return;
+    }
+    
     try {
+
+      toast.loading(`Starting subscription for ${selectedPlan.title}...`, {
+        description: `Price: ${selectedPlan.price}`,
+        id: 'subscription-loading'
+      });
+      
       const res = await fetch(
         `${api.baseUrl}${api.createCheckoutSession}`,
         {
@@ -25,31 +38,65 @@ export default function PicingSection() {
           body: JSON.stringify({ 
             priceId, 
             customerEmail: user.email,
-            planName: plans.find(p => p.priceId === priceId)?.title || 'Unknown Plan',
+            planName: selectedPlan.title,
             successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancelUrl: `${window.location.origin}/cancel`
           }),
         }
       );
+      
+  
+      toast.dismiss('subscription-loading');
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData?.message || `HTTP ${res.status}: ${res.statusText}`);
+      }
+      
       const data = await res.json();
-      if (res.ok && data?.url) {
+      if (data?.url) {
+     
+        localStorage.setItem('purchasedPlan', selectedPlan.title);
+        localStorage.setItem('purchasedPlanDetails', JSON.stringify({
+          name: selectedPlan.title,
+          price: selectedPlan.price,
+          duration: '1 month'
+        }));
         
-        const selectedPlan = plans.find(p => p.priceId === priceId);
-        if (selectedPlan) {
-          localStorage.setItem('purchasedPlan', selectedPlan.title);
-          localStorage.setItem('purchasedPlanDetails', JSON.stringify({
-            name: selectedPlan.title,
-            price: selectedPlan.price,
-            duration: '1 month'
-          }));
-        }
-        window.location.href = data.url as string;
+  
+        toast.success(`Redirecting to payment for ${selectedPlan.title}`, {
+          description: `Price: ${selectedPlan.price}`
+        });
+        
+     
+        setTimeout(() => {
+          window.location.href = data.url as string;
+        }, 1000);
+        
         return;
       }
-      throw new Error(data?.message || "Failed to create checkout session");
+      throw new Error("No checkout URL received from server");
     } catch (error) {
-      console.error(error);
-      toast.error("Unable to start subscription. Please try again.");
+      console.error('Payment error:', error);
+      
+      
+      toast.dismiss('subscription-loading');
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch')) {
+          toast.error("Network Error", {
+            description: "Unable to connect to payment server. Please check your internet connection and try again."
+          });
+        } else {
+          toast.error("Payment Error", {
+            description: error.message || "Unable to start subscription. Please try again."
+          });
+        }
+      } else {
+        toast.error("Payment Error", {
+          description: "Unable to start subscription. Please try again."
+        });
+      }
     }
   };
   const plans = [
