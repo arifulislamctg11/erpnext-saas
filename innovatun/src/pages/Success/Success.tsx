@@ -1,33 +1,127 @@
-import { useEffect } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useAuth } from "../../contexts/use-auth";
+import { api } from "../../api";
 
 const SuccessPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const sessionId = searchParams.get("session_id");
-  const planName = localStorage.getItem('purchasedPlan');
+  const planName = searchParams.get("plan_name");
+  const planAmount = searchParams.get("plan_amount");
+  const [planData, setPlanData] = useState({ 
+    planName: planName || 'Your Plan', 
+    amount: planAmount || 'Unknown Amount', 
+    priceId: '' 
+  });
+
+  const storeSubscription = useCallback(async () => {
+    if (!user?.email || !sessionId) return;
+
+    try {
+      // Use plan data from URL parameters (primary source)
+      let planData = { 
+        planName: planName || 'Unknown Plan', 
+        amount: planAmount || 'Unknown Amount', 
+        priceId: '' 
+      };
+      
+      // Try to get additional data from backend if needed
+      try {
+        const sessionResponse = await fetch(`${api.baseUrl}/get-session-data/${sessionId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        
+        if (sessionResponse.ok) {
+          const sessionData = await sessionResponse.json();
+          // Only update if we don't have URL data
+          if (!planName || !planAmount) {
+            planData = {
+              planName: sessionData.planName || planName || 'Unknown Plan',
+              amount: sessionData.planAmount || planAmount || 'Unknown Amount',
+              priceId: sessionData.priceId || ''
+            };
+            setPlanData({
+              planName: sessionData.planName || planName || 'Unknown Plan',
+              amount: sessionData.planAmount || planAmount || 'Unknown Amount',
+              priceId: sessionData.priceId || ''
+            });
+          }
+        }
+      } catch (sessionError) {
+        console.error('Error fetching session data:', sessionError);
+        // Keep the URL parameter data if backend fails
+      }
+
+      // Store subscription in MongoDB
+      try {
+        const response = await fetch(`${api.baseUrl}${api.subscriptions}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user.uid,
+            email: user.email,
+            planName: planData.planName,
+            priceId: planData.priceId,
+            amount: planData.amount,
+            currency: 'USD',
+            sessionId: sessionId,
+            status: 'active',
+            subscriptionId: sessionId,
+            currentPeriodStart: new Date().toISOString(),
+            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+          }),
+        });
+
+        if (response.ok) {
+          console.log('Subscription stored successfully in MongoDB');
+        } else {
+          console.error('Failed to store subscription in MongoDB');
+        }
+      } catch (fetchError) {
+        console.error('Error storing subscription (CORS/Network issue):', fetchError);
+        // Store locally as fallback
+        const localSubscription = {
+          userId: user.uid,
+          email: user.email,
+          planName: planData.planName,
+          priceId: planData.priceId,
+          amount: planData.amount,
+          currency: 'USD',
+          sessionId: sessionId,
+          status: 'active',
+          subscriptionId: sessionId,
+          currentPeriodStart: new Date().toISOString(),
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          createdAt: new Date().toISOString()
+        };
+        
+        // Store in localStorage as fallback
+        const existingSubscriptions = JSON.parse(localStorage.getItem('localSubscriptions') || '[]');
+        existingSubscriptions.push(localSubscription);
+        localStorage.setItem('localSubscriptions', JSON.stringify(existingSubscriptions));
+        
+        console.log('Subscription stored locally as fallback');
+      }
+    } catch (error) {
+      console.error('Error storing subscription:', error);
+    }
+  }, [user, sessionId, planName, planAmount]);
 
   useEffect(() => {
-    // Get plan details from localStorage
-    const planDetails = localStorage.getItem('purchasedPlanDetails');
-    let planInfo = { name: planName || 'your plan', price: '', duration: '1 month' };
-    
-    if (planDetails) {
-      try {
-        planInfo = JSON.parse(planDetails);
-      } catch (e) {
-        console.error('Error parsing plan details:', e);
-      }
-    }
+    // Store subscription data
+    storeSubscription();
     
     toast.success(`Payment Successful 🎉`, {
-      description: `You have successfully subscribed to ${planInfo.name} for ${planInfo.duration}${planInfo.price ? ` (${planInfo.price})` : ''}! Redirecting to dashboard...`,
+      description: `You have successfully subscribed to ${planData.planName}! Redirecting to dashboard...`,
     });
-    
-    // Clean up localStorage
-    localStorage.removeItem('purchasedPlan');
-    localStorage.removeItem('purchasedPlanDetails');
     
     // Navigate to dashboard after showing toast
     const timer = setTimeout(() => {
@@ -35,7 +129,7 @@ const SuccessPage: React.FC = () => {
     }, 3000);
     
     return () => clearTimeout(timer);
-  }, [navigate, planName]);
+  }, [navigate, user, storeSubscription, planData, planName, planAmount]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -60,7 +154,7 @@ const SuccessPage: React.FC = () => {
           <div className="relative z-10">
             <h1 className="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h1>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              You have successfully subscribed to <span className="font-semibold text-green-600">{planName || 'your plan'}</span> for 1 month!
+              You have successfully subscribed to <span className="font-semibold text-green-600">{planData.planName}</span>!
             </p>
 
             {/* Plan details card */}
@@ -68,11 +162,11 @@ const SuccessPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="text-left">
                   <p className="text-sm text-gray-500">Plan</p>
-                  <p className="font-semibold text-gray-800">{planName || 'Your Plan'}</p>
+                  <p className="font-semibold text-gray-800">{planData.planName}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-500">Duration</p>
-                  <p className="font-semibold text-gray-800">1 Month</p>
+                  <p className="text-sm text-gray-500">Amount</p>
+                  <p className="font-semibold text-gray-800">{planData.amount}</p>
                 </div>
               </div>
             </div>
