@@ -6,11 +6,12 @@ import Register from "../features/auth/Register/Register";
 // import CheckoutPage from "../features/auth/Register/checkout";
 // import Dashboard from "../pages/Dashboard/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
+import AdminProtectedRoute from "./AdminProtectedRoute";
 import SuccessPage from "../pages/Success/Success";
 import CancelPage from "../pages/Cancel/Cancel";
 import Login from "../features/auth/Register/Login";
 import FrappeLogin from "../features/auth/Register/FrappeLogin";
-import Payments from "../pages/StripePayments/[Payments]";
+import StripePayments from "../pages/StripePayments/[Payments]";
 import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
 import Billing from "../pages/Dashboard/Billing/Billing";
 import Profile from "../pages/Dashboard/Profile/Profile";
@@ -20,6 +21,13 @@ import Subscription from "../pages/Dashboard/Subscriptions/Subscription";
 import ForgotPassword from "../features/auth/ForgotPassword";
 import ResetPassword from "../features/auth/PasswordReset";
 import { Settings } from "../pages/Dashboard/Settings/Settings";
+import AdminDashboardLayout from "../layout/AdminDashboardLayout/AdminDashboardLayout";
+import AdminDashboard from "../pages/Admin/AdminDashboard";
+import Customers from "../pages/Admin/Customers";
+import Payments from "../pages/Admin/Payments";
+import Subscriptions from "../pages/Admin/Subscriptions";
+import AdminSettings from "../pages/Admin/AdminSettings";
+import CustomerDetail from "../pages/Admin/CustomerDetail";
 
 const router = createBrowserRouter([
   {
@@ -54,7 +62,7 @@ const router = createBrowserRouter([
 
       {
         path: "/payments/:id",
-        element: <Payments />,
+        element: <StripePayments />,
       },
 
       {
@@ -96,6 +104,22 @@ const router = createBrowserRouter([
           { path: "current-plan", element: <CurrentPlan /> }, // /dashboard/profile
           { path: "subscriptions", element: <Subscription /> }, // /dashboard/profile
           { path: "settings", element: <Settings /> },
+        ],
+      },
+      {
+        path: "/admin",
+        element: (
+          <AdminProtectedRoute>
+            <AdminDashboardLayout />
+          </AdminProtectedRoute>
+        ),
+        children: [
+          { index: true, element: <AdminDashboard /> },
+          { path: "customers", element: <Customers /> },
+          { path: "customers/:id", element: <CustomerDetail /> },
+          { path: "payments", element: <Payments /> },
+          { path: "subscriptions", element: <Subscriptions /> },
+          { path: "settings", element: <AdminSettings /> },
         ],
       },
     ],
