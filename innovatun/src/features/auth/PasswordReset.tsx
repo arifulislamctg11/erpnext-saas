@@ -22,12 +22,12 @@ export default function ResetPassword() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) return;
+    if (!formData.email || !formData.password || !formData) return;
     setIsLoading(true);
     setError(null);
     try {
-     
-      navigate(fromPath);
+    
+      navigate('/login');
     } catch (err) {
       const message = (err as { message?: string })?.message || "Failed to sign in";
       setError(message);
