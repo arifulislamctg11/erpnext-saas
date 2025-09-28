@@ -17,6 +17,9 @@ import Profile from "../pages/Dashboard/Profile/Profile";
 import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome";
 import CurrentPlan from "../pages/Dashboard/CurrentPlan/CurrentPlan";
 import Subscription from "../pages/Dashboard/Subscriptions/Subscription";
+import ForgotPassword from "../features/auth/ForgotPassword";
+import ResetPassword from "../features/auth/PasswordReset";
+import { Settings } from "../pages/Dashboard/Settings/Settings";
 
 const router = createBrowserRouter([
   {
@@ -71,7 +74,14 @@ const router = createBrowserRouter([
         path: "/cancel",
         element: <CancelPage/>,
       },
-      
+      {
+        path: "/forgot-password",
+        element: <ForgotPassword/>,
+      },
+      {
+        path: "/reset-password",
+        element: <ResetPassword/>,
+      },
       {
         path: "/dashboard",
         element: (
@@ -85,6 +95,7 @@ const router = createBrowserRouter([
           { path: "billing", element: <Billing/> }, // /dashboard/profile
           { path: "current-plan", element: <CurrentPlan /> }, // /dashboard/profile
           { path: "subscriptions", element: <Subscription /> }, // /dashboard/profile
+          { path: "settings", element: <Settings /> },
         ],
       },
     ],

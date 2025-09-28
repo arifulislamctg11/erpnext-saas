@@ -7,94 +7,7 @@ import { toast } from "sonner";
 import { useAuth } from "../../contexts/use-auth";
 import { api } from "../../api";
 
-export default function PicingSection() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubscription = async (priceId: string) => {
-    if (!user) {
-      navigate("/register");
-      return;
-    }
-    
-    const selectedPlan = plans.find(p => p.priceId === priceId);
-    if (!selectedPlan) {
-      toast.error("Plan not found. Please try again.");
-      return;
-    }
-    
-    try {
-
-      toast.loading(`Starting subscription for ${selectedPlan.title}...`, {
-        description: `Price: ${selectedPlan.price}`,
-        id: 'subscription-loading'
-      });
-      
-      const res = await fetch(
-        `${api.baseUrl}${api.createCheckoutSession}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            priceId, 
-            customerEmail: user.email,
-            planName: selectedPlan.title,
-            planAmount: selectedPlan.price,
-            successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}&plan_name=${encodeURIComponent(selectedPlan.title)}&plan_amount=${encodeURIComponent(selectedPlan.price)}`,
-            cancelUrl: `${window.location.origin}/cancel`
-          }),
-        }
-      );
-      
-  
-      toast.dismiss('subscription-loading');
-      
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData?.message || `HTTP ${res.status}: ${res.statusText}`);
-      }
-      
-      const data = await res.json();
-      if (data?.url) {
-     
-        
-  
-        toast.success(`Redirecting to payment for ${selectedPlan.title}`, {
-          description: `Price: ${selectedPlan.price}`
-        });
-        
-     
-        setTimeout(() => {
-          window.location.href = data.url as string;
-        }, 1000);
-        
-        return;
-      }
-      throw new Error("No checkout URL received from server");
-    } catch (error) {
-      console.error('Payment error:', error);
-      
-      
-      toast.dismiss('subscription-loading');
-      
-      if (error instanceof Error) {
-        if (error.message.includes('Failed to fetch')) {
-          toast.error("Network Error", {
-            description: "Unable to connect to payment server. Please check your internet connection and try again."
-          });
-        } else {
-          toast.error("Payment Error", {
-            description: error.message || "Unable to start subscription. Please try again."
-          });
-        }
-      } else {
-        toast.error("Payment Error", {
-          description: "Unable to start subscription. Please try again."
-        });
-      }
-    }
-  };
-  const plans = [
+export const plans = [
     {
       slug: "free-trial",
       title: "Enterprise ERP",
@@ -183,6 +96,94 @@ export default function PicingSection() {
       buttonStyle: "bg-blue-600 hover:bg-blue-700 text-white",
     },
   ];
+
+export default function PicingSection() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubscription = async (priceId: string) => {
+    if (!user) {
+      navigate("/register");
+      return;
+    }
+    
+    const selectedPlan = plans.find(p => p.priceId === priceId);
+    if (!selectedPlan) {
+      toast.error("Plan not found. Please try again.");
+      return;
+    }
+    
+    try {
+
+      toast.loading(`Starting subscription for ${selectedPlan.title}...`, {
+        description: `Price: ${selectedPlan.price}`,
+        id: 'subscription-loading'
+      });
+      
+      const res = await fetch(
+        `${api.baseUrl}${api.createCheckoutSession}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            priceId, 
+            customerEmail: user.email,
+            planName: selectedPlan.title,
+            planAmount: selectedPlan.price,
+            successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}&plan_name=${encodeURIComponent(selectedPlan.title)}&plan_amount=${encodeURIComponent(selectedPlan.price)}`,
+            cancelUrl: `${window.location.origin}/cancel`
+          }),
+        }
+      );
+      
+  
+      toast.dismiss('subscription-loading');
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData?.message || `HTTP ${res.status}: ${res.statusText}`);
+      }
+      
+      const data = await res.json();
+      if (data?.url) {
+     
+        
+  
+        toast.success(`Redirecting to payment for ${selectedPlan.title}`, {
+          description: `Price: ${selectedPlan.price}`
+        });
+        
+     
+        setTimeout(() => {
+          window.location.href = data.url as string;
+        }, 1000);
+        
+        return;
+      }
+      throw new Error("No checkout URL received from server");
+    } catch (error) {
+      console.error('Payment error:', error);
+      
+      
+      toast.dismiss('subscription-loading');
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch')) {
+          toast.error("Network Error", {
+            description: "Unable to connect to payment server. Please check your internet connection and try again."
+          });
+        } else {
+          toast.error("Payment Error", {
+            description: error.message || "Unable to start subscription. Please try again."
+          });
+        }
+      } else {
+        toast.error("Payment Error", {
+          description: "Unable to start subscription. Please try again."
+        });
+      }
+    }
+  };
 
   const addOns = [
     "Dedicated server hosting & monitoring",
