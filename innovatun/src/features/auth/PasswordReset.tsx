@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
+import { api } from "../../api";
+import { ResetOTPUrl } from "../../api/Urls";
 
 type LocationState = { from?: { pathname?: string } } | null;
 
@@ -12,6 +14,7 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [susseccTxt, setSusseccTxt] = useState('');
 
   const fromPath = ((location.state as LocationState)?.from?.pathname) || "/dashboard";
 
@@ -26,8 +29,23 @@ export default function ResetPassword() {
     setIsLoading(true);
     setError(null);
     try {
-    
-      navigate('/login');
+       const response = await fetch(`${api.baseUrl}${ResetOTPUrl}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email: formData.email, password: formData?.password, otp: formData.otp }),
+        });
+        const formatedRes = await response.json();
+      
+        if(formatedRes?.message !== "Password Changed successfully"){
+          setError(formatedRes?.message);
+          setIsLoading(true);
+          return
+        }
+        else{
+          setSusseccTxt('Password Changed successfully!')
+          setTimeout(() => navigate('/login'), 1000)
+        }
     } catch (err) {
       const message = (err as { message?: string })?.message || "Failed to sign in";
       setError(message);
@@ -112,7 +130,9 @@ export default function ResetPassword() {
               </div>
             </div>
 
-            <button
+            {
+              susseccTxt ? <p className="font-medium text-green-500 text-lg">{susseccTxt}</p> :
+              <button
               type="submit"
               disabled={isLoading || !formData.email || !formData.password || !formData.otp}
               className="w-[200px] py-3 mt-6 text-white transition-colors duration-300 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-70"
@@ -120,7 +140,8 @@ export default function ResetPassword() {
             >
               {isLoading ? "Loading..." : "Submit"}
             </button>
-
+            }
+      
             {error && (
               <p className="mt-3 text-sm text-red-600" role="alert">
                 {error}

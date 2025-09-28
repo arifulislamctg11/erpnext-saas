@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import { api } from "../../api";
+import { SendOTPUrl } from "../../api/Urls";
 
 type LocationState = { from?: { pathname?: string } } | null;
 
@@ -10,7 +11,6 @@ export default function ForgotPassword() {
   const location = useLocation();
 
   const [formData, setFormData] = useState({ email: ""});
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [susseccTxt, setSusseccTxt] = useState('');
@@ -28,7 +28,7 @@ export default function ForgotPassword() {
     setIsLoading(true);
     setError(null);
     try {
-        const otp_send_res = await fetch(`${api.baseUrl}/sendotp`, {
+        const otp_send_res = await fetch(`${api.baseUrl}${SendOTPUrl}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

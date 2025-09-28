@@ -1,11 +1,13 @@
 import { Settings } from "lucide-react";
 import { Button } from "../ui/button";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import menuItems from "../../lib/data";
 import Logo from "../../assets/images/innovatun_logo_bg_less.png";
 import { cn } from "../../lib/utils";
 export default function Sidebar() {
-  const location = useLocation()
+  const location = useLocation();
+  const navigate = useNavigate();
+  
   return (
     <div className="shadow-xl">
       <div className="w-64 bg-sidebar  border-r border-sidebar-border ">
@@ -22,11 +24,11 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <nav className="px-3 h-full space-y-1">
+        <nav className="px-3 h-full">
           <div className="flex pt-1 items-start border-b border-gray-400 pb-1">
             <h2 className="text-sm">Main</h2>
           </div>
-          <div className="mb-2">
+          <div className="mb-2  space-y-1">
           {menuItems?.map((item) => {
             const isActive = item.link ===location.pathname
             return (
@@ -49,10 +51,14 @@ export default function Sidebar() {
 
         </nav>
 
-        <div className=" bottom-4  left-3 right-3">
+        <div className=" bottom-4  px-3 ">
           <Button
+          onClick={() => navigate('/dashboard/settings')}
             variant="ghost"
-            className=" w-[200px] bg-gray-300 hover:bg-gray-400 justify-start text-sidebar-foreground  hover:text-white "
+          className={cn(
+                        `w-full justify-start text-sidebar-foreground my-[1px] hover:bg-primary/90  hover:text-white`,
+                        location.pathname == '/dashboard/settings' ? "bg-primary text-white":"hover:bg-primary/90 hover:text-white"
+                      )}
           >
             <Settings className="h-4 w-4 mr-2" />
             Settings
