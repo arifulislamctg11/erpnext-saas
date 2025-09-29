@@ -3,8 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
-import { Badge } from "../../components/ui/badge";
 import { Search, Download, Eye, Filter } from "lucide-react";
+import { DataTable } from "../../components/ui/table/components/data-table";
+import { customersColumns, type Customer } from "../../components/ui/table/columns/customers-columns";
 
 export default function Customers() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -12,7 +13,7 @@ export default function Customers() {
   const [planFilter, setPlanFilter] = useState("all");
 
   // Mock customer data - replace with actual API call
-  const customers = [
+  const customers: Customer[] = [
     {
       id: 1,
       email: "john.doe@example.com",
@@ -138,50 +139,19 @@ export default function Customers() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-4">Email</th>
-                  <th className="text-left p-4">Name</th>
-                  <th className="text-left p-4">Plan</th>
-                  <th className="text-left p-4">Status</th>
-                  <th className="text-left p-4">Signup Date</th>
-                  <th className="text-left p-4">Last Login</th>
-                  <th className="text-left p-4">Total Spent</th>
-                  <th className="text-left p-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredCustomers.map((customer) => (
-                  <tr key={customer.id} className="border-b hover:bg-gray-50">
-                    <td className="p-4">{customer.email}</td>
-                    <td className="p-4">{customer.name}</td>
-                    <td className="p-4">
-                      <Badge variant="outline">{customer.plan}</Badge>
-                    </td>
-                    <td className="p-4">
-                      <Badge 
-                        variant={customer.status === 'active' ? 'default' : 
-                                customer.status === 'trial' ? 'secondary' : 'destructive'}
-                      >
-                        {customer.status}
-                      </Badge>
-                    </td>
-                    <td className="p-4">{customer.signupDate}</td>
-                    <td className="p-4">{customer.lastLogin}</td>
-                    <td className="p-4">{customer.totalSpent} TND</td>
-                    <td className="p-4">
-                      <Button variant="outline" size="sm">
-                        <Eye className="h-4 w-4 mr-2" />
-                        View
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable columns={[
+            ...customersColumns,
+            {
+              id: "actions",
+              header: "Actions",
+              cell: () => (
+                <Button variant="outline" size="sm">
+                  <Eye className="h-4 w-4 mr-2" />
+                  View
+                </Button>
+              )
+            }
+          ]} data={filteredCustomers} searchKey="email" />
         </CardContent>
       </Card>
     </div>

@@ -19,3 +19,6 @@ export {
 
 export type { Subscription } from './columns/subscription-columns'
 export type { BillingRecord } from './columns/billing-columns'
+
+export { customersColumns } from './columns/customers-columns'
+export type { Customer } from './columns/customers-columns'
