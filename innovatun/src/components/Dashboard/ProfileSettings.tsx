@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,6 +19,9 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Check, ExternalLink, Edit } from "lucide-react";
+import { api } from "../../api";
+import { ProfileUrl } from "../../api/Urls";
+import { useAuth } from "../../contexts/use-auth";
 
 const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -44,6 +47,7 @@ export function ProfileSettings() {
   const [linkedinConnected, setLinkedinConnected] = useState(true);
   const [mediumConnected, setMediumConnected] = useState(true);
   const [githubConnected, setGithubConnected] = useState(false);
+  const { user} = useAuth();
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -84,6 +88,21 @@ export function ProfileSettings() {
   const handleConnectGithub = () => {
     setGithubConnected(true);
   };
+
+  const fetchProfile = async () => {
+      const response = await fetch(`${api.baseUrl}${ProfileUrl}?email=${user?.email}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+    const formatedRes = await response.json();
+    console.log('profile response ===>', formatedRes)
+  }
+  useEffect(() => {
+    if(user?.email){
+      fetchProfile()
+    }
+  },[user?.email])
 
   return (
     <div className="p-3 min-h-screen overflow-auto  mx-auto space-y-3">
