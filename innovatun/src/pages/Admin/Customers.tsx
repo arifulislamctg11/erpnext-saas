@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -6,45 +6,77 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Search, Download, Eye, Filter } from "lucide-react";
 import { DataTable } from "../../components/ui/table/components/data-table";
 import { customersColumns, type Customer } from "../../components/ui/table/columns/customers-columns";
+import { api } from "../../api";
 
 export default function Customers() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [planFilter, setPlanFilter] = useState("all");
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock customer data - replace with actual API call
-  const customers: Customer[] = [
-    {
-      id: 1,
-      email: "john.doe@example.com",
-      name: "John Doe",
-      plan: "Premium",
-      status: "active",
-      signupDate: "2024-01-15",
-      lastLogin: "2024-01-20",
-      totalSpent: 299
-    },
-    {
-      id: 2,
-      email: "jane.smith@example.com",
-      name: "Jane Smith",
-      plan: "Basic",
-      status: "trial",
-      signupDate: "2024-01-18",
-      lastLogin: "2024-01-19",
-      totalSpent: 0
-    },
-    {
-      id: 3,
-      email: "bob.wilson@example.com",
-      name: "Bob Wilson",
-      plan: "Premium",
-      status: "cancelled",
-      signupDate: "2024-01-10",
-      lastLogin: "2024-01-15",
-      totalSpent: 299
-    }
-  ];
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Try /customers first, then fallbacks
+        const candidates = [
+          `${api.baseUrl}/customers`,
+          `${api.baseUrl}/users/list`,
+          `${api.baseUrl}/users`,
+        ];
+        let list: Array<Record<string, unknown>> | null = null;
+        for (const url of candidates) {
+          try {
+            const res = await fetch(url, { credentials: "include" });
+            if (!res.ok) continue;
+            const data: unknown = await res.json();
+            if (Array.isArray(data)) { list = data as Array<Record<string, unknown>>; break; }
+            if (typeof data === 'object' && data !== null) {
+              const obj = data as { customers?: unknown[]; users?: unknown[] };
+              if (Array.isArray(obj.customers)) { list = obj.customers as Array<Record<string, unknown>>; break; }
+              if (Array.isArray(obj.users)) { list = obj.users as Array<Record<string, unknown>>; break; }
+            }
+          } catch { /* try next */ }
+        }
+        if (!list) throw new Error("Failed to load customers: no endpoint responded");
+
+        const mapped: Customer[] = list.map((u, idx) => {
+          const email = (u.email as string | undefined) ?? "";
+          const first = (u.firstName as string | undefined) ?? "";
+          const last = (u.lastName as string | undefined) ?? "";
+          const username = (u.username as string | undefined) ?? "";
+          const company = (u.companyName as string | undefined) ?? "";
+          const nameCandidate = (u.name as string | undefined) ?? `${first}${(first || last ? " " : "")}${last}`;
+          const name = (nameCandidate || company || username || "").trim();
+          const plan = ((u.planName as string | undefined) ?? (u.plan as string | undefined) ?? "—");
+          const status = (u.status as string | undefined) ?? (((u.isActive as boolean | undefined) ?? false) ? "active" : "inactive");
+          const created = (u.createdAt as string | number | Date | undefined);
+          const lastLogin = (u.lastLogin as string | number | Date | undefined);
+          const totalSpent = Number((u.totalSpent as number | string | undefined) ?? 0);
+          return {
+            id: Number((u.id as number | string | undefined) ?? idx + 1),
+            email,
+            name,
+            plan: String(plan),
+            status: String(status),
+            signupDate: created ? new Date(created).toISOString().slice(0, 10) : "",
+            lastLogin: lastLogin ? new Date(lastLogin).toISOString().slice(0, 10) : "",
+            totalSpent,
+          };
+        });
+        if (alive) setCustomers(mapped);
+      } catch (e) {
+        if (alive) setError((e as Error).message);
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
 
   const filteredCustomers = customers.filter(customer => {
     const matchesSearch = customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -139,19 +171,30 @@ export default function Customers() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable columns={[
-            ...customersColumns,
-            {
-              id: "actions",
-              header: "Actions",
-              cell: () => (
-                <Button variant="outline" size="sm">
-                  <Eye className="h-4 w-4 mr-2" />
-                  View
-                </Button>
-              )
-            }
-          ]} data={filteredCustomers} searchKey="email" />
+          {error && (
+            <div className="mb-4 text-sm text-red-600">{error}</div>
+          )}
+          {loading ? (
+            <div className="py-10 text-center text-gray-500">Loading customers…</div>
+          ) : (
+            <DataTable
+              columns={[
+                ...customersColumns,
+                {
+                  id: "actions",
+                  header: "Actions",
+                  cell: () => (
+                    <Button variant="outline" size="sm">
+                      <Eye className="h-4 w-4 mr-2" />
+                      View
+                    </Button>
+                  ),
+                },
+              ]}
+              data={filteredCustomers}
+              searchKey="email"
+            />
+          )}
         </CardContent>
       </Card>
     </div>
