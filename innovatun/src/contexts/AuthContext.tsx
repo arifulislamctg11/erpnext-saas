@@ -7,6 +7,10 @@ import { AuthContext, type AuthContextValue } from "./auth-context";
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  
+  // Admin email configuration
+  const ADMIN_EMAILS = ['test@gmail.com'];
+  const isAdmin = user ? ADMIN_EMAILS.includes(user.email || '') : false;
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
@@ -36,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signOut(auth);
   };
 
-  const value = useMemo<AuthContextValue>(() => ({ user, loading, signupWithEmail, signinWithEmail, signinWithGoogle, signout }), [user, loading]);
+  const value = useMemo<AuthContextValue>(() => ({ user, loading, isAdmin, signupWithEmail, signinWithEmail, signinWithGoogle, signout }), [user, loading, isAdmin]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

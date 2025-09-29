@@ -1,0 +1,371 @@
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Badge } from "../../components/ui/badge";
+import { Switch } from "../../components/ui/switch";
+import { Plus, Edit, Trash2, Save, Eye, EyeOff } from "lucide-react";
+
+export default function AdminSettings() {
+  const [showSecrets, setShowSecrets] = useState(false);
+
+  // Mock data - replace with actual API calls
+  const [plans, setPlans] = useState([
+    {
+      id: 1,
+      name: "Basic Plan",
+      price: 99,
+      currency: "TND",
+      features: ["Feature 1", "Feature 2", "Feature 3"],
+      trialDays: 7,
+      isActive: true
+    },
+    {
+      id: 2,
+      name: "Premium Plan",
+      price: 299,
+      currency: "TND",
+      features: ["All Basic Features", "Premium Feature 1", "Premium Feature 2", "Priority Support"],
+      trialDays: 14,
+      isActive: true
+    }
+  ]);
+
+  const [billingSettings, setBillingSettings] = useState({
+    stripePublicKey: "pk_test_...",
+    stripeSecretKey: "sk_test_...",
+    webhookSecret: "whsec_...",
+    paymentProvider: "stripe"
+  });
+
+  const [emailTemplates, setEmailTemplates] = useState([
+    {
+      id: 1,
+      name: "Welcome Email",
+      subject: "Welcome to Innovatun!",
+      isActive: true
+    },
+    {
+      id: 2,
+      name: "Payment Confirmation",
+      subject: "Payment Received - Thank You!",
+      isActive: true
+    },
+    {
+      id: 3,
+      name: "Subscription Cancelled",
+      subject: "Your subscription has been cancelled",
+      isActive: false
+    }
+  ]);
+
+  const [systemLogs, setSystemLogs] = useState([
+    {
+      id: 1,
+      timestamp: "2024-01-20 10:30:00",
+      level: "INFO",
+      message: "User john.doe@example.com logged in",
+      source: "Authentication"
+    },
+    {
+      id: 2,
+      timestamp: "2024-01-20 10:25:00",
+      level: "SUCCESS",
+      message: "Payment processed successfully for jane.smith@example.com",
+      source: "Payment"
+    },
+    {
+      id: 3,
+      timestamp: "2024-01-20 10:20:00",
+      level: "ERROR",
+      message: "Webhook validation failed for transaction txn_123456",
+      source: "Webhook"
+    }
+  ]);
+
+  const handleAddPlan = () => {
+    const newPlan = {
+      id: plans.length + 1,
+      name: "New Plan",
+      price: 0,
+      currency: "TND",
+      features: [],
+      trialDays: 0,
+      isActive: true
+    };
+    setPlans([...plans, newPlan]);
+  };
+
+  const handleDeletePlan = (id: number) => {
+    setPlans(plans.filter(plan => plan.id !== id));
+  };
+
+  const handleTogglePlan = (id: number) => {
+    setPlans(plans.map(plan => 
+      plan.id === id ? { ...plan, isActive: !plan.isActive } : plan
+    ));
+  };
+
+  const handleSaveBillingSettings = () => {
+    // Implement save functionality
+    console.log("Saving billing settings:", billingSettings);
+  };
+
+  const handleToggleEmailTemplate = (id: number) => {
+    setEmailTemplates(emailTemplates.map(template => 
+      template.id === id ? { ...template, isActive: !template.isActive } : template
+    ));
+  };
+
+  return (
+    <div className="p-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Admin Settings</h1>
+        <p className="text-gray-600 mt-2">Manage system configuration and settings</p>
+      </div>
+
+      <Tabs defaultValue="plans" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="plans">Plans Management</TabsTrigger>
+          <TabsTrigger value="billing">Billing Settings</TabsTrigger>
+          <TabsTrigger value="email">Email Templates</TabsTrigger>
+          <TabsTrigger value="logs">System Logs</TabsTrigger>
+        </TabsList>
+
+        {/* Plans Management */}
+        <TabsContent value="plans" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Subscription Plans</CardTitle>
+                  <CardDescription>
+                    Manage subscription plans, pricing, and features
+                  </CardDescription>
+                </div>
+                <Button onClick={handleAddPlan} className="flex items-center space-x-2">
+                  <Plus className="h-4 w-4" />
+                  <span>Add Plan</span>
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {plans.map((plan) => (
+                  <Card key={plan.id} className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-4">
+                          <h3 className="text-lg font-semibold">{plan.name}</h3>
+                          <Badge variant={plan.isActive ? "default" : "secondary"}>
+                            {plan.isActive ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
+                        <div className="mt-2">
+                          <p className="text-2xl font-bold text-green-600">
+                            {plan.price} {plan.currency}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {plan.trialDays} days trial
+                          </p>
+                        </div>
+                        <div className="mt-2">
+                          <p className="text-sm font-medium">Features:</p>
+                          <ul className="text-sm text-gray-600 list-disc list-inside">
+                            {plan.features.map((feature, index) => (
+                              <li key={index}>{feature}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={plan.isActive}
+                          onCheckedChange={() => handleTogglePlan(plan.id)}
+                        />
+                        <Button variant="outline" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDeletePlan(plan.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Billing Settings */}
+        <TabsContent value="billing" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Provider Configuration</CardTitle>
+              <CardDescription>
+                Configure payment provider credentials and webhook settings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="stripePublicKey">Stripe Public Key</Label>
+                  <Input
+                    id="stripePublicKey"
+                    value={billingSettings.stripePublicKey}
+                    onChange={(e) => setBillingSettings({
+                      ...billingSettings,
+                      stripePublicKey: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="stripeSecretKey">Stripe Secret Key</Label>
+                  <div className="relative">
+                    <Input
+                      id="stripeSecretKey"
+                      type={showSecrets ? "text" : "password"}
+                      value={billingSettings.stripeSecretKey}
+                      onChange={(e) => setBillingSettings({
+                        ...billingSettings,
+                        stripeSecretKey: e.target.value
+                      })}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowSecrets(!showSecrets)}
+                    >
+                      {showSecrets ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="webhookSecret">Webhook Secret</Label>
+                <div className="relative">
+                  <Input
+                    id="webhookSecret"
+                    type={showSecrets ? "text" : "password"}
+                    value={billingSettings.webhookSecret}
+                    onChange={(e) => setBillingSettings({
+                      ...billingSettings,
+                      webhookSecret: e.target.value
+                    })}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowSecrets(!showSecrets)}
+                  >
+                    {showSecrets ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <Button onClick={handleSaveBillingSettings} className="flex items-center space-x-2">
+                <Save className="h-4 w-4" />
+                <span>Save Settings</span>
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Email Templates */}
+        <TabsContent value="email" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Email Templates</CardTitle>
+              <CardDescription>
+                Manage email templates for customer communications
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {emailTemplates.map((template) => (
+                  <Card key={template.id} className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-4">
+                          <h3 className="text-lg font-semibold">{template.name}</h3>
+                          <Badge variant={template.isActive ? "default" : "secondary"}>
+                            {template.isActive ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Subject: {template.subject}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={template.isActive}
+                          onCheckedChange={() => handleToggleEmailTemplate(template.id)}
+                        />
+                        <Button variant="outline" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* System Logs */}
+        <TabsContent value="logs" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>System Logs & Webhook Events</CardTitle>
+              <CardDescription>
+                View system logs and webhook event history
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {systemLogs.map((log) => (
+                  <div key={log.id} className="flex items-center space-x-4 p-3 border rounded-lg">
+                    <Badge 
+                      variant={log.level === "ERROR" ? "destructive" : 
+                              log.level === "SUCCESS" ? "default" : "secondary"}
+                    >
+                      {log.level}
+                    </Badge>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{log.message}</p>
+                      <p className="text-xs text-gray-500">
+                        {log.timestamp} • {log.source}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}

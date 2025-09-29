@@ -16,7 +16,8 @@ export default function Main() {
           pathname === "/dashboard/profile" ||
           pathname === "/dashboard/current-plan" ||
           pathname === "/dashboard/subscriptions" ||
-          pathname === "/dashboard/billing"
+          pathname === "/dashboard/billing" ||
+          pathname.includes("/admin")
             ? "hidden"
             : ""
         }`}
