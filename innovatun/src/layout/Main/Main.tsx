@@ -6,7 +6,7 @@ export default function Main() {
   const { pathname } = useLocation();
   return (
     <div>
-      <div className={`${pathname.includes("/dashboard") ? "hidden" : ""}`}>
+      <div className={`${pathname.includes("/dashboard") || pathname.includes("/admin") ? "hidden" : ""}`}>
         <Header />
       </div>
       <Outlet />
