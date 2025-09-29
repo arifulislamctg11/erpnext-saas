@@ -65,11 +65,11 @@ export default function Login() {
       <div className="flex flex-col-reverse w-full max-w-5xl p-6 rounded-lg shadow-lg md:flex-row bg-white/90 backdrop-filter backdrop-blur-sm">
         {/* Left side: Form */}
         <div className="flex-1 p-4 lg:p-8">
-          <h1 className="mb-6 text-3xl font-bold text-center text-blue-600">Welcome Back</h1>
+          <h1 className="mb-6 text-3xl font-bold text-center text-black">Welcome Back</h1>
 
           <form onSubmit={handleLogin} aria-label="Login form">
             <div className="mt-4">
-              <label htmlFor="email" className="block text-sm font-medium">
+              <label htmlFor="email" className="block text-sm font-medium text-start">
                 Email Address
               </label>
               <input
@@ -123,7 +123,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading || !formData.email || !formData.password}
-              className="w-full py-3 mt-6 text-white transition-colors duration-300 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-70"
+              className="w-full py-3 mt-6 text-white bg-black"
               aria-label="Sign in to your account"
             >
               {isLoading ? "Signing In..." : "Sign In"}
@@ -135,13 +135,13 @@ export default function Login() {
               </p>
             )}
 
-            <div className="flex items-center my-6">
+            {/* <div className="flex items-center my-6">
               <div className="flex-1 border-t border-gray-300"></div>
               <span className="px-4 text-sm text-gray-500">OR</span>
               <div className="flex-1 border-t border-gray-300"></div>
-            </div>
+            </div> */}
 
-            <button
+            {/* <button
               type="button"
               disabled={isLoading}
               onClick={async () => {
@@ -166,7 +166,7 @@ export default function Login() {
               aria-label="Sign in with Google"
             >
               Continue with Google
-            </button>
+            </button> */}
           </form>
 
           <p className="mt-6 text-sm text-center">

@@ -61,7 +61,7 @@ export default function Header() {
             </a>
             {user && (
              <Link to={"/dashboard"}>
-               <Button className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors text-black">
+               <Button className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-primary transition-colors text-white">
                  Dashboard
                </Button>
              </Link>
@@ -85,13 +85,13 @@ export default function Header() {
                   </div>
                 )}
               </Link>
-              <Button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-black ">
+              <Button onClick={handleLogout} className="cursor-pointer bg-gray-300 hover:bg-red-700 text-black ">
                 Logout
               </Button>
             </>
           ) : (
             <Link to="/register">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-black">
+              <Button className="bg-black hover:bg-blue-700 text-white">
                 Get Started
               </Button>
             </Link>

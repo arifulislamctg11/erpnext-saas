@@ -53,12 +53,12 @@ export default function CurrentPlan() {
   return(
     <div className="min-h-screen bg-gray-50 p-6">
         <div className="w-full lg:max-w-7xl">
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="flex flex-cols lg:flex-row justify-between">
               {
                 currentPlanData && <div>
                   <Card
                   
-                  className={`p-8 "bg-white border-0 shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg relative"`}
+                  className={`p-8 bg-white border-1 border-black shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg h-[680px]`}
                 >
                 <h4 className="text-xl lg:text-2xl text-green-700 font-bold">Current Plan</h4>
                   {currentPlanData?.badge && (
@@ -96,7 +96,7 @@ export default function CurrentPlan() {
                 nextPlanData && <div>
                   <Card
                   
-                  className={`p-8  bg-gray-900  text-white shadow-lg relative`}
+                  className={`p-8  bg-gray-900  text-white shadow-lg relative h-[680px]`}
                 >
                 <h4 className="text-xl lg:text-2xl  text-yellow-400 font-bold">Upgrade Plan</h4>
                   {nextPlanData?.badge && (
@@ -105,7 +105,7 @@ export default function CurrentPlan() {
                     </Badge>
                   )}
 
-                 <div className="text-center mb-6">
+                 <div className="text-center mb-4">
                   <h3 className="text-xl font-semibold mb-2">{nextPlanData.title}</h3>
                   <div className="text-4xl font-bold mb-1">
                     {nextPlanData.price}
