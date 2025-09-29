@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import { api } from "../../api";
 import { ResetOTPUrl } from "../../api/Urls";
+import { useAuth } from "../../contexts/use-auth";
 
 type LocationState = { from?: { pathname?: string } } | null;
 
@@ -17,6 +18,7 @@ export default function ResetPassword() {
   const [susseccTxt, setSusseccTxt] = useState('');
 
   const fromPath = ((location.state as LocationState)?.from?.pathname) || "/dashboard";
+  const { PasswordReset } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,6 +31,7 @@ export default function ResetPassword() {
     setIsLoading(true);
     setError(null);
     try {
+
        const response = await fetch(`${api.baseUrl}${ResetOTPUrl}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

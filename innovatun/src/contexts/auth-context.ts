@@ -9,6 +9,7 @@ export type AuthContextValue = {
   signinWithEmail: (email: string, password: string) => Promise<User>;
   signinWithGoogle: () => Promise<User>;
   signout: () => Promise<void>;
+  PasswordReset: (email: string) => Promise<any>;
 };
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
