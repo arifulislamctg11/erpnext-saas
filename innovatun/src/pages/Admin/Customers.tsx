@@ -25,8 +25,7 @@ export default function Customers() {
         // Try /customers first, then fallbacks
         const candidates = [
           `${api.baseUrl}/customers`,
-          `${api.baseUrl}/users/list`,
-          `${api.baseUrl}/users`,
+         
         ];
         let list: Array<Record<string, unknown>> | null = null;
         for (const url of candidates) {
