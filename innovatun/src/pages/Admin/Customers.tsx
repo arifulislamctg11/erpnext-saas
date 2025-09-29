@@ -22,7 +22,7 @@ export default function Customers() {
       setLoading(true);
       setError(null);
       try {
-        // Try /customers first, then fallbacks
+        
         const candidates = [
           `${api.baseUrl}/customers`,
          
@@ -61,6 +61,7 @@ export default function Customers() {
             email,
             name,
             plan: String(plan),
+            amount: String((u.planAmount as string | undefined) ?? ""), 
             status: String(status),
             signupDate: created ? new Date(created).toISOString().slice(0, 10) : "",
             lastLogin: lastLogin ? new Date(lastLogin).toISOString().slice(0, 10) : "",

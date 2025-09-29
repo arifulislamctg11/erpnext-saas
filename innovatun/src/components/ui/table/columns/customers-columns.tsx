@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "../../badge"
 import { Button } from "../../button"
-import { ArrowUpDown, Mail, User, Calendar, DollarSign, Activity } from "lucide-react"
+import { ArrowUpDown, Mail, User, Calendar, Activity } from "lucide-react"
 
 export type Customer = {
   id: number
@@ -12,6 +12,7 @@ export type Customer = {
   signupDate: string
   lastLogin: string
   totalSpent: number
+  amount?: string
 }
 
 export const customersColumns: ColumnDef<Customer>[] = [
@@ -104,22 +105,18 @@ export const customersColumns: ColumnDef<Customer>[] = [
       </Button>
     ),
   },
+ 
   {
-    accessorKey: "totalSpent",
+    accessorKey: "amount",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="h-8 px-2 lg:px-3 font-semibold text-gray-700 hover:bg-green-50"
-      >
-        <DollarSign className="mr-2 h-4 w-4 text-green-600" />
-        Total Spent
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+        Amount
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
     cell: ({ row }) => {
-      const value = row.getValue("totalSpent") as number
-      return <div className="font-semibold text-green-700">{value} TND</div>
+      const amount = row.getValue("amount") as string | undefined;
+      return <div className="font-semibold text-gray-800">{amount || "—"}</div>;
     },
   },
 ]
