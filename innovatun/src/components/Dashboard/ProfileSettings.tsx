@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,20 +19,33 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Check, ExternalLink, Edit } from "lucide-react";
+import { api } from "../../api";
+import { ProfileUrl, UpdateProfileURL } from "../../api/Urls";
+import { useAuth } from "../../contexts/use-auth";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
-const profileSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  contactNumber: z.string().min(1, "Contact number is required"),
-  aboutYou: z.string().min(10, "About you must be at least 10 characters"),
-  website: z.string().url("Invalid website URL").optional().or(z.literal("")),
-  linkedin: z.string().min(1, "LinkedIn username is required"),
-  medium: z.string().min(1, "Medium username is required"),
-  github: z.string().optional().or(z.literal("")),
+const formSchema = z.object({
+  companyName: z.string().min(2, "Company name must be at least 2 characters"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  currency: z.string().min(1, "Please select a currency"),
+  abbr: z.string().min(1, "Please enter abbreviation"),
+  tax_id: z.string().min(1, "Please enter tax ID"),
+  domain: z.string().min(1, "Please enter domain"),
+  date_established: z.string().min(1, "Please enter date of establishment"),
+  country: z.string().min(1, "Please select a country"),
 });
 
-type ProfileFormData = z.infer<typeof profileSchema>;
+type ProfileFormData = z.infer<typeof formSchema>;
 
 interface CompletionItem {
   id: string;
@@ -41,24 +54,16 @@ interface CompletionItem {
 }
 
 export function ProfileSettings() {
-  const [linkedinConnected, setLinkedinConnected] = useState(true);
-  const [mediumConnected, setMediumConnected] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [githubConnected, setGithubConnected] = useState(false);
+  const [successTxt, setSuccessTxt] = useState('')
+  const { user} = useAuth();
 
   const form = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      firstName: "Gabriele",
-      lastName: "Persola",
-      email: "hello@gpdesign.com",
-      contactNumber: "🇺🇸 123 4567 890",
-      aboutYou:
-        "I am a creative UX/UI Designer who likes to delve into customer problems and solve them through careful analysis and designing accessible, engaging, and intuitive interfaces.",
-      website: "www.gabrielepersola.design.com",
-      linkedin: "GabrielePersola",
-      medium: "GPersola",
-      github: "",
-    },
+    resolver: zodResolver(formSchema),
+    
   });
 
   const completionItems: CompletionItem[] = [
@@ -77,13 +82,47 @@ export function ProfileSettings() {
     (completedCount / completionItems.length) * 100
   );
 
-  const onSubmit = (data: ProfileFormData) => {
-    console.log("Profile data:", data);
+  const onSubmit = async (data: ProfileFormData) => {
+    setIsLoading(true);
+    setSubmitError(null);
+    try {
+      const response = await fetch(`${api.baseUrl}${UpdateProfileURL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const formatedRes = await response.json();
+      if(formatedRes?.message == 'updated successfully!'){
+        setIsLoading(false)
+        setSuccessTxt('Profile Updated Successfully !')
+        setTimeout(() => setSuccessTxt(''), 3000)
+      }else{
+        setIsLoading(false)
+        setSubmitError('Failed to update')
+      }
+    } catch (error) {
+      
+    }
   };
 
-  const handleConnectGithub = () => {
-    setGithubConnected(true);
-  };
+  const fetchProfile = async () => {
+      const response = await fetch(`${api.baseUrl}${ProfileUrl}?email=${user?.email}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+    const formatedRes = await response.json();
+    form.reset(formatedRes?.data)
+    console.log('profile response ===>', formatedRes)
+  }
+  useEffect(() => {
+    if(user?.email){
+      fetchProfile()
+    }
+  },[user?.email])
 
   return (
     <div className="p-3 min-h-screen overflow-auto  mx-auto space-y-3">
@@ -92,217 +131,280 @@ export function ProfileSettings() {
         <div className="lg:col-span-2">
           <Card>
             <CardContent className="">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
-                >
-                  {/* Name Fields */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="firstName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-muted-foreground">
-                            First name
-                          </FormLabel>
-                          <FormControl>
-                            <Input {...field} className="bg-muted/50" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-muted-foreground">
-                            Last name
-                          </FormLabel>
-                          <FormControl>
-                            <Input {...field} className="bg-muted/50" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                {/* Form */}
+          <Form {...form}>
+            <form onSubmit={(e) => {
+              console.log('Form submitted');
+              form.handleSubmit(onSubmit)(e);
+            }} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="companyName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 font-medium">
+                      Company Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Acme Inc."
+                        className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                  {/* Email and Contact */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-muted-foreground">
-                            Email
-                          </FormLabel>
-                          <FormControl>
-                            <Input {...field} className="bg-muted/50" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="contactNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-muted-foreground">
-                            Contact number
-                          </FormLabel>
-                          <FormControl>
-                            <Input {...field} className="bg-muted/50" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 font-medium">
+                        First Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="John"
+                          className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  {/* About You */}
-                  <FormField
-                    control={form.control}
-                    name="aboutYou"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-muted-foreground">
-                          About you
-                        </FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            className="bg-muted/50 min-h-[100px] resize-none"
-                            rows={4}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 font-medium">
+                        Last Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Doe"
+                          className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-                  {/* Website */}
-                  <FormField
-                    control={form.control}
-                    name="website"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-muted-foreground">
-                          Website
-                        </FormLabel>
-                        <FormControl>
-                          <Input {...field} className="bg-muted/50" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 font-medium">
+                      Username
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="johndoe"
+                        className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                  {/* LinkedIn */}
-                  <FormField
-                    control={form.control}
-                    name="linkedin"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-muted-foreground">
-                          LinkedIn
-                        </FormLabel>
-                        <div className="flex items-center gap-3">
-                          <FormControl>
-                            <Input {...field} className="bg-muted/50 flex-1" />
-                          </FormControl>
-                          {linkedinConnected && (
-                            <Badge
-                              variant="secondary"
-                              className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
-                            >
-                              <Check className="w-3 h-3 mr-1" />
-                              Account Linked
-                            </Badge>
-                          )}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 font-medium">
+                      Email
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={true}
+                        type="email"
+                        placeholder="m@example.com"
+                        className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="abbr"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 font-medium">
+                      Abbr
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder=" enter abbreviation "
+                        className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="tax_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 font-medium">
+                      Tax ID
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="m@example.com"
+                        className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="domain"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 font-medium">
+                      Domain
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="m@example.com"
+                        className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="date_established"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 font-medium">
+                      Date of Establishment
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="m@example.com"
+                        className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                  {/* Medium */}
-                  <FormField
-                    control={form.control}
-                    name="medium"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-muted-foreground">
-                          Medium
-                        </FormLabel>
-                        <div className="flex items-center gap-3">
-                          <FormControl>
-                            <Input {...field} className="bg-muted/50 flex-1" />
-                          </FormControl>
-                          {mediumConnected && (
-                            <Badge
-                              variant="secondary"
-                              className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
-                            >
-                              <Check className="w-3 h-3 mr-1" />
-                              Account Linked
-                            </Badge>
-                          )}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <FormField
+                control={form.control}
+                name="currency"
+                render={({ field }) => (
+                  <FormItem className="w-[300px]">
+                    <FormLabel className="text-gray-700 font-medium">
+                      Currency
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl className="w-[300px]">
+                        <SelectTrigger className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0">
+                          <SelectValue placeholder="Select currency" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="USD">USD - US Dollar</SelectItem>
+                        <SelectItem value="EUR">EUR - Euro</SelectItem>
+                        <SelectItem value="GBP">GBP - British Pound</SelectItem>
+                        <SelectItem value="JPY">JPY - Japanese Yen</SelectItem>
+                        <SelectItem value="CAD">
+                          CAD - Canadian Dollar
+                        </SelectItem>
+                        <SelectItem value="AUD">
+                          AUD - Australian Dollar
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                  {/* GitHub */}
-                  <FormField
-                    control={form.control}
-                    name="github"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-muted-foreground">
-                          GitHub
-                        </FormLabel>
-                        <div className="flex items-center gap-3">
-                          <FormControl>
-                            <Input
-                              {...field}
-                              placeholder="Enter your GitHub URL"
-                              className="bg-muted/50 flex-1"
-                            />
-                          </FormControl>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleConnectGithub}
-                            className="shrink-0 bg-transparent"
-                          >
-                            Connect GitHub
-                            <ExternalLink className="w-3 h-3 ml-1" />
-                          </Button>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="flex justify-end w-full mt-8 pt-6">
-                  <Button
-                    type="submit"
-                    variant={"default"}
-                    className="w-[200px] "
-                  >
-                    Save changes
-                  </Button>
-                  </div>
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem className="w-[300px]">
+                    <FormLabel className="text-gray-700 font-medium">
+                      Country
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                       value={field.value}
+                    >
+                      <FormControl className="w-[300px]">
+                        <SelectTrigger className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0">
+                          <SelectValue placeholder="Select country" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="US">United States</SelectItem>
+                        <SelectItem value="CA">Canada</SelectItem>
+                        <SelectItem value="GB">United Kingdom</SelectItem>
+                        <SelectItem value="DE">Germany</SelectItem>
+                        <SelectItem value="FR">France</SelectItem>
+                        <SelectItem value="AU">Australia</SelectItem>
+                        <SelectItem value="JP">Japan</SelectItem>
+                        <SelectItem value="IN">India</SelectItem>
+                        <SelectItem value="BR">Brazil</SelectItem>
+                        <SelectItem value="MX">Mexico</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                </form>
-              </Form>
+              {
+                successTxt ? <p className="text-green-500 font-semibold">{successTxt}</p> : <Button
+                type="submit"
+                className="w-full h-12 bg-black hover:bg-gray-800 text-white font-medium mt-6"
+                disabled={isLoading}
+              >
+                {isLoading ? "Saving..." : "Save"}
+              </Button>
+              }
+              {submitError && (
+                <p className="text-red-600 text-sm mt-2">{submitError}</p>
+              )}
+            </form>
+          </Form>
             </CardContent>
           </Card>
         </div>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { User } from "firebase/auth";
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { AuthContext, type AuthContextValue } from "./auth-context";
 
@@ -40,7 +40,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signOut(auth);
   };
 
-  const value = useMemo<AuthContextValue>(() => ({ user, loading, isAdmin, signupWithEmail, signinWithEmail, signinWithGoogle, signout }), [user, loading, isAdmin]);
+    const PasswordReset = async (email: any): Promise<any> => {
+      try {
+        const response = await sendPasswordResetEmail(auth, email);
+        console.log('Reset email sent successfully', response);
+        const success = {response, success: true}
+        return  success
+      } catch (error) {
+        console.error('Error sending reset email:', error);
+        throw error; // optionally propagate the error
+      }
+    }
+  const value = useMemo<AuthContextValue>(() => ({ user, loading, isAdmin, signupWithEmail, signinWithEmail, signinWithGoogle, signout, PasswordReset }), [user, loading, isAdmin]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

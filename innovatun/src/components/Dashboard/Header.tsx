@@ -1,10 +1,22 @@
 import { LayoutDashboard, Github, Shield } from "lucide-react";
 import { Button } from "../../components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/use-auth";
 
 export default function Header() {
   const { isAdmin } = useAuth();
+    const { user, signout } = useAuth();
+  const navigate = useNavigate();
+
+    const handleLogout = async () => {
+    try {
+      await signout();
+      navigate("/home");
+    } catch (error) {
+      // optionally handle error
+      console.error(error);
+    }
+  };
 
   return (
     <div>
@@ -20,10 +32,9 @@ export default function Header() {
             </Link>
           )}
         </div>
-        <Button variant="ghost" size="sm" className="cursor-pointer">
-          <Github className="h-4 w-4 mr-2" />
-          Github
-        </Button>
+       <Button onClick={handleLogout} className="cursor-pointer bg-black text-white ">
+        Logout
+      </Button>
       </header>
     </div>
   );
