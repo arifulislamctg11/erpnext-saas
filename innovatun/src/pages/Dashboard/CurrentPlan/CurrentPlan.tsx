@@ -51,7 +51,7 @@ export default function CurrentPlan() {
   },[user?.email])
 
   return(
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-white p-6">
         <div className="w-full lg:max-w-7xl">
           <div className="flex flex-cols lg:flex-row justify-between">
               {
