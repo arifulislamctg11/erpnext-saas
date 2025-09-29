@@ -13,6 +13,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   
   // Admin when backend role is 'admin'
   const isAdmin = role === 'admin';
+    const loading = firebaseLoading || roleLoading;
+
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
