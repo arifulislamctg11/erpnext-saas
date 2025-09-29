@@ -4,7 +4,7 @@ import {
   CreditCard,
   FileText,
   Shield,
-  Settings
+
 } from "lucide-react";
 
 const adminMenuItems = [

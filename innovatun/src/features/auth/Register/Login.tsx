@@ -35,6 +35,19 @@ export default function Login() {
     });
   };
 
+  const fetchUserProfile = async (email: string) => {
+    try {
+      const emailLower = email.toLowerCase();
+      const endpoint = `${api.baseUrl}/users?email=${encodeURIComponent(emailLower)}`;
+      const res = await fetch(endpoint);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data as { email?: string; role?: string } | null;
+    } catch {
+      return null;
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email || !formData.password) return;
@@ -48,7 +61,10 @@ export default function Login() {
         
         console.warn("JWT request failed", jwtErr);
       }
-      navigate(fromPath);
+      const profile = await fetchUserProfile(formData.email);
+      const emailLower = formData.email.toLowerCase();
+      const isBackendAdmin = profile?.role === "admin" && emailLower === "aljoboyer@gmail.com";
+      navigate(isBackendAdmin ? "/admin" : fromPath);
     } catch (err) {
       const message = (err as { message?: string })?.message || "Failed to sign in";
       setError(message);
@@ -154,7 +170,10 @@ export default function Login() {
                   } catch (jwtErr) {
                     console.warn("JWT request failed", jwtErr);
                   }
-                  navigate(fromPath);
+                  const profile = await fetchUserProfile(user.email ?? "");
+                  const emailLower = (user.email ?? "").toLowerCase();
+                  const isBackendAdmin = profile?.role === "admin" && emailLower === "aljoboyer@gmail.com";
+                  navigate(isBackendAdmin ? "/admin" : fromPath);
                 } catch (err) {
                   const message = (err as { message?: string })?.message || "Google sign-in failed";
                   setError(message);

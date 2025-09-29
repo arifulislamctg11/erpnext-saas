@@ -98,11 +98,11 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          { index: true, element: <DashboardHome /> }, // /dashboard
-          { path: "profile", element: <Profile /> }, // /dashboard/profile
-          { path: "billing", element: <Billing/> }, // /dashboard/profile
-          { path: "current-plan", element: <CurrentPlan /> }, // /dashboard/profile
-          { path: "subscriptions", element: <Subscription /> }, // /dashboard/profile
+          { index: true, element: <DashboardHome /> }, 
+          { path: "profile", element: <Profile /> }, 
+          { path: "billing", element: <Billing/> }, 
+          { path: "current-plan", element: <CurrentPlan /> }, 
+          { path: "subscriptions", element: <Subscription /> }, 
           { path: "settings", element: <Settings /> },
         ],
       },

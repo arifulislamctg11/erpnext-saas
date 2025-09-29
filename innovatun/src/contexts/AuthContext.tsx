@@ -3,22 +3,56 @@ import type { User } from "firebase/auth";
 import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { AuthContext, type AuthContextValue } from "./auth-context";
+import { api } from "../api";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [firebaseLoading, setFirebaseLoading] = useState<boolean>(true);
+  const [role, setRole] = useState<string | null>(null);
+  const [roleLoading, setRoleLoading] = useState<boolean>(false);
   
-  // Admin email configuration
-  const ADMIN_EMAILS = ['test@gmail.com'];
-  const isAdmin = user ? ADMIN_EMAILS.includes(user.email || '') : false;
+  // Admin when backend role is 'admin'
+  const isAdmin = role === 'admin';
+    const loading = firebaseLoading || roleLoading;
+
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
-      setLoading(false);
+      setFirebaseLoading(false);
     });
     return () => unsub();
   }, []);
+
+  // Fetch role from backend users collection
+  useEffect(() => {
+    let isMounted = true;
+    const run = async () => {
+      const emailLower = (user?.email || '').toLowerCase();
+      if (!emailLower) {
+        if (isMounted) setRole(null);
+        if (isMounted) setRoleLoading(false);
+        return;
+      }
+      if (isMounted) setRoleLoading(true);
+      try {
+        const res = await fetch(`${api.baseUrl}/users?email=${encodeURIComponent(emailLower)}`);
+        if (!res.ok) {
+          if (isMounted) setRole(null);
+          if (isMounted) setRoleLoading(false);
+          return;
+        }
+        const data = await res.json();
+        if (isMounted) setRole((data?.role as string) ?? null);
+      } catch {
+        if (isMounted) setRole(null);
+      } finally {
+        if (isMounted) setRoleLoading(false);
+      }
+    };
+    run();
+    return () => { isMounted = false; };
+  }, [user]);
 
   const signupWithEmail = async (email: string, password: string) => {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
