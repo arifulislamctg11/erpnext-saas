@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
+import { countries, currencies } from "../../../lib/staticData";
 
 const formSchema = z.object({
   companyName: z.string().min(2, "Company name must be at least 2 characters"),
@@ -366,16 +367,11 @@ export default function Register() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white">
-                        <SelectItem value="USD">USD - US Dollar</SelectItem>
-                        <SelectItem value="EUR">EUR - Euro</SelectItem>
-                        <SelectItem value="GBP">GBP - British Pound</SelectItem>
-                        <SelectItem value="JPY">JPY - Japanese Yen</SelectItem>
-                        <SelectItem value="CAD">
-                          CAD - Canadian Dollar
-                        </SelectItem>
-                        <SelectItem value="AUD">
-                          AUD - Australian Dollar
-                        </SelectItem>
+                        {
+                          currencies?.map((item: any) => (
+                            <SelectItem value={item?.value}>{item?.label}</SelectItem>
+                          )) 
+                        }  
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -401,16 +397,11 @@ export default function Register() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white">
-                        <SelectItem value="US">United States</SelectItem>
-                        <SelectItem value="CA">Canada</SelectItem>
-                        <SelectItem value="GB">United Kingdom</SelectItem>
-                        <SelectItem value="DE">Germany</SelectItem>
-                        <SelectItem value="FR">France</SelectItem>
-                        <SelectItem value="AU">Australia</SelectItem>
-                        <SelectItem value="JP">Japan</SelectItem>
-                        <SelectItem value="IN">India</SelectItem>
-                        <SelectItem value="BR">Brazil</SelectItem>
-                        <SelectItem value="MX">Mexico</SelectItem>
+                          {
+                              countries?.map((item: any) => (
+                            <SelectItem value={item?.value}>{item?.label}</SelectItem>
+                              ))
+                            }
                       </SelectContent>
                     </Select>
                     <FormMessage />
