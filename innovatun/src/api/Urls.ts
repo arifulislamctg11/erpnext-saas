@@ -11,3 +11,5 @@ export const ProfileUrl = '/user-profile';
 
 export const UpdateProfileURL = '/update-profile';
 
+export const CompleteProfileURL = '/profile-complete';
+
