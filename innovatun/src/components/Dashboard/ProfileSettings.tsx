@@ -20,7 +20,7 @@ import {
 } from "../ui/form";
 import { Check, ExternalLink, Edit } from "lucide-react";
 import { api } from "../../api";
-import { ProfileUrl, UpdateProfileURL } from "../../api/Urls";
+import { CompleteProfileURL, ProfileUrl, UpdateProfileURL } from "../../api/Urls";
 import { useAuth } from "../../contexts/use-auth";
 import {
   Select,
@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { setPersistence } from "firebase/auth";
 
 const formSchema = z.object({
   companyName: z.string().min(2, "Company name must be at least 2 characters"),
@@ -60,27 +61,12 @@ export function ProfileSettings() {
   const [githubConnected, setGithubConnected] = useState(false);
   const [successTxt, setSuccessTxt] = useState('')
   const { user} = useAuth();
-
+  const [completionItems, setCompletionItems]: any = useState([]);
+  const [completionPercentage, setCompletionPercentage] = useState(0)
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(formSchema),
     
   });
-
-  const completionItems: CompletionItem[] = [
-    { id: "photo", label: "Upload a profile photo", completed: true },
-    { id: "email", label: "Verify email address", completed: true },
-    { id: "phone", label: "Add phone number", completed: true },
-    { id: "bio", label: "Complete biography", completed: true },
-    { id: "website", label: "Add your website", completed: true },
-    { id: "github", label: "Link GitHub account", completed: githubConnected },
-  ];
-
-  const completedCount = completionItems.filter(
-    (item) => item.completed
-  ).length;
-  const completionPercentage = Math.round(
-    (completedCount / completionItems.length) * 100
-  );
 
   const onSubmit = async (data: ProfileFormData) => {
     setIsLoading(true);
@@ -109,15 +95,39 @@ export function ProfileSettings() {
   };
 
   const fetchProfile = async () => {
-      const response = await fetch(`${api.baseUrl}${ProfileUrl}?email=${user?.email}`, {
+    const response = await fetch(`${api.baseUrl}${ProfileUrl}?email=${user?.email}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
     });
     const formatedRes = await response.json();
-    form.reset(formatedRes?.data)
-    console.log('profile response ===>', formatedRes)
+    form.reset(formatedRes?.data);
+
+    const profile_cmplt_res = await fetch(`${api.baseUrl}${CompleteProfileURL}?email=${user?.email}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+     const formatedCmpltRes = await profile_cmplt_res.json();
+     if(formatedCmpltRes?.data?.email){
+        setCompletionItems([
+              { id: "photo", label: "Company Creation", completed: true },
+              { id: "email", label: "User Creation", completed: true },
+              { id: "phone", label: "Employee Creation", completed: true },
+              { id: "bio", label: "Assignment", completed: true },
+            ])
+        setCompletionPercentage(100)
+     }else{
+          setCompletionItems([
+          { id: "photo", label: "Company Creation", completed: false },
+          { id: "email", label: "User Creation", completed: false },
+          { id: "phone", label: "Employee Creation", completed: false },
+          { id: "bio", label: "Assignment", completed: false },
+        ])
+     }
   }
+
   useEffect(() => {
     if(user?.email){
       fetchProfile()
@@ -422,7 +432,7 @@ export function ProfileSettings() {
               <Progress value={completionPercentage} className="h-2" />
             </CardHeader>
             <CardContent className="space-y-3">
-              {completionItems.map((item) => (
+              {completionItems.map((item: any) => (
                 <div
                   key={item.id}
                   className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
