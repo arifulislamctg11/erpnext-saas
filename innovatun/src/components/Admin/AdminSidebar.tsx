@@ -1,13 +1,11 @@
-import { Settings, Users, CreditCard, FileText, BarChart3, Shield } from "lucide-react";
 import { Button } from "../ui/button";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import adminMenuItems from "../../lib/admin-data";
 import Logo from "../../assets/images/innovatun_logo_bg_less.png";
 import { cn } from "../../lib/utils";
 
 export default function AdminSidebar() {
   const location = useLocation();
-  const navigate = useNavigate();
   
   return (
     <div className="shadow-xl">
@@ -50,20 +48,6 @@ export default function AdminSidebar() {
             })}
           </div>
         </nav>
-
-        <div className="bottom-4 px-3">
-          <Button
-            onClick={() => navigate('/admin/settings')}
-            variant="ghost"
-            className={cn(
-              `w-full justify-start text-sidebar-foreground my-[1px] hover:bg-primary/90 hover:text-white`,
-              location.pathname === '/admin/settings' ? "bg-primary text-white" : "hover:bg-primary/90 hover:text-white"
-            )}
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
-          </Button>
-        </div>
       </div>
     </div>
   );
