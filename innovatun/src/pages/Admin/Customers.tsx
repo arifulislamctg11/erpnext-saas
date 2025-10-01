@@ -7,6 +7,7 @@ import { Search, Download, Eye, Filter } from "lucide-react";
 import { DataTable } from "../../components/ui/table/components/data-table";
 import { customersColumns, type Customer } from "../../components/ui/table/columns/customers-columns";
 import { api } from "../../api";
+import { Link } from "react-router-dom";
 
 export default function Customers() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -183,12 +184,17 @@ export default function Customers() {
                 {
                   id: "actions",
                   header: "Actions",
-                  cell: () => (
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4 mr-2" />
-                      View
-                    </Button>
-                  ),
+                  cell: ({ row }) => {
+                    const email = (row.original as Customer).email;
+                    return (
+                      <Link to={`/admin/customers/${encodeURIComponent(email)}`}>
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4 mr-2" />
+                          View
+                        </Button>
+                      </Link>
+                    );
+                  },
                 },
               ]}
               data={filteredCustomers}
