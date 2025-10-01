@@ -1,4 +1,4 @@
-import { Settings, Users, CreditCard, FileText, BarChart3, Shield } from "lucide-react";
+import { Settings} from "lucide-react";
 import { Button } from "../ui/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import adminMenuItems from "../../lib/admin-data";
