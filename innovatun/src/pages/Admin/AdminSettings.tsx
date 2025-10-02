@@ -1,38 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { Textarea } from "../../components/ui/textarea";
+import { Check } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Badge } from "../../components/ui/badge";
 import { Switch } from "../../components/ui/switch";
 import { Plus, Edit, Trash2, Save, Eye, EyeOff } from "lucide-react";
+import { plans } from "../../components/Home/PicingSection";
+import { useNavigate } from "react-router-dom";
+import { GetPlansURL } from "../../api/Urls";
+import { api } from "../../api";
 
 export default function AdminSettings() {
   const [showSecrets, setShowSecrets] = useState(false);
-
+  const navigate = useNavigate();
   // Mock data - replace with actual API calls
-  const [plans, setPlans] = useState([
-    {
-      id: 1,
-      name: "Basic Plan",
-      price: 99,
-      currency: "TND",
-      features: ["Feature 1", "Feature 2", "Feature 3"],
-      trialDays: 7,
-      isActive: true
-    },
-    {
-      id: 2,
-      name: "Premium Plan",
-      price: 299,
-      currency: "TND",
-      features: ["All Basic Features", "Premium Feature 1", "Premium Feature 2", "Priority Support"],
-      trialDays: 14,
-      isActive: true
-    }
-  ]);
+  const [plansData, setPlansData] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   const [billingSettings, setBillingSettings] = useState({
     stripePublicKey: "pk_test_...",
@@ -87,26 +73,16 @@ export default function AdminSettings() {
   ]);
 
   const handleAddPlan = () => {
-    const newPlan = {
-      id: plans.length + 1,
-      name: "New Plan",
-      price: 0,
-      currency: "TND",
-      features: [],
-      trialDays: 0,
-      isActive: true
-    };
-    setPlans([...plans, newPlan]);
+
+    navigate('/admin/createplan');
   };
 
   const handleDeletePlan = (id: number) => {
-    setPlans(plans.filter(plan => plan.id !== id));
+    
   };
 
   const handleTogglePlan = (id: number) => {
-    setPlans(plans.map(plan => 
-      plan.id === id ? { ...plan, isActive: !plan.isActive } : plan
-    ));
+    
   };
 
   const handleSaveBillingSettings = () => {
@@ -120,6 +96,31 @@ export default function AdminSettings() {
     ));
   };
 
+  const featchPlans = async () => {
+    try {
+      setLoading(true)
+        const response = await fetch(`${api.baseUrl}${GetPlansURL}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+        });
+        const formatedRes = await response.json();
+        if(formatedRes.data){
+          setPlansData(formatedRes?.data)
+          setLoading(false)
+        }else{
+          setLoading(false)
+        }
+    } catch (error) {
+      setLoading(false)
+    }
+  }
+  useEffect(() => {
+    featchPlans()
+  },[]);
+
   return (
     <div className="p-6">
       <div className="mb-8">
@@ -131,7 +132,7 @@ export default function AdminSettings() {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="plans">Plans Management</TabsTrigger>
           <TabsTrigger value="billing">Billing Settings</TabsTrigger>
-          <TabsTrigger value="email">Email Templates</TabsTrigger>
+          {/* <TabsTrigger value="email">Email Templates</TabsTrigger> */}
           <TabsTrigger value="logs">System Logs</TabsTrigger>
         </TabsList>
 
@@ -141,8 +142,8 @@ export default function AdminSettings() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Subscription Plans</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-start font-bold text-lg md:text-3xl">Subscription Plans</CardTitle>
+                  <CardDescription className="text-start font-medium text-base text-gray-400">
                     Manage subscription plans, pricing, and features
                   </CardDescription>
                 </div>
@@ -153,54 +154,66 @@ export default function AdminSettings() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {plans.map((plan) => (
-                  <Card key={plan.id} className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-4">
-                          <h3 className="text-lg font-semibold">{plan.name}</h3>
-                          <Badge variant={plan.isActive ? "default" : "secondary"}>
-                            {plan.isActive ? "Active" : "Inactive"}
-                          </Badge>
-                        </div>
-                        <div className="mt-2">
-                          <p className="text-2xl font-bold text-green-600">
-                            {plan.price} {plan.currency}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {plan.trialDays} days trial
-                          </p>
-                        </div>
-                        <div className="mt-2">
-                          <p className="text-sm font-medium">Features:</p>
-                          <ul className="text-sm text-gray-600 list-disc list-inside">
-                            {plan.features.map((feature, index) => (
-                              <li key={index}>{feature}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Switch
+               {
+                loading ?<p className="text-center font-bold text-xl md:text-3xl">Loading....</p>  : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {plansData?.map((plan: any) => (
+                <Card
+                  className={`p-8 bg-white border-1 border-black shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg `}
+                >
+                  <div className="text-center mb-2">
+                    <h3 className="text-xl lg:text-2xl font-bold">{plan?.planName}</h3>
+                    <div className="text-4xl font-bold mb-1">
+                    {plan.planPrice} TND
+                    <span className="text-lg font-normal text-gray-500">
+                      /{plan?.trialDays} Days
+                    </span>
+                  </div>
+                    {/* <p className="text-sm text-gray-300">{plan?.description}</p> */}
+                  </div>
+                                 
+                  <div className="mb-2 h-[380px]">
+                    <h4 className="font-semibold mb-4">What's included:</h4>
+                    <ul className="space-y-3 text-left">
+                      {plan?.features.map((feature : any, idx: any) => (
+                        
+                          feature && <li
+                          key={idx}
+                          className={`flex items-center text-sm "text-gray-600 group-hover:text-white"`}
+                        >
+                          <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
+                          {feature}
+                        </li>
+                        
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="flex flex-row justify-between items-center">
+                     {/* <Switch
                           checked={plan.isActive}
                           onCheckedChange={() => handleTogglePlan(plan.id)}
-                        />
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleDeletePlan(plan.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
+                        /> */}
+                    {/* <Button 
+                      variant="outline" 
+                      size="sm"
+                      
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button> */}
+                     <Button onClick={() => {
+                        navigate('/admin/createplan', {
+                          state: {
+                            id: plan?._id,
+                          },
+                        });
+                     }} variant="outline" size="sm">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </Card>
                 ))}
               </div>
+               }
             </CardContent>
           </Card>
         </TabsContent>

@@ -7,9 +7,7 @@ import * as z from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
 import { Progress } from "../ui/progress";
-import { Badge } from "../ui/badge";
 import {
   Form,
   FormControl,
@@ -47,17 +45,10 @@ const formSchema = z.object({
 
 type ProfileFormData = z.infer<typeof formSchema>;
 
-interface CompletionItem {
-  id: string;
-  label: string;
-  completed: boolean;
-}
-
 export function ProfileSettings() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [githubConnected, setGithubConnected] = useState(false);
   const [successTxt, setSuccessTxt] = useState('')
   const { user} = useAuth();
   const [completionItems, setCompletionItems]: any = useState([]);

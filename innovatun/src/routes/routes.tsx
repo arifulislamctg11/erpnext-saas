@@ -28,6 +28,7 @@ import Payments from "../pages/Admin/Payments";
 import Subscriptions from "../pages/Admin/Subscriptions";
 import AdminSettings from "../pages/Admin/AdminSettings";
 import CustomerDetail from "../pages/Admin/CustomerDetail";
+import { Createplan } from "../pages/Admin/CreatePlan";
 
 const router = createBrowserRouter([
   {
@@ -120,6 +121,7 @@ const router = createBrowserRouter([
           { path: "payments", element: <Payments /> },
           { path: "subscriptions", element: <Subscriptions /> },
           { path: "settings", element: <AdminSettings /> },
+          { path: "createplan", element: <Createplan /> },
         ],
       },
     ],
