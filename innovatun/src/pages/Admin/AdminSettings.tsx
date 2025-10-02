@@ -108,7 +108,7 @@ export default function AdminSettings() {
         });
         const formatedRes = await response.json();
         if(formatedRes.data){
-          setPlansData(formatedRes?.data)
+          setPlansData(formatedRes?.products)
           setLoading(false)
         }else{
           setLoading(false)
@@ -161,14 +161,14 @@ export default function AdminSettings() {
                   className={`p-8 bg-white border-1 border-black shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg `}
                 >
                   <div className="text-center mb-2">
-                    <h3 className="text-xl lg:text-2xl font-bold">{plan?.planName}</h3>
+                    <h3 className="text-xl lg:text-2xl font-bold">{plan?.name}</h3>
                     <div className="text-4xl font-bold mb-1">
-                    {plan.planPrice} TND
+                    {plan.prices} TND
                     <span className="text-lg font-normal text-gray-500">
-                      /{plan?.trialDays} Days
+                      / Month
                     </span>
                   </div>
-                    {/* <p className="text-sm text-gray-300">{plan?.description}</p> */}
+                    <p className=" text-gray-500">14 Days Free Trial</p>
                   </div>
                                  
                   <div className="mb-2 h-[380px]">
@@ -203,7 +203,7 @@ export default function AdminSettings() {
                      <Button onClick={() => {
                         navigate('/admin/createplan', {
                           state: {
-                            id: plan?._id,
+                            id: plan?.id,
                           },
                         });
                      }} variant="outline" size="sm">
