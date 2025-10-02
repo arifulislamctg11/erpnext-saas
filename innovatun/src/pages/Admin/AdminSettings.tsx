@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -10,12 +10,15 @@ import { Switch } from "../../components/ui/switch";
 import { Plus, Edit, Trash2, Save, Eye, EyeOff } from "lucide-react";
 import { plans } from "../../components/Home/PicingSection";
 import { useNavigate } from "react-router-dom";
+import { GetPlansURL } from "../../api/Urls";
+import { api } from "../../api";
 
 export default function AdminSettings() {
   const [showSecrets, setShowSecrets] = useState(false);
   const navigate = useNavigate();
   // Mock data - replace with actual API calls
-  const [plansData, setPlansData] = useState();
+  const [plansData, setPlansData] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   const [billingSettings, setBillingSettings] = useState({
     stripePublicKey: "pk_test_...",
@@ -70,12 +73,7 @@ export default function AdminSettings() {
   ]);
 
   const handleAddPlan = () => {
-    // navigate('/admin/createplan', {
-    //   state: {
-    //     planName: 'Pro Plan',
-    //     features: ['Feature A', 'Feature B'],
-    //   },
-    // });
+
     navigate('/admin/createplan');
   };
 
@@ -98,6 +96,31 @@ export default function AdminSettings() {
     ));
   };
 
+  const featchPlans = async () => {
+    try {
+      setLoading(true)
+        const response = await fetch(`${api.baseUrl}${GetPlansURL}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+        });
+        const formatedRes = await response.json();
+        if(formatedRes.data){
+          setPlansData(formatedRes?.data)
+          setLoading(false)
+        }else{
+          setLoading(false)
+        }
+    } catch (error) {
+      setLoading(false)
+    }
+  }
+  useEffect(() => {
+    featchPlans()
+  },[]);
+
   return (
     <div className="p-6">
       <div className="mb-8">
@@ -109,7 +132,7 @@ export default function AdminSettings() {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="plans">Plans Management</TabsTrigger>
           <TabsTrigger value="billing">Billing Settings</TabsTrigger>
-          <TabsTrigger value="email">Email Templates</TabsTrigger>
+          {/* <TabsTrigger value="email">Email Templates</TabsTrigger> */}
           <TabsTrigger value="logs">System Logs</TabsTrigger>
         </TabsList>
 
@@ -131,33 +154,36 @@ export default function AdminSettings() {
               </div>
             </CardHeader>
             <CardContent>
-               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {plans.map((plan) => (
+               {
+                loading ?<p className="text-center font-bold text-xl md:text-3xl">Loading....</p>  : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {plansData?.map((plan: any) => (
                 <Card
                   className={`p-8 bg-white border-1 border-black shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg `}
                 >
                   <div className="text-center mb-2">
-                    <h3 className="text-xl lg:text-2xl font-bold">{plan?.title}</h3>
+                    <h3 className="text-xl lg:text-2xl font-bold">{plan?.planName}</h3>
                     <div className="text-4xl font-bold mb-1">
-                    {plan.price}
+                    {plan.planPrice} TND
                     <span className="text-lg font-normal text-gray-500">
-                      /mo
+                      /{plan?.trialDays} Days
                     </span>
                   </div>
-                    <p className="text-sm text-gray-300">{plan?.description}</p>
+                    {/* <p className="text-sm text-gray-300">{plan?.description}</p> */}
                   </div>
                                  
                   <div className="mb-2 h-[380px]">
                     <h4 className="font-semibold mb-4">What's included:</h4>
                     <ul className="space-y-3 text-left">
                       {plan?.features.map((feature : any, idx: any) => (
-                        <li
+                        
+                          feature && <li
                           key={idx}
                           className={`flex items-center text-sm "text-gray-600 group-hover:text-white"`}
                         >
                           <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
                           {feature}
                         </li>
+                        
                       ))}
                     </ul>
                   </div>
@@ -174,13 +200,20 @@ export default function AdminSettings() {
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button> */}
-                     <Button variant="outline" size="sm">
+                     <Button onClick={() => {
+                        navigate('/admin/createplan', {
+                          state: {
+                            id: plan?._id,
+                          },
+                        });
+                     }} variant="outline" size="sm">
                       <Edit className="h-4 w-4" />
                     </Button>
                   </div>
                 </Card>
                 ))}
               </div>
+               }
             </CardContent>
           </Card>
         </TabsContent>

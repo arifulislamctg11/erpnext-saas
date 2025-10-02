@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Card, CardContent} from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import {
@@ -15,21 +15,15 @@ import {
   FormLabel,
   FormMessage,
 } from "../../components/ui/form";
-import { Check, ExternalLink, Edit } from "lucide-react";
 import { api } from "../../api";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../components/ui/select';
 import { useAuth } from "../../contexts/use-auth";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { CreatePlanURL, GetPlansURL, UpdatePlansURL } from "../../api/Urls";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   planName: z.string().min(3, "Plan name must be at least 3 characters"),
-  planPrice: z.string().min(2, "Price must be at least 1 characters"),
+  planPrice: z.string().min(1, "Price must be at least 1 characters"),
   trialDays: z.string().min(2, "Trial Day must be at least 2 characters"),
   featureOne: z.string().min(10, "Feature description must be at least 10 character"),
   feature2: z.string().optional(),
@@ -46,21 +40,21 @@ const formSchema = z.object({
 type ProfileFormData = z.infer<typeof formSchema>;
 
 export function Createplan() {
+  const navigate = useNavigate()
   const location = useLocation();
   const state = location.state;
   const [isLoading, setIsLoading] = useState(false);
   
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [successTxt, setSuccessTxt] = useState('')
-  const { user} = useAuth();
+
   const form = useForm<ProfileFormData | any>({
     resolver: zodResolver(formSchema),
     
   });
 
   const onSubmit = async (data: ProfileFormData | any) => {
-    // setIsLoading(true);
-    // setSubmitError(null);
+    setIsLoading(true);
+    setSubmitError(null);
     try {
 
      const featursData = [2,3,4,5,6,7,8,9,10].map((item: any) => {
@@ -77,27 +71,92 @@ export function Createplan() {
         ...featursData
       ]
      }
-      console.log('reqBody ===>', reqBody)
+      if(state?.id){
+          const response = await fetch(`${api.baseUrl}${UpdatePlansURL}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+            body: JSON.stringify({...reqBody, _id: state?.id}),
+          });
+          const formatedRes = await response.json();
+          if(formatedRes?.message == 'updated successfully!'){
+            setIsLoading(false)
+                toast.success("Plan updated Successfully", {
+                description: 'Plan updated Successfully'
+              });
+            setTimeout(() => {
+              navigate('/admin/settings')
+            }, 1000)
+          }else{
+            setIsLoading(false)
+            setSubmitError('Failed to create')
+          }
+      }else{
+          const response = await fetch(`${api.baseUrl}${CreatePlanURL}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify(reqBody),
+        });
+        const formatedRes = await response.json();
+        if(formatedRes?.message == 'Plan Created Successfully'){
+          setIsLoading(false)
+            toast.success("Plan Created Successfully", {
+              description: 'Plan Created Successfully'
+            });
+        setTimeout(() => {
+          navigate('/admin/settings')
+        }, 1000)
+        }else{
+          setIsLoading(false)
+          setSubmitError('Failed to create')
+        }
+      }
+     
     } catch (error) {
-      
+       setIsLoading(true);
+      setSubmitError(null);
     }
   };
 
-  const fetchProfile = async () => {
-   
+  const fetchPlan = async () => {
+       const response = await fetch(`${api.baseUrl}${GetPlansURL}/${state?.id}`, {
+         method: "GET",
+         headers: { "Content-Type": "application/json" },
+         credentials: "include",
+       });
+       const formatedRes = await response.json();
+       const formatObj = {
+        ...formatedRes?.data,
+          featureOne: formatedRes?.data?.features[0],
+          feature2: formatedRes?.data?.features[1],
+          feature3: formatedRes?.data?.features[2],
+          feature4: formatedRes?.data?.features[3],
+          feature5: formatedRes?.data?.features[4],
+          feature6: formatedRes?.data?.features[5],
+          feature7: formatedRes?.data?.features[6],
+          feature8: formatedRes?.data?.features[7],
+          feature9: formatedRes?.data?.features[8],
+          feature10: formatedRes?.data?.features[9],
+       }
+       form.reset(formatObj);
   }
 
   useEffect(() => {
-    if(user?.email){
-      fetchProfile()
+    if(state?.id){
+      fetchPlan()
     }
-  },[user?.email])
+  },[state?.id])
 
   return (
     <div className="p-3 min-h-screen overflow-auto bg-white mx-auto space-y-3">
        <div className="w-full md:max-w-5xl mx-auto">
           <Card>
-        <p className="font-bold text-lg md:text-3xl my-3">Create New Plan</p>
+        <p className="font-bold text-lg md:text-3xl my-3"> Plan</p>
             <CardContent className="">
                 {/* Form */}
                 <Form {...form}>
