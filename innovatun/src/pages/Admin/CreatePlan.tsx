@@ -23,7 +23,7 @@ import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(3, "Plan name must be at least 3 characters"),
-  price: z.string().min(1, "Price must be at least 1 characters"),
+  price: z.string().min(1, "Price must be at least 1"),
   trialDays: z.string().optional(),
   featureOne: z.string().min(10, "Feature description must be at least 10 character"),
   feature2: z.string().optional(),
@@ -63,8 +63,8 @@ export function Createplan() {
      })
 
      const reqBody = {
-      planName: data?.planName,
-      planPrice: data?.planPrice,
+      name: data?.name,
+      price: data?.price,
       trialDays: 14,
       features: [
         data?.featureOne,
@@ -78,7 +78,7 @@ export function Createplan() {
               "Content-Type": "application/json",
               "Accept": "application/json",
             },
-            body: JSON.stringify({...reqBody, _id: state?.id}),
+            body: JSON.stringify({...reqBody, id: state?.id}),
           });
           const formatedRes = await response.json();
           if(formatedRes?.message == 'updated successfully!'){
@@ -132,6 +132,7 @@ export function Createplan() {
        const formatedRes = await response.json();
        const formatObj = {
         ...formatedRes?.data,
+          price: `${formatedRes?.data?.price}`,
           featureOne: formatedRes?.data?.features[0] || '',
           feature2: formatedRes?.data?.features[1] || '',
           feature3: formatedRes?.data?.features[2] || '',
