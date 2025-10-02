@@ -11,3 +11,11 @@ export const ProfileUrl = '/user-profile';
 
 export const UpdateProfileURL = '/update-profile';
 
+export const CompleteProfileURL = '/profile-complete';
+
+export const CreatePlanURL = '/create-plan';
+
+export const GetPlansURL = '/plans';
+
+export const UpdatePlansURL = '/update-plan';
+

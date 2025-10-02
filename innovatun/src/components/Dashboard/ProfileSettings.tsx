@@ -7,9 +7,7 @@ import * as z from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
 import { Progress } from "../ui/progress";
-import { Badge } from "../ui/badge";
 import {
   Form,
   FormControl,
@@ -20,7 +18,7 @@ import {
 } from "../ui/form";
 import { Check, ExternalLink, Edit } from "lucide-react";
 import { api } from "../../api";
-import { ProfileUrl, UpdateProfileURL } from "../../api/Urls";
+import { CompleteProfileURL, ProfileUrl, UpdateProfileURL } from "../../api/Urls";
 import { useAuth } from "../../contexts/use-auth";
 import {
   Select,
@@ -29,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-
+import { countries, currencies } from "../../lib/staticData";
 const formSchema = z.object({
   companyName: z.string().min(2, "Company name must be at least 2 characters"),
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -47,40 +45,18 @@ const formSchema = z.object({
 
 type ProfileFormData = z.infer<typeof formSchema>;
 
-interface CompletionItem {
-  id: string;
-  label: string;
-  completed: boolean;
-}
-
 export function ProfileSettings() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [githubConnected, setGithubConnected] = useState(false);
   const [successTxt, setSuccessTxt] = useState('')
   const { user} = useAuth();
-
+  const [completionItems, setCompletionItems]: any = useState([]);
+  const [completionPercentage, setCompletionPercentage] = useState(0)
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(formSchema),
     
   });
-
-  const completionItems: CompletionItem[] = [
-    { id: "photo", label: "Upload a profile photo", completed: true },
-    { id: "email", label: "Verify email address", completed: true },
-    { id: "phone", label: "Add phone number", completed: true },
-    { id: "bio", label: "Complete biography", completed: true },
-    { id: "website", label: "Add your website", completed: true },
-    { id: "github", label: "Link GitHub account", completed: githubConnected },
-  ];
-
-  const completedCount = completionItems.filter(
-    (item) => item.completed
-  ).length;
-  const completionPercentage = Math.round(
-    (completedCount / completionItems.length) * 100
-  );
 
   const onSubmit = async (data: ProfileFormData) => {
     setIsLoading(true);
@@ -109,15 +85,39 @@ export function ProfileSettings() {
   };
 
   const fetchProfile = async () => {
-      const response = await fetch(`${api.baseUrl}${ProfileUrl}?email=${user?.email}`, {
+    const response = await fetch(`${api.baseUrl}${ProfileUrl}?email=${user?.email}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
     });
     const formatedRes = await response.json();
-    form.reset(formatedRes?.data)
-    console.log('profile response ===>', formatedRes)
+    form.reset(formatedRes?.data);
+
+    const profile_cmplt_res = await fetch(`${api.baseUrl}${CompleteProfileURL}?email=${user?.email}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+     const formatedCmpltRes = await profile_cmplt_res.json();
+     if(formatedCmpltRes?.data?.email){
+        setCompletionItems([
+              { id: "photo", label: "Company Creation", completed: true },
+              { id: "email", label: "User Creation", completed: true },
+              { id: "phone", label: "Employee Creation", completed: true },
+              { id: "bio", label: "Assignment", completed: true },
+            ])
+        setCompletionPercentage(100)
+     }else{
+          setCompletionItems([
+          { id: "photo", label: "Company Creation", completed: false },
+          { id: "email", label: "User Creation", completed: false },
+          { id: "phone", label: "Employee Creation", completed: false },
+          { id: "bio", label: "Assignment", completed: false },
+        ])
+     }
   }
+
   useEffect(() => {
     if(user?.email){
       fetchProfile()
@@ -339,16 +339,11 @@ export function ProfileSettings() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white">
-                        <SelectItem value="USD">USD - US Dollar</SelectItem>
-                        <SelectItem value="EUR">EUR - Euro</SelectItem>
-                        <SelectItem value="GBP">GBP - British Pound</SelectItem>
-                        <SelectItem value="JPY">JPY - Japanese Yen</SelectItem>
-                        <SelectItem value="CAD">
-                          CAD - Canadian Dollar
-                        </SelectItem>
-                        <SelectItem value="AUD">
-                          AUD - Australian Dollar
-                        </SelectItem>
+                        {
+                          currencies?.map((item: any) => (
+                            <SelectItem value={item?.value}>{item?.label}</SelectItem>
+                          )) 
+                        }                       
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -374,16 +369,11 @@ export function ProfileSettings() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white">
-                        <SelectItem value="US">United States</SelectItem>
-                        <SelectItem value="CA">Canada</SelectItem>
-                        <SelectItem value="GB">United Kingdom</SelectItem>
-                        <SelectItem value="DE">Germany</SelectItem>
-                        <SelectItem value="FR">France</SelectItem>
-                        <SelectItem value="AU">Australia</SelectItem>
-                        <SelectItem value="JP">Japan</SelectItem>
-                        <SelectItem value="IN">India</SelectItem>
-                        <SelectItem value="BR">Brazil</SelectItem>
-                        <SelectItem value="MX">Mexico</SelectItem>
+                        {
+                          countries?.map((item: any) => (
+                        <SelectItem value={item?.value}>{item?.label}</SelectItem>
+                          ))
+                        }
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -422,7 +412,7 @@ export function ProfileSettings() {
               <Progress value={completionPercentage} className="h-2" />
             </CardHeader>
             <CardContent className="space-y-3">
-              {completionItems.map((item) => (
+              {completionItems.map((item: any) => (
                 <div
                   key={item.id}
                   className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
