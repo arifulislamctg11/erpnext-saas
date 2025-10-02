@@ -208,7 +208,7 @@ export default function Payments() {
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalRevenue} TND</div>
+            <div className="text-2xl font-bold">{totalRevenue} USD</div>
             <p className="text-xs text-muted-foreground">
               From {filteredPayments.filter(p => p.status === "paid").length} successful payments
             </p>
