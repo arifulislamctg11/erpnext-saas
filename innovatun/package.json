@@ -5,11 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/assets/erpnext_saas/innovatun/ && npm run copy-html-entry",
-    "build:hosting": "vite build --outDir=dist --base=/",
+    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "copy-html-entry": "node scripts/copy-html-entry.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

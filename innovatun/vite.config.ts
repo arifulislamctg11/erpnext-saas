@@ -18,9 +18,12 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
-  build: {
-    outDir: "../erpnext_saas/public/innovatun",
-    emptyOutDir: true,
-    target: "es2015",
-  },
+    build: {
+        rollupOptions: {
+            output: {
+                format: 'es',
+            },
+        },
+        outDir: './build',
+    },
 });
