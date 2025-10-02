@@ -2,15 +2,15 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/use-auth";
 import { api } from "../../../api";
-import Lottie from "lottie-react";
-import loginAnimation from "../../../assets/login-animation.json";
+
+
 
 type LocationState = { from?: { pathname?: string } } | null;
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signinWithEmail, signinWithGoogle } = useAuth();
+  const { signinWithEmail} = useAuth();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -200,7 +200,7 @@ export default function Login() {
         </div>
 
         <div className="items-center justify-center flex-1 hidden p-4 md:flex">
-          <Lottie animationData={loginAnimation} loop={true} aria-hidden="true" />
+     
         </div>
       </div>
     </div>
