@@ -61,11 +61,7 @@ export default function CurrentPlan() {
                   className={`p-8 bg-white border-1 border-black shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg h-[680px]`}
                 >
                 <h4 className="text-xl lg:text-2xl text-green-700 font-bold">Current Plan</h4>
-                  {currentPlanData?.badge && (
-                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white">
-                      {currentPlanData?.badge}
-                    </Badge>
-                  )}
+                
 
                   <div className="text-center mb-2">
                     <h3 className="text-xl font-semibold mb-2">{currentPlanData?.title}</h3>
@@ -99,12 +95,7 @@ export default function CurrentPlan() {
                   className={`p-8  bg-gray-900  text-white shadow-lg relative h-[680px]`}
                 >
                 <h4 className="text-xl lg:text-2xl  text-yellow-400 font-bold">Upgrade Plan</h4>
-                  {nextPlanData?.badge && (
-                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white">
-                      {nextPlanData?.badge}
-                    </Badge>
-                  )}
-
+    
                  <div className="text-center mb-4">
                   <h3 className="text-xl font-semibold mb-2">{nextPlanData.title}</h3>
                   <div className="text-4xl font-bold mb-1">
