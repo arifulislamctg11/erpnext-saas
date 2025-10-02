@@ -9,10 +9,11 @@ import { Badge } from "../../components/ui/badge";
 import { Switch } from "../../components/ui/switch";
 import { Plus, Edit, Trash2, Save, Eye, EyeOff } from "lucide-react";
 import { plans } from "../../components/Home/PicingSection";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminSettings() {
   const [showSecrets, setShowSecrets] = useState(false);
-
+  const navigate = useNavigate();
   // Mock data - replace with actual API calls
   const [plansData, setPlansData] = useState();
 
@@ -69,7 +70,7 @@ export default function AdminSettings() {
   ]);
 
   const handleAddPlan = () => {
-    
+    navigate('/admin/createplan')
   };
 
   const handleDeletePlan = (id: number) => {
