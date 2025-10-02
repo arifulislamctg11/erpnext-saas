@@ -169,7 +169,7 @@ export default function AdminDashboard() {
         },
     {
       title: "Total Revenue",
-          value: `${totalRevenue.toLocaleString()} TND`,
+          value: `${totalRevenue.toLocaleString()} USD`,
           description: `From ${paymentRecords.filter(p => p.status === "paid").length} successful payments`,
       icon: CreditCard,
       color: "text-green-600"
