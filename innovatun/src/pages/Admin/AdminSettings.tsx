@@ -70,7 +70,13 @@ export default function AdminSettings() {
   ]);
 
   const handleAddPlan = () => {
-    navigate('/admin/createplan')
+    // navigate('/admin/createplan', {
+    //   state: {
+    //     planName: 'Pro Plan',
+    //     features: ['Feature A', 'Feature B'],
+    //   },
+    // });
+    navigate('/admin/createplan');
   };
 
   const handleDeletePlan = (id: number) => {
@@ -130,12 +136,6 @@ export default function AdminSettings() {
                 <Card
                   className={`p-8 bg-white border-1 border-black shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg `}
                 >
-                  {plan?.badge && (
-                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white">
-                      {plan?.badge}
-                    </Badge>
-                  )}
-
                   <div className="text-center mb-2">
                     <h3 className="text-xl lg:text-2xl font-bold">{plan?.title}</h3>
                     <div className="text-4xl font-bold mb-1">

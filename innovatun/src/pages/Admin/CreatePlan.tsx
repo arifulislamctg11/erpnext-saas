@@ -25,41 +25,59 @@ import {
   SelectValue,
 } from '../../components/ui/select';
 import { useAuth } from "../../contexts/use-auth";
+import { useLocation } from "react-router-dom";
 
 const formSchema = z.object({
-  companyName: z.string().min(2, "Company name must be at least 2 characters"),
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  currency: z.string().min(1, "Please select a currency"),
-  abbr: z.string().min(1, "Please enter abbreviation"),
-  tax_id: z.string().min(1, "Please enter tax ID"),
-  domain: z.string().min(1, "Please enter domain"),
-  date_established: z.string().min(1, "Please enter date of establishment"),
-  country: z.string().min(1, "Please select a country"),
+  planName: z.string().min(3, "Plan name must be at least 3 characters"),
+  planPrice: z.string().min(2, "Price must be at least 1 characters"),
+  trialDays: z.string().min(2, "Trial Day must be at least 2 characters"),
+  featureOne: z.string().min(10, "Feature description must be at least 10 character"),
+  feature2: z.string().optional(),
+  feature3: z.string().optional(),
+  feature4: z.string().optional(),
+  feature5: z.string().optional(),
+  feature6: z.string().optional(),
+  feature7: z.string().optional(),
+  feature8: z.string().optional(),
+  feature9: z.string().optional(),
+  feature10: z.string().optional(),
 });
 
 type ProfileFormData = z.infer<typeof formSchema>;
 
 export function Createplan() {
+  const location = useLocation();
+  const state = location.state;
   const [isLoading, setIsLoading] = useState(false);
-
+  
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successTxt, setSuccessTxt] = useState('')
   const { user} = useAuth();
-  const form = useForm<ProfileFormData>({
+  const form = useForm<ProfileFormData | any>({
     resolver: zodResolver(formSchema),
     
   });
 
-  const onSubmit = async (data: ProfileFormData) => {
-    setIsLoading(true);
-    setSubmitError(null);
+  const onSubmit = async (data: ProfileFormData | any) => {
+    // setIsLoading(true);
+    // setSubmitError(null);
     try {
-     
-      
+
+     const featursData = [2,3,4,5,6,7,8,9,10].map((item: any) => {
+        const itm = data[`feature${item}`]
+        return itm
+     })
+
+     const reqBody = {
+      planName: data?.planName,
+      planPrice: data?.planPrice,
+      trialDays: data?.trialDays,
+      features: [
+        data?.featureOne,
+        ...featursData
+      ]
+     }
+      console.log('reqBody ===>', reqBody)
     } catch (error) {
       
     }
@@ -77,9 +95,9 @@ export function Createplan() {
 
   return (
     <div className="p-3 min-h-screen overflow-auto bg-white mx-auto space-y-3">
-       <div className="">
+       <div className="w-full md:max-w-5xl mx-auto">
           <Card>
-                    <p className="font-bold text-lg md:text-3xl my-3">Create New Plan</p>
+        <p className="font-bold text-lg md:text-3xl my-3">Create New Plan</p>
             <CardContent className="">
                 {/* Form */}
                 <Form {...form}>
@@ -89,15 +107,15 @@ export function Createplan() {
                   }} className="space-y-4">
                     <FormField
                       control={form.control}
-                      name="companyName"
+                      name="planName"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-gray-700 font-medium">
-                            Company Name
+                            Plan Name
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Acme Inc."
+                              placeholder="Plan Name"
                               className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                               {...field}
                             />
@@ -106,60 +124,38 @@ export function Createplan() {
                         </FormItem>
                       )}
                     />
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-gray-700 font-medium">
-                              First Name
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="John"
-                                className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-gray-700 font-medium">
-                              Last Name
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Doe"
-                                className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="planPrice"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium">
+                            Plan Price
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Plan Price"
+                              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                     <FormField
                       control={form.control}
-                      name="username"
+                      name="trialDays"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-gray-700 font-medium">
-                            Username
+                            Trial days
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="johndoe"
+                              placeholder="Trial Days"
                               className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                               {...field}
                             />
@@ -168,6 +164,43 @@ export function Createplan() {
                         </FormItem>
                       )}
                     />
+                  <p className="font-bold text-start">Features:</p>
+                    <FormField
+                      control={form.control}
+                      name="featureOne"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="Feature 1"
+                              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {
+                      [2,3,4,5,6,7,8,9,10].map((item: any) => (
+                        <FormField
+                          control={form.control}
+                          name={`feature${item}`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input
+                                  placeholder={`Feature ${item}`}
+                                  className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage className="text-start" />
+                            </FormItem>
+                          )}
+                        />
+                      ))
+                    }
 
                   <Button
                       type="submit"
