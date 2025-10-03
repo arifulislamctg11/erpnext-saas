@@ -14,13 +14,13 @@ export function Footer() {
               <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
                 <div className="w-4 h-4 bg-black rounded-full"></div>
               </div>
-              <span className="text-lg font-medium">The Blue Office</span>
+              <span className="text-lg font-medium">Innovatun</span>
             </div>
 
             <div className="space-y-2 text-sm text-gray-300">
-              <p>RDC IMMEUBLE LLOYD, </p>
-              <p>Centre Urbain Nord,</p>
-              <p>Tunis 1082</p>
+              <p>IMMEUBLE LLOYD, RDC,  </p>
+              <p>Tunis 1082,</p>
+              <p>Tunisia</p>
             </div>
 
             <div className="space-y-2 text-sm text-gray-300">
@@ -147,13 +147,13 @@ export function Footer() {
               Built for innovation and success
             </p>
 
-            <Button
+            {/* <Button
               variant="outline"
               className="bg-transparent border-gray-600 text-white hover:bg-gray-800 hover:text-white"
             >
               English
               <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
+            </Button> */}
           </div>
         </div>
 
