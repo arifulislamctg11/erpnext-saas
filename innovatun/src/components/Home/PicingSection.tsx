@@ -103,30 +103,30 @@ export default function PicingSection() {
 
   const handleSubscription = async (priceId: string) => {
     if (!user) {
-      navigate("/register");
+      navigate("/register", { state: { priceId } });
       return;
     }
-    
+
     const selectedPlan = plans.find(p => p.priceId === priceId);
     if (!selectedPlan) {
       toast.error("Plan not found. Please try again.");
       return;
     }
-    
+
     try {
 
       toast.loading(`Starting subscription for ${selectedPlan.title}...`, {
         description: `Price: ${selectedPlan.price}`,
         id: 'subscription-loading'
       });
-      
+
       const res = await fetch(
-        `${api.baseUrl}${api.createCheckoutSession}`,
+       ` ${api.baseUrl}${api.createCheckoutSession}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            priceId, 
+          body: JSON.stringify({
+            priceId,
             customerEmail: user.email,
             planName: selectedPlan.title,
             planAmount: selectedPlan.price,
@@ -135,38 +135,38 @@ export default function PicingSection() {
           }),
         }
       );
-      
-  
+
+
       toast.dismiss('subscription-loading');
-      
+
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData?.message || `HTTP ${res.status}: ${res.statusText}`);
+        throw new Error(errorData?.message ||` HTTP ${res.status}: ${res.statusText}`);
       }
-      
+
       const data = await res.json();
       if (data?.url) {
-     
-        
-  
+
+
+
         toast.success(`Redirecting to payment for ${selectedPlan.title}`, {
           description: `Price: ${selectedPlan.price}`
         });
-        
-     
+
+
         setTimeout(() => {
           window.location.href = data.url as string;
         }, 1000);
-        
+
         return;
       }
       throw new Error("No checkout URL received from server");
     } catch (error) {
       console.error('Payment error:', error);
-      
-      
+
+
       toast.dismiss('subscription-loading');
-      
+
       if (error instanceof Error) {
         if (error.message.includes('Failed to fetch')) {
           toast.error("Network Error", {
@@ -253,7 +253,7 @@ export default function PicingSection() {
                     ))}
                   </ul>
                 </div>
-                
+
                 <Button
                   className={plan.buttonStyle}
                   onClick={() => handleSubscription(plan.priceId)}
@@ -279,6 +279,6 @@ export default function PicingSection() {
           </div>
         </div>
       </section>
-    </div>
-  );
+ </div>
+);
 }
