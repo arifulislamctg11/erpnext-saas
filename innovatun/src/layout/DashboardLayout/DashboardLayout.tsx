@@ -10,16 +10,16 @@ export default function DashboardLayout() {
     setOpen((prev) => !prev);
   };
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <Sidebar open={open} />
 
       {/* Main Content */}
       <main className="flex-1 bg-gray-50">
-        <div>
+        <div className=" bg-white border-b border-gray-200  z-10">
           <Header handleLeft={handleLeft} />
         </div>
-        <div className="bg-[#d9d9d9] min-h-full">
+        <div className="bg-[#d9d9d9] ">
           <Outlet /> {/* child pages render here */}
         </div>
       </main>

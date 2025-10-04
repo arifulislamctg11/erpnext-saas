@@ -10,10 +10,7 @@ import {
   CardTitle,
 } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
-import {
-  Tabs,
-  TabsContent,
-} from "../../../components/ui/tabs";
+import { Tabs, TabsContent } from "../../../components/ui/tabs";
 import { TrendingUp, TrendingDown, Plus, Columns } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
@@ -29,6 +26,7 @@ import { api } from "../../../api";
 import { useAuth } from "../../../contexts/use-auth";
 import { ProfileUrl } from "../../../api/Urls";
 import { Link } from "react-router-dom";
+import { UserFormDialog } from "./components/dailog";
 
 // TypeScript interfaces for type safety
 interface MetricCardProps {
@@ -95,7 +93,7 @@ export default function DashboardHome() {
   console.log(user?.email);
 
   useEffect(() => {
-    //  if (!user?.email) return; 
+    //  if (!user?.email) return;
     const userData = async () => {
       try {
         const response = await fetch(
@@ -106,7 +104,7 @@ export default function DashboardHome() {
           }
         );
         const data = await response.json();
-        console.log('hello',data);
+        console.log("hello", data);
         setCompanyData(data?.data?.companyName);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -117,15 +115,17 @@ export default function DashboardHome() {
   }, [user?.email]);
   console.log("company name", companyName);
 
-  console.log(employeeData) 
+  console.log(employeeData);
   useEffect(() => {
-     if (!companyName) return; // don’t fetch until we have a value
+    if (!companyName) return; // don’t fetch until we have a value
 
     const fetchData = async () => {
       try {
-        const response = await fetch(`${api.baseUrl}/user-company/${companyName}`);
+        const response = await fetch(
+          `${api.baseUrl}/user-company/${companyName}`
+        );
         const data = await response.json();
-        console.log('bane',data)
+        console.log("bane", data);
         setEmployeeData(data?.data || []);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -176,13 +176,11 @@ export default function DashboardHome() {
             icon={<Activity className="h-4 w-4" />}
           />
         </div> */}
-                    <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-          
-                </div>
-              </CardHeader>
-            </Card>
+        {/* <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">undefined</div>
+          </CardHeader>
+        </Card> */}
         <div className=" mb-10  flex flex-col gap-3">
           {/* Bottom Section with Tabs */}
           <div className="mb-10">
@@ -203,21 +201,19 @@ export default function DashboardHome() {
                         </Link>
                       </div>
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">
-                          <Columns className="h-4 w-4 mr-2" />
-                          Customize Columns
-                        </Button>
-                        <Button size="sm">
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add Section
-                        </Button>
+                        <UserFormDialog>
+                          <Button size="sm">
+                            <Plus className="h-4 w-4 " />
+                            Add User
+                          </Button>
+                        </UserFormDialog>
                       </div>
                     </div>
 
                     <TabsContent value={activeTab} className="mt-6">
                       <div className="border rounded-lg">
                         <div className="rounded-md border">
-                          <Table>
+                          <Table className="text-left">
                             <TableHeader>
                               <TableRow className="">
                                 <TableHead>User Id</TableHead>
@@ -230,7 +226,7 @@ export default function DashboardHome() {
                             </TableHeader>
 
                             <TableBody>
-                              {employeeData.map((item:any, index: number) => {
+                              {employeeData.map((item: any, index: number) => {
                                 return (
                                   <TableRow key={index}>
                                     <TableCell className="">
@@ -279,4 +275,3 @@ export default function DashboardHome() {
     </div>
   );
 }
-
