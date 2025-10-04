@@ -1,7 +1,6 @@
-"use client";
 
-import { useNavigate } from "react-router-dom";
 
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +28,7 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import { countries, currencies } from "../../../lib/staticData";
+import { plans } from "../../../components/Home/PicingSection";
 
 const formSchema = z.object({
   companyName: z.string().min(2, "Company name must be at least 2 characters"),
@@ -49,7 +49,6 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
-
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm<FormData>({
@@ -71,78 +70,100 @@ export default function Register() {
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { signupWithEmail } = useAuth();
 
+  // Get the plan selected before redirecting
+  const selectedPlanId = location.state?.priceId as string | undefined;
+
   const onSubmit = async (values: FormData) => {
-    console.log('onSubmit called with values:', values);
     setIsLoading(true);
     setSubmitError(null);
 
     try {
-      console.log('Attempting to register user:', values.email);
-      console.log('API URL:', `${api.baseUrl}${api.register}`);
-
-      console.log("➡️ Fetching:", `${api.baseUrl}${api.register}`);
-
-
-      // First, register user in MongoDB via backend API
+      // Register user in MongoDB backend
       const response = await fetch(`${api.baseUrl}${api.register}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify(values),
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Server error response:', errorText);
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
-      const data = await response.json();
-      console.log('Registration response:', data);
+       await response.json();
 
-      // If MongoDB registration successful, create Firebase user
-      const user = await signupWithEmail(values.email, values.password);
-      console.log("Firebase user created:", user.uid);
-      console.log("MongoDB user created:", data.userId);
+      // Create Firebase user
+       await signupWithEmail(values.email, values.password);
 
-      // Show success message
       toast.success("Account created successfully!", {
-        description: "Welcome to ERPNext SaaS!"
+        description: "Welcome to ERPNext SaaS!",
       });
 
-      // Navigate to home page
-      navigate("/home");
+      // If a plan was selected before registration, redirect to Stripe checkout
+      if (selectedPlanId) {
+        const selectedPlan = plans.find((p) => p.priceId === selectedPlanId);
+        if (selectedPlan) {
+          try {
+            const res = await fetch(
+              `${api.baseUrl}${api.createCheckoutSession}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  priceId: selectedPlan.priceId,
+                  customerEmail: values.email,
+                  planName: selectedPlan.title,
+                  planAmount: selectedPlan.price,
+                  successUrl: `${
+                    window.location.origin
+                  }/success?session_id={CHECKOUT_SESSION_ID}&plan_name=${encodeURIComponent(
+                    selectedPlan.title
+                  )}&plan_amount=${encodeURIComponent(selectedPlan.price)}`,
+                  cancelUrl: `${window.location.origin}/cancel`,
+                }),
+              }
+            );
 
+            const checkoutData = await res.json();
+
+            if (checkoutData?.url) {
+              window.location.href = checkoutData.url; // redirect to Stripe
+              return;
+            } else {
+              toast.error("Checkout failed. Please try again.");
+            }
+          } catch (err) {
+            console.error("Checkout error:", err);
+            toast.error("Checkout failed. Please try again.");
+          }
+        }
+      }
+
+      // Default redirect if no plan selected
+      navigate("/home");
     } catch (error) {
       console.error("Registration error:", error);
-      
       if (error instanceof Error) {
-        if (error.message.includes('Failed to fetch')) {
-          const message = "Unable to connect to registration server. Please check your internet connection and try again.";
+        if (error.message.includes("Failed to fetch")) {
+          const message =
+            "Unable to connect to registration server. Please check your internet connection and try again.";
           setSubmitError(message);
-          toast.error("Network Error", {
-            description: message
-          });
+          toast.error("Network Error", { description: message });
         } else {
           const message = error.message || "Failed to create account";
           setSubmitError(message);
-          toast.error("Registration failed", {
-            description: message
-          });
+          toast.error("Registration failed", { description: message });
         }
       } else {
         const message = "Failed to create account";
         setSubmitError(message);
-        toast.error("Registration failed", {
-          description: message
-        });
+        toast.error("Registration failed", { description: message });
       }
     } finally {
       setIsLoading(false);
@@ -152,7 +173,6 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-3xl shadow-xl p-4">
-        {/* Main Form Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-semibold text-gray-900 mb-2">
@@ -160,12 +180,12 @@ export default function Register() {
             </h1>
           </div>
 
-          {/* Form */}
           <Form {...form}>
-            <form onSubmit={(e) => {
-              console.log('Form submitted');
-              form.handleSubmit(onSubmit)(e);
-            }} className="space-y-4">
+            <form
+              onSubmit={(e) => form.handleSubmit(onSubmit)(e)}
+              className="space-y-4"
+            >
+              {/* Company Name */}
               <FormField
                 control={form.control}
                 name="companyName"
@@ -186,6 +206,7 @@ export default function Register() {
                 )}
               />
 
+              {/* First & Last Name */}
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -206,7 +227,6 @@ export default function Register() {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="lastName"
@@ -228,6 +248,7 @@ export default function Register() {
                 />
               </div>
 
+              {/* Username, Email */}
               <FormField
                 control={form.control}
                 name="username"
@@ -268,6 +289,8 @@ export default function Register() {
                   </FormItem>
                 )}
               />
+
+              {/* Abbr, Tax ID, Domain, Date Established */}
               <FormField
                 control={form.control}
                 name="abbr"
@@ -278,8 +301,7 @@ export default function Register() {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
-                        placeholder=" enter abbreviation "
+                        placeholder="Enter abbreviation"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
                       />
@@ -298,8 +320,7 @@ export default function Register() {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
-                        placeholder="m@example.com"
+                        placeholder="Enter tax ID"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
                       />
@@ -318,8 +339,7 @@ export default function Register() {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
-                        placeholder="m@example.com"
+                        placeholder="example.com"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
                       />
@@ -338,8 +358,7 @@ export default function Register() {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
-                        placeholder="m@example.com"
+                        placeholder="YYYY-MM-DD"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
                       />
@@ -349,6 +368,7 @@ export default function Register() {
                 )}
               />
 
+              {/* Currency */}
               <FormField
                 control={form.control}
                 name="currency"
@@ -367,11 +387,11 @@ export default function Register() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white">
-                        {
-                          currencies?.map((item: any) => (
-                            <SelectItem value={item?.value}>{item?.label}</SelectItem>
-                          )) 
-                        }  
+                        {currencies.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -379,6 +399,7 @@ export default function Register() {
                 )}
               />
 
+              {/* Country */}
               <FormField
                 control={form.control}
                 name="country"
@@ -397,11 +418,11 @@ export default function Register() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white">
-                          {
-                              countries?.map((item: any) => (
-                            <SelectItem value={item?.value}>{item?.label}</SelectItem>
-                              ))
-                            }
+                        {countries.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -409,16 +430,15 @@ export default function Register() {
                 )}
               />
 
+              {/* Password */}
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex items-center justify-between">
-                      <FormLabel className="text-gray-700 font-medium">
-                        Password
-                      </FormLabel>
-                    </div>
+                    <FormLabel className="text-gray-700 font-medium">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="password"
