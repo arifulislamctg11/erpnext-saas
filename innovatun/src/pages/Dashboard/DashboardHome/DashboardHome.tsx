@@ -13,8 +13,6 @@ import { Badge } from "../../../components/ui/badge";
 import {
   Tabs,
   TabsContent,
-  TabsList,
-  TabsTrigger,
 } from "../../../components/ui/tabs";
 import { TrendingUp, TrendingDown, Plus, Columns } from "lucide-react";
 
@@ -97,7 +95,7 @@ export default function DashboardHome() {
   console.log(user?.email);
 
   useEffect(() => {
-     if (!user?.email) return; // wait u
+    //  if (!user?.email) return; 
     const userData = async () => {
       try {
         const response = await fetch(
@@ -105,10 +103,10 @@ export default function DashboardHome() {
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
-            credentials: "include",
           }
         );
         const data = await response.json();
+        console.log('hello',data);
         setCompanyData(data?.data?.companyName);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -119,6 +117,7 @@ export default function DashboardHome() {
   }, [user?.email]);
   console.log("company name", companyName);
 
+  console.log(employeeData) 
   useEffect(() => {
      if (!companyName) return; // don’t fetch until we have a value
 
@@ -126,6 +125,7 @@ export default function DashboardHome() {
       try {
         const response = await fetch(`${api.baseUrl}/user-company/${companyName}`);
         const data = await response.json();
+        console.log('bane',data)
         setEmployeeData(data?.data || []);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -230,7 +230,7 @@ export default function DashboardHome() {
                             </TableHeader>
 
                             <TableBody>
-                              {employeeData.map((item: any, index: number) => {
+                              {employeeData.map((item:any, index: number) => {
                                 return (
                                   <TableRow key={index}>
                                     <TableCell className="">
