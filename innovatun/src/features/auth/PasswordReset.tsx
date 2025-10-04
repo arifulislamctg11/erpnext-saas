@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import Lottie from "lottie-react";
+
 import { api } from "../../api";
 import { ResetOTPUrl } from "../../api/Urls";
 import { useAuth } from "../../contexts/use-auth";

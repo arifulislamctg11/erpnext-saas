@@ -5,11 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/assets/erpnext_saas/innovatun/ && npm run copy-html-entry",
-    "build:hosting": "vite build --outDir=dist --base=/",
+    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "copy-html-entry": "node scripts/copy-html-entry.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -56,7 +54,6 @@
     "html2canvas": "^1.4.1",
     "input-otp": "1.4.1",
     "jspdf": "^3.0.3",
-    "lottie-react": "^2.4.1",
     "lucide-react": "^0.544.0",
     "react": "^19.1.1",
     "react-day-picker": "9.8.0",
