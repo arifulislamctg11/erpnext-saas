@@ -6,4 +6,5 @@ export const api = {
   createPaymentIntent: "/create-payment-intent",
   register: "/register",
   subscriptions: "/subscriptions",
+  
 };
