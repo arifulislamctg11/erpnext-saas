@@ -22,9 +22,9 @@ import { CreatePlanURL, GetPlansURL, UpdatePlansURL } from "../../api/Urls";
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  planName: z.string().min(3, "Plan name must be at least 3 characters"),
-  planPrice: z.string().min(1, "Price must be at least 1 characters"),
-  trialDays: z.string().min(2, "Trial Day must be at least 2 characters"),
+  name: z.string().min(3, "Plan name must be at least 3 characters"),
+  price: z.string().min(1, "Price must be at least 1"),
+  trialDays: z.string().optional(),
   featureOne: z.string().min(10, "Feature description must be at least 10 character"),
   feature2: z.string().optional(),
   feature3: z.string().optional(),
@@ -63,9 +63,9 @@ export function Createplan() {
      })
 
      const reqBody = {
-      planName: data?.planName,
-      planPrice: data?.planPrice,
-      trialDays: data?.trialDays,
+      name: data?.name,
+      price: data?.price,
+      trialDays: 14,
       features: [
         data?.featureOne,
         ...featursData
@@ -78,7 +78,7 @@ export function Createplan() {
               "Content-Type": "application/json",
               "Accept": "application/json",
             },
-            body: JSON.stringify({...reqBody, _id: state?.id}),
+            body: JSON.stringify({...reqBody, id: state?.id}),
           });
           const formatedRes = await response.json();
           if(formatedRes?.message == 'updated successfully!'){
@@ -132,16 +132,17 @@ export function Createplan() {
        const formatedRes = await response.json();
        const formatObj = {
         ...formatedRes?.data,
-          featureOne: formatedRes?.data?.features[0],
-          feature2: formatedRes?.data?.features[1],
-          feature3: formatedRes?.data?.features[2],
-          feature4: formatedRes?.data?.features[3],
-          feature5: formatedRes?.data?.features[4],
-          feature6: formatedRes?.data?.features[5],
-          feature7: formatedRes?.data?.features[6],
-          feature8: formatedRes?.data?.features[7],
-          feature9: formatedRes?.data?.features[8],
-          feature10: formatedRes?.data?.features[9],
+          price: `${formatedRes?.data?.price}`,
+          featureOne: formatedRes?.data?.features[0] || '',
+          feature2: formatedRes?.data?.features[1] || '',
+          feature3: formatedRes?.data?.features[2] || '',
+          feature4: formatedRes?.data?.features[3] || '',
+          feature5: formatedRes?.data?.features[4] || '',
+          feature6: formatedRes?.data?.features[5] || '',
+          feature7: formatedRes?.data?.features[6] || '',
+          feature8: formatedRes?.data?.features[7] || '',
+          feature9: formatedRes?.data?.features[8] || '',
+          feature10: formatedRes?.data?.features[9] || '',
        }
        form.reset(formatObj);
   }
@@ -166,7 +167,7 @@ export function Createplan() {
                   }} className="space-y-4">
                     <FormField
                       control={form.control}
-                      name="planName"
+                      name="name"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-gray-700 font-medium">
@@ -186,7 +187,7 @@ export function Createplan() {
                     
                     <FormField
                       control={form.control}
-                      name="planPrice"
+                      name="price"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-gray-700 font-medium">
@@ -214,9 +215,10 @@ export function Createplan() {
                           </FormLabel>
                           <FormControl>
                             <Input
+                             value={14}
+                            disabled={true}
                               placeholder="Trial Days"
                               className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
-                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
