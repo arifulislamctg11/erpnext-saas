@@ -21,4 +21,6 @@ export const UpdatePlansURL = '/update-plan';
 
 export const GetHomePlansURL = '/home-plans';
 
+export const GetAdminSecretURL = '/admin-secret';
+
 // user-company
