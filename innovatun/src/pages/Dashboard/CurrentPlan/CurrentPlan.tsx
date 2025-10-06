@@ -133,7 +133,17 @@ export default function CurrentPlan() {
                 </Card>
               </div>
               }
+              {}
           </div>
+          {
+            !currentPlanData &&     <Card className="p-8 text-center">
+            <div className="text-gray-500">
+              <div className="text-4xl mb-4">📋</div>
+              <h3 className="text-lg font-medium mb-2">No Plan Subscribe Yet</h3>
+              <p className="text-sm">You haven't subscribed to any plans yet.</p>
+            </div>
+          </Card>
+          }
         </div>
     </div>
   );
