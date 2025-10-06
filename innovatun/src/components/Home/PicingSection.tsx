@@ -102,7 +102,7 @@ export const plans = [
 export default function PicingSection() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [plansData, setPlansData] = useState([]);
+  const [plansData, setPlansData]: any = useState([]);
 
   const handleSubscription = async (priceId: string) => {
     if (!user) {
@@ -110,7 +110,8 @@ export default function PicingSection() {
       return;
     }
 
-    const selectedPlan = plans.find(p => p.priceId === priceId);
+    const selectedPlan = plansData.find((p: any) => p?.price?.id === priceId);
+    
     if (!selectedPlan) {
       toast.error("Plan not found. Please try again.");
       return;
@@ -118,8 +119,8 @@ export default function PicingSection() {
 
     try {
 
-      toast.loading(`Starting subscription for ${selectedPlan.title}...`, {
-        description: `Price: ${selectedPlan.price}`,
+      toast.loading(`Starting subscription for ${selectedPlan.name}...`, {
+        description: `Price: ${selectedPlan?.price?.unit_amount}`,
         id: 'subscription-loading'
       });
 
@@ -131,9 +132,9 @@ export default function PicingSection() {
           body: JSON.stringify({
             priceId,
             customerEmail: user.email,
-            planName: selectedPlan.title,
-            planAmount: selectedPlan.price,
-            successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}&plan_name=${encodeURIComponent(selectedPlan.title)}&plan_amount=${encodeURIComponent(selectedPlan.price)}`,
+            planName: selectedPlan.name,
+            planAmount: selectedPlan.price?.unit_amount,
+            successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}&plan_name=${encodeURIComponent(selectedPlan?.name)}&plan_amount=${encodeURIComponent(selectedPlan?.price?.unit_amount)}`,
             cancelUrl: `${window.location.origin}/cancel`
           }),
         }
@@ -152,8 +153,8 @@ export default function PicingSection() {
 
 
 
-        toast.success(`Redirecting to payment for ${selectedPlan.title}`, {
-          description: `Price: ${selectedPlan.price}`
+        toast.success(`Redirecting to payment for ${selectedPlan.name}`, {
+          description: `Price: ${selectedPlan?.price?.unit_amount}`
         });
 
 
@@ -216,7 +217,7 @@ export default function PicingSection() {
       featchPlans()
     },[]);
   
-    console.log('plan check ===>', plansData)
+   
   return (
     <div id="Pricing">
       <section className="px-6 py-16 bg-gray-50">
@@ -235,7 +236,7 @@ export default function PicingSection() {
 
           {
             plansData?.length > 0 && <div className="grid md:grid-cols-4 gap-4">
-            {plansData?.map((plan: any, index) => (
+            {plansData?.map((plan: any, index: any) => (
               <Card
                 key={index}
                 className={`p-8 bg-white border-0 shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg relative`}

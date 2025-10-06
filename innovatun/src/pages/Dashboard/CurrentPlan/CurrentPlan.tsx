@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { plans } from "../../../components/Home/PicingSection";
 import { api } from "../../../api";
-import { CurrentPlanUrl } from "../../../api/Urls";
+import { CurrentPlanUrl, GetHomePlansURL } from "../../../api/Urls";
 import { useAuth } from "../../../contexts/use-auth";
 import { Card } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
@@ -13,33 +13,51 @@ export default function CurrentPlan() {
   const plansData = plans;
   const [currentPlanData, setCurrentPlanData] : any= useState(null);
   const [nextPlanData, setNexPlanData] : any= useState(null);
-
+  const [loading, setLoading] = useState(false)
   const { user} = useAuth();
 
+  const getNextPlan = (planData: any, findPlan: any) => {
+    const priceNumber = Number(findPlan?.price?.unit_amount);
+
+        // Sort the array based on numeric price
+      const sortedArray = planData.slice().sort((a: any, b: any) => Number(a.price?.unit_amount) - Number(b.price?.unit_amount));
+
+      console.log('sorted data', sortedArray)
+      // Find the next higher price object
+      for (let obj of sortedArray) {
+        if (Number(obj.price?.unit_amount) > priceNumber) {
+          console.log('entering ===>', obj)
+          return obj;
+        }
+      }
+  }
+
   const getCurrentPlan = async () => {
+    setLoading(true)
     const response = await fetch(`${api.baseUrl}${CurrentPlanUrl}?email=${user?.email}`, {
               method: "GET",
               headers: { "Content-Type": "application/json" },
               credentials: "include",
             });
     const formatedRes = await response.json();
-    if(formatedRes?.data){
-      const findPlan = plansData.find((item) => item?.title == formatedRes?.data?.planName)
-      setCurrentPlanData(findPlan);
 
-      if(findPlan?.title == "Enterprise ERP"){
-        setNexPlanData(plansData[1])
-      }
-      else if(findPlan?.title == "Starter ERP"){
-        setNexPlanData(plansData[2])
-      }
-       else if(findPlan?.title == "Pro ERP (Most Popular)"){
-        setNexPlanData(plansData[3])
-      }
-       else if(findPlan?.title == "Pro ERP (Most Popular)"){
-        setNexPlanData(null)
-      }
+     const plan_response = await fetch(`${api.baseUrl}${GetHomePlansURL}`, {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json",
+                },
+              });
+    const formatedPlanRes = await plan_response.json();
+    
+    if(formatedRes?.data){
+      const findPlan = formatedPlanRes?.products?.find((item : any) => item?.name == formatedRes?.data?.planName)
+      setCurrentPlanData(findPlan);
+      const nextPlan = getNextPlan(formatedPlanRes?.products, findPlan);
+      setNexPlanData(nextPlan)
+      setLoading(false)
     }else{
+      setLoading(false)
       setCurrentPlanData(null)
     }
   }
@@ -52,7 +70,8 @@ export default function CurrentPlan() {
 
   return(
     <div className="min-h-screen bg-white p-6">
-        <div className="w-full lg:max-w-7xl">
+        {
+          loading ? <h1>Loading...</h1> : <div className="w-full lg:max-w-7xl">
           <div className="flex flex-cols lg:flex-row justify-between">
               {
                 currentPlanData && <div>
@@ -64,16 +83,21 @@ export default function CurrentPlan() {
                 
 
                   <div className="text-center mb-2">
-                    <h3 className="text-xl font-semibold mb-2">{currentPlanData?.title}</h3>
+                    <h3 className="text-xl font-semibold mb-2">{currentPlanData?.name}</h3>
        
-                    <p className="text-sm text-gray-300">{currentPlanData?.description}</p>
+                    <div className="text-4xl font-bold mb-1">
+                    {currentPlanData.price?.unit_amount}
+                    <span className="text-lg font-normal text-gray-500">
+                      /month
+                    </span>
+                  </div>
                   </div>
                                  
                   <div className="mb-2">
                     <h4 className="font-semibold mb-4">What's included:</h4>
                     <ul className="space-y-3 text-left">
                       {currentPlanData?.features.map((feature : any, idx: any) => (
-                        <li
+                        feature && <li
                           key={idx}
                           className={`flex items-center text-sm "text-gray-600 group-hover:text-white"`}
                         >
@@ -83,13 +107,12 @@ export default function CurrentPlan() {
                       ))}
                     </ul>
                   </div>
-
-                  <p className="text-sm mt-4 text-gray-500">{currentPlanData?.note}</p>
                 </Card>
               </div>
               }
               {
-                nextPlanData && <div>
+                nextPlanData ? 
+                <div>
                   <Card
                   
                   className={`p-8  bg-gray-900  text-white shadow-lg relative h-[680px]`}
@@ -97,21 +120,20 @@ export default function CurrentPlan() {
                 <h4 className="text-xl lg:text-2xl  text-yellow-400 font-bold">Upgrade Plan</h4>
     
                  <div className="text-center mb-4">
-                  <h3 className="text-xl font-semibold mb-2">{nextPlanData.title}</h3>
+                  <h3 className="text-xl font-semibold mb-2">{nextPlanData?.name}</h3>
                   <div className="text-4xl font-bold mb-1">
-                    {nextPlanData.price}
+                    {nextPlanData.price?.unit_amount}
                     <span className="text-lg font-normal text-gray-500">
-                      /mo
+                      /month
                     </span>
                   </div>
-                  <p className="text-sm text-gray-300">{nextPlanData.description}</p>
                 </div>
 
                   <div className="mb-2">
                     <h4 className="font-semibold mb-4">What's included:</h4>
                     <ul className="space-y-3 text-left">
                       {nextPlanData?.features.map((feature : any, idx: any) => (
-                        <li
+                        feature && <li
                           key={idx}
                           className={`flex items-center text-sm "text-gray-300"`}
                         >
@@ -131,12 +153,19 @@ export default function CurrentPlan() {
 
                   <p className="text-sm mt-4 text-gray-500">{nextPlanData?.note}</p>
                 </Card>
-              </div>
+              </div> :  <div>
+                  <Card
+                  
+                  className={`w-full lg:w-[500px] p-8  bg-gray-900  text-white shadow-lg relative h-[680px]`}
+                >
+                <h4 className="text-xl lg:text-2xl  text-yellow-400 font-bold">You are already on the highest plan, so an upgrade is not necessary.</h4>
+                </Card>
+              </div> 
               }
-              {}
+              
           </div>
           {
-            !currentPlanData &&     <Card className="p-8 text-center">
+            !currentPlanData && <Card className="p-8 text-center">
             <div className="text-gray-500">
               <div className="text-4xl mb-4">📋</div>
               <h3 className="text-lg font-medium mb-2">No Plan Subscribe Yet</h3>
@@ -145,6 +174,7 @@ export default function CurrentPlan() {
           </Card>
           }
         </div>
+        }
     </div>
   );
 }
