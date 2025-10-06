@@ -2,8 +2,13 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { ArrowRight, Users } from "lucide-react";
 import { Card } from "../ui/card";
+import { useAuth } from "../../contexts/use-auth";
+import { useNavigate } from "react-router-dom";
 
 export default function HeroSection() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   return (
     <div>
       <section className="bg-slate-900 text-white py-20 px-4">
@@ -23,13 +28,16 @@ export default function HeroSection() {
             Your Partner in Digital Transformation
           </p>
 
-          <Button
+          {
+            user ? '' : <Button
             size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white mb-12"
+            onClick={() => navigate('/login')}
           >
-            Get Plans Available
+           Login Now
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
+          }
 
           {/* Client Logos */}
           <div className="flex items-center justify-center space-x-8 opacity-60 mb-16">
