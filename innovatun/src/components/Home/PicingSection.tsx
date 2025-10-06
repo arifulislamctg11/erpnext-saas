@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../../contexts/use-auth";
 import { api } from "../../api";
+import { useEffect, useState } from "react";
+import { GetHomePlansURL, GetPlansURL } from "../../api/Urls";
 
 export const plans = [
     {
@@ -100,6 +102,7 @@ export const plans = [
 export default function PicingSection() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [plansData, setPlansData] = useState([]);
 
   const handleSubscription = async (priceId: string) => {
     if (!user) {
@@ -192,6 +195,28 @@ export default function PicingSection() {
     "Data migration & audit compliance services",
   ];
 
+    const featchPlans = async () => {
+      try {
+          const response = await fetch(`${api.baseUrl}${GetHomePlansURL}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+          });
+          const formatedRes = await response.json();
+          if(formatedRes.products){
+            setPlansData(formatedRes?.products)
+          }
+      } catch (error) {
+        console.log('plan fetch err ===>', error)
+      }
+    }
+    useEffect(() => {
+      featchPlans()
+    },[]);
+  
+    console.log('plan check ===>', plansData)
   return (
     <div id="Pricing">
       <section className="px-6 py-16 bg-gray-50">
@@ -208,38 +233,35 @@ export default function PicingSection() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-4">
-            {plans.map((plan, index) => (
+          {
+            plansData?.length > 0 && <div className="grid md:grid-cols-4 gap-4">
+            {plansData?.map((plan: any, index) => (
               <Card
                 key={index}
-                className={`p-8 ${
-                  plan.badge
-                    ? "bg-gray-900  text-white shadow-lg relative"
-                    : "bg-white border-0 shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg relative"
-                }`}
+                className={`p-8 bg-white border-0 shadow-sm hover:bg-gray-900 group hover:text-white hover:shadow-lg relative`}
               >
-                {plan.badge && (
+                {/* {plan.badge && (
                   <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white">
                     {plan.badge}
                   </Badge>
-                )}
+                )} */}
 
                 <div className="text-center mb-6">
-                  <h3 className="text-xl font-semibold mb-2">{plan.title}</h3>
+                  <h3 className="text-xl font-semibold mb-2">{plan?.name}</h3>
                   <div className="text-4xl font-bold mb-1">
-                    {plan.price}
+                    {plan?.price?.unit_amount} TND
                     <span className="text-lg font-normal text-gray-500">
-                      /mo
+                      /Month
                     </span>
                   </div>
-                  <p className="text-sm text-gray-300">{plan.description}</p>
+                  <p className="text-sm text-gray-300">14 Days Free Trial</p>
                 </div>
 
                 <div className="mb-8">
                   <h4 className="font-semibold mb-4">What's included:</h4>
                   <ul className="space-y-3 text-left">
-                    {plan.features.map((feature, idx) => (
-                      <li
+                    {plan.features.map((feature: any, idx: any) => (
+                     feature &&  <li
                         key={idx}
                         className={`flex items-center text-sm ${
                           plan.badge
@@ -256,15 +278,14 @@ export default function PicingSection() {
 
                 <Button
                   className={plan.buttonStyle}
-                  onClick={() => handleSubscription(plan.priceId)}
+                  onClick={() => handleSubscription(plan?.price?.id)}
                 >
-                  {plan.buttonText}
+                  Get started
                 </Button>
-
-                <p className="text-sm mt-4 text-gray-500">{plan.note}</p>
               </Card>
             ))}
           </div>
+          }
 
           {/* Optional Add-ons */}
           <div className="bg-white p-6 rounded-lg shadow-sm mt-12">

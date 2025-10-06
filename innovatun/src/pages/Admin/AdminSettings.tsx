@@ -133,7 +133,7 @@ export default function AdminSettings() {
           <TabsTrigger value="plans">Plans Management</TabsTrigger>
           <TabsTrigger value="billing">Billing Settings</TabsTrigger>
           {/* <TabsTrigger value="email">Email Templates</TabsTrigger> */}
-          <TabsTrigger value="logs">System Logs</TabsTrigger>
+          {/* <TabsTrigger value="logs">System Logs</TabsTrigger> */}
         </TabsList>
 
         {/* Plans Management */}

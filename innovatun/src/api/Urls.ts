@@ -19,4 +19,6 @@ export const GetPlansURL = '/plans';
 
 export const UpdatePlansURL = '/update-plan';
 
+export const GetHomePlansURL = '/home-plans';
+
 // user-company
