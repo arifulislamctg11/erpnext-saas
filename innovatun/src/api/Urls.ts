@@ -23,4 +23,6 @@ export const GetHomePlansURL = '/home-plans';
 
 export const GetAdminSecretURL = '/admin-secret';
 
+export const GetSubsURL = '/stripe-subscription';
+
 // user-company
