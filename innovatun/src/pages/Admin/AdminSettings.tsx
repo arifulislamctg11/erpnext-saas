@@ -10,7 +10,7 @@ import { Switch } from "../../components/ui/switch";
 import { Plus, Edit, Trash2, Save, Eye, EyeOff } from "lucide-react";
 import { plans } from "../../components/Home/PicingSection";
 import { useNavigate } from "react-router-dom";
-import { GetPlansURL } from "../../api/Urls";
+import { GetAdminSecretURL, GetPlansURL } from "../../api/Urls";
 import { api } from "../../api";
 
 export default function AdminSettings() {
@@ -20,12 +20,7 @@ export default function AdminSettings() {
   const [plansData, setPlansData] = useState([]);
   const [loading, setLoading] = useState(false)
 
-  const [billingSettings, setBillingSettings] = useState({
-    stripePublicKey: "pk_test_...",
-    stripeSecretKey: "sk_test_...",
-    webhookSecret: "whsec_...",
-    paymentProvider: "stripe"
-  });
+  const [billingSettings, setBillingSettings]: any = useState(null);
 
   const [emailTemplates, setEmailTemplates] = useState([
     {
@@ -77,14 +72,6 @@ export default function AdminSettings() {
     navigate('/admin/createplan');
   };
 
-  const handleDeletePlan = (id: number) => {
-    
-  };
-
-  const handleTogglePlan = (id: number) => {
-    
-  };
-
   const handleSaveBillingSettings = () => {
     // Implement save functionality
     console.log("Saving billing settings:", billingSettings);
@@ -117,8 +104,27 @@ export default function AdminSettings() {
       setLoading(false)
     }
   }
+   const featchAdminSecret = async () => {
+    try {
+        const response = await fetch(`${api.baseUrl}${GetAdminSecretURL}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+        });
+        const formatedRes = await response.json();
+        if(formatedRes.result){
+          setBillingSettings(formatedRes?.result[0])
+        }else{
+        }
+    } catch (error) {
+
+    }
+  }
   useEffect(() => {
     featchPlans()
+    featchAdminSecret()
   },[]);
 
   return (
@@ -133,7 +139,7 @@ export default function AdminSettings() {
           <TabsTrigger value="plans">Plans Management</TabsTrigger>
           <TabsTrigger value="billing">Billing Settings</TabsTrigger>
           {/* <TabsTrigger value="email">Email Templates</TabsTrigger> */}
-          <TabsTrigger value="logs">System Logs</TabsTrigger>
+          {/* <TabsTrigger value="logs">System Logs</TabsTrigger> */}
         </TabsList>
 
         {/* Plans Management */}
@@ -163,7 +169,7 @@ export default function AdminSettings() {
                   <div className="text-center mb-2">
                     <h3 className="text-xl lg:text-2xl font-bold">{plan?.name}</h3>
                     <div className="text-4xl font-bold mb-1">
-                    {plan.prices} TND
+                    $ {plan.prices}
                     <span className="text-lg font-normal text-gray-500">
                       / Month
                     </span>
@@ -233,11 +239,8 @@ export default function AdminSettings() {
                   <Label htmlFor="stripePublicKey">Stripe Public Key</Label>
                   <Input
                     id="stripePublicKey"
-                    value={billingSettings.stripePublicKey}
-                    onChange={(e) => setBillingSettings({
-                      ...billingSettings,
-                      stripePublicKey: e.target.value
-                    })}
+                    value={billingSettings?.stripe_public}
+                    disabled={true}
                   />
                 </div>
                 <div>
@@ -246,11 +249,8 @@ export default function AdminSettings() {
                     <Input
                       id="stripeSecretKey"
                       type={showSecrets ? "text" : "password"}
-                      value={billingSettings.stripeSecretKey}
-                      onChange={(e) => setBillingSettings({
-                        ...billingSettings,
-                        stripeSecretKey: e.target.value
-                      })}
+                       value={billingSettings?.stripe_secret}
+                      disabled={true}
                     />
                     <Button
                       type="button"
@@ -270,16 +270,13 @@ export default function AdminSettings() {
               </div>
               
               <div>
-                <Label htmlFor="webhookSecret">Webhook Secret</Label>
+                <Label htmlFor="webhookSecret">Api Url</Label>
                 <div className="relative">
                   <Input
                     id="webhookSecret"
                     type={showSecrets ? "text" : "password"}
-                    value={billingSettings.webhookSecret}
-                    onChange={(e) => setBillingSettings({
-                      ...billingSettings,
-                      webhookSecret: e.target.value
-                    })}
+                    value={billingSettings?.api_url}
+                    disabled={true}
                   />
                   <Button
                     type="button"

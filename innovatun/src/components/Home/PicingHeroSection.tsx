@@ -3,7 +3,7 @@ import { Card } from "../ui/card";
 
 export default function PicingHeroSection() {
   return (
-    <div>
+    <div id="Benifits">
       <section className="px-6 py-16 text-center max-w-4xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 text-balance">
           A smarter way to build, launch and maintain a ERP site

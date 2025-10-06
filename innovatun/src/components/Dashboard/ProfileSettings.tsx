@@ -150,6 +150,7 @@ export function ProfileSettings() {
                         placeholder="Acme Inc."
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        disabled={true}
                       />
                     </FormControl>
                     <FormMessage />
@@ -171,6 +172,7 @@ export function ProfileSettings() {
                           placeholder="John"
                           className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                           {...field}
+                          disabled={true}
                         />
                       </FormControl>
                       <FormMessage />
@@ -191,6 +193,7 @@ export function ProfileSettings() {
                           placeholder="Doe"
                           className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                           {...field}
+                          disabled={true}
                         />
                       </FormControl>
                       <FormMessage />
@@ -212,6 +215,7 @@ export function ProfileSettings() {
                         placeholder="johndoe"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        disabled={true}
                       />
                     </FormControl>
                     <FormMessage />
@@ -254,6 +258,7 @@ export function ProfileSettings() {
                         placeholder=" enter abbreviation "
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        disabled={true}
                       />
                     </FormControl>
                     <FormMessage />
@@ -274,6 +279,7 @@ export function ProfileSettings() {
                         placeholder="m@example.com"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        disabled={true}
                       />
                     </FormControl>
                     <FormMessage />
@@ -294,6 +300,7 @@ export function ProfileSettings() {
                         placeholder="m@example.com"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        disabled={true}
                       />
                     </FormControl>
                     <FormMessage />
@@ -314,6 +321,7 @@ export function ProfileSettings() {
                         placeholder="m@example.com"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        disabled={true}
                       />
                     </FormControl>
                     <FormMessage />
@@ -324,6 +332,7 @@ export function ProfileSettings() {
               <FormField
                 control={form.control}
                 name="currency"
+                disabled={true}
                 render={({ field }) => (
                   <FormItem className="w-[300px]">
                     <FormLabel className="text-gray-700 font-medium">
@@ -332,6 +341,7 @@ export function ProfileSettings() {
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}
+                      disabled={true}
                     >
                       <FormControl className="w-[300px]">
                         <SelectTrigger className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0">
@@ -354,6 +364,7 @@ export function ProfileSettings() {
               <FormField
                 control={form.control}
                 name="country"
+                disabled={true}
                 render={({ field }) => (
                   <FormItem className="w-[300px]">
                     <FormLabel className="text-gray-700 font-medium">
@@ -362,6 +373,7 @@ export function ProfileSettings() {
                     <Select
                       onValueChange={field.onChange}
                        value={field.value}
+                       disabled={true}
                     >
                       <FormControl className="w-[300px]">
                         <SelectTrigger className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0">

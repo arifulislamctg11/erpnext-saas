@@ -15,6 +15,15 @@ export default function Header() {
       console.error(error);
     }
   };
+
+    const handleScrollTo = (id: any) => {
+    const section = document.getElementById(id);
+ 
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <div className="container">
       {/* Header */}
@@ -35,30 +44,25 @@ export default function Header() {
             >
               Home
             </Link>
-            <Link
-              to={"/about"}
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              Recent Work
-            </Link>
-            <a
-              href="#"
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+  
+            <p
+             onClick={() => handleScrollTo('Benifits')}
+              className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               Benefits
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            </p>
+            <p
+                onClick={() => handleScrollTo('Pricing')}
+              className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               Pricing
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            </p>
+            <p
+               onClick={() => handleScrollTo('Faq')}
+              className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               FAQs
-            </a>
+            </p>
             {user && (
              <Link to={"/dashboard"}>
                <Button className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-primary transition-colors text-white">

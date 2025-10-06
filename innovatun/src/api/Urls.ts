@@ -1,5 +1,5 @@
-export const baseUrl='http://localhost:5000'
-// export const baseUrl='https://backend-ten-red-40.vercel.app'
+// export const baseUrl='http://localhost:5000'
+export const baseUrl='https://backend-ten-red-40.vercel.app'
 
 export const SendOTPUrl = '/sendotp';
 
@@ -18,5 +18,11 @@ export const CreatePlanURL = '/create-plan';
 export const GetPlansURL = '/plans';
 
 export const UpdatePlansURL = '/update-plan';
+
+export const GetHomePlansURL = '/home-plans';
+
+export const GetAdminSecretURL = '/admin-secret';
+
+export const GetSubsURL = '/stripe-subscription';
 
 // user-company

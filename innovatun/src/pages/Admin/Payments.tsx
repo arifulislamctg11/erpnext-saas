@@ -7,6 +7,7 @@ import { Badge } from "../../components/ui/badge";
 import { Search, Download, Filter } from "lucide-react";
 import { api } from "../../api";
 import { toast } from "sonner";
+import { GetSubsURL } from "../../api/Urls";
 
 export default function Payments() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -102,32 +103,32 @@ export default function Payments() {
     return result;
   }, []);
 
-  const fetchPayments = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${api.baseUrl}${api.subscriptions}`);
-      const data = await response.json();
 
-      if (data?.success && Array.isArray(data.subscriptions)) {
-        setPayments(coerceToPaymentRecords(data.subscriptions));
-      } else if (Array.isArray(data)) {
-        setPayments(coerceToPaymentRecords(data));
-      } else {
-        toast.error("Failed to load payments from server");
-        setPayments([]);
-      }
-    } catch (error) {
-      console.error("Error fetching payments from subscriptions:", error);
-      toast.error("Network/CORS error while fetching payments");
-      setPayments([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [coerceToPaymentRecords]);
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(`${api.baseUrl}${api.subscriptions}`);
+  //     const data = await response.json();
 
-  useEffect(() => {
-    fetchPayments();
-  }, [fetchPayments]);
+  //     if (data?.success && Array.isArray(data.subscriptions)) {
+  //       setPayments(coerceToPaymentRecords(data.subscriptions));
+  //     } else if (Array.isArray(data)) {
+  //       setPayments(coerceToPaymentRecords(data));
+  //     } else {
+  //       toast.error("Failed to load payments from server");
+  //       setPayments([]);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching payments from subscriptions:", error);
+  //     toast.error("Network/CORS error while fetching payments");
+  //     setPayments([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [coerceToPaymentRecords]);
+
+  // useEffect(() => {
+  //   fetchPayments();
+  // }, [fetchPayments]);
 
   const dateInRange = useCallback((dateStr: string): boolean => {
     if (dateFilter === "all") return true;
@@ -153,23 +154,24 @@ export default function Payments() {
     const term = searchTerm.trim().toLowerCase();
     const customerTerm = customerFilter.trim().toLowerCase();
 
-    return payments.filter((payment) => {
+    return payments.filter((payment: any) => {
       const matchesSearch =
         term === "" ||
-        payment.customerEmail.toLowerCase().includes(term) ||
-        payment.customerName.toLowerCase().includes(term) ||
-        (payment.transactionId || "").toLowerCase().includes(term) ||
-        payment.plan.toLowerCase().includes(term);
+        payment?.customer?.email.toLowerCase().includes(term) ||
+        payment?.customer?.name.toLowerCase().includes(term) ||
+        (payment?.latest_invoice?.number || "").toLowerCase().includes(term) ||
+        payment?.plan?.product?.name.toLowerCase().includes(term);
 
       const matchesCustomer =
         customerTerm === "" ||
-        payment.customerName.toLowerCase().includes(customerTerm) ||
-        payment.customerEmail.toLowerCase().includes(customerTerm);
+        payment?.customer?.email?.toLowerCase().includes(customerTerm) ||
+        payment?.customer?.name?.toLowerCase().includes(customerTerm);
 
-    const matchesStatus = statusFilter === "all" || payment.status === statusFilter;
-      const matchesDate = dateInRange(payment.date);
+    // const matchesStatus = statusFilter === "all" || payment.status === statusFilter;
+    //   const matchesDate = dateInRange(payment.date);
     
-      return matchesSearch && matchesCustomer && matchesStatus && matchesDate;
+      // return matchesSearch && matchesCustomer && matchesStatus && matchesDate;
+      return matchesSearch && matchesCustomer
   });
   }, [payments, searchTerm, customerFilter, statusFilter, dateInRange]);
 
@@ -194,6 +196,41 @@ export default function Payments() {
     link.click();
     document.body.removeChild(link);
   };
+
+   const fetchPayments = async () => {
+       setLoading(true);
+      try {
+        const res = await fetch(`${api.baseUrl}${GetSubsURL}`);
+        const data = await res.json();
+        console.log('check =======>', data?.data?.data)
+        setLoading(false)
+  
+        if (data?.data?.data?.length > 0 && Array.isArray(data?.data?.data)) {
+          // setSubscriptions(coerce(data?.data?.data));
+          setPayments(data?.data?.data)
+        }else {
+          toast.error("Failed to load subscriptions");
+          setPayments([]);
+        }
+      } catch (err) {
+        console.error("Admin subscriptions fetch error", err);
+        toast.error("Network/CORS error while fetching subscriptions");
+        setPayments([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+  
+    useEffect(() => {
+      fetchPayments();
+    }, []);
+
+  const getDate = (timestamp: any) => {
+    const date = new Date(timestamp * 1000);
+
+    const onlyDate = date.toISOString().split('T')[0];
+    return onlyDate
+  }
 
   return (
     <div className="p-6">
@@ -329,29 +366,29 @@ export default function Payments() {
                 </tr>
               </thead>
               <tbody>
-                {filteredPayments.map((payment) => (
+                {filteredPayments.map((payment: any) => (
                   <tr key={payment.id} className="border-b hover:bg-gray-50">
                     <td className="p-4">
                       <div>
-                        <div className="font-medium">{payment.customerName}</div>
-                        <div className="text-sm text-gray-500">{payment.customerEmail}</div>
+                        <div className="font-medium">{payment?.customer?.name}</div>
+                        <div className="text-sm text-gray-500">{payment?.customer?.email}</div>
                       </div>
                     </td>
-                    <td className="p-4 font-medium">{payment.amount} {payment.currency}</td>
+                    <td className="p-4 font-medium">{payment?.plan?.amount} {payment?.plan?.currency}</td>
                     <td className="p-4">
                       <Badge 
                         variant={payment.status === 'paid' ? 'default' : 
                                 payment.status === 'pending' ? 'secondary' : 'destructive'}
                       >
-                        {payment.status}
+                        {payment?.latest_invoice?.status}
                       </Badge>
                     </td>
-                    <td className="p-4">{payment.paymentMethod || '-'}</td>
-                    <td className="p-4">{payment.date}</td>
+                    <td className="p-4">Stripe</td>
+                    <td className="p-4">{getDate(payment?.latest_invoice?.created)}</td>
                     <td className="p-4">
-                      <Badge variant="outline">{payment.plan || '-'}</Badge>
+                      <Badge variant="outline">{payment?.plan?.product?.name || '-'}</Badge>
                     </td>
-                    <td className="p-4 font-mono text-sm">{payment.transactionId || '-'}</td>
+                    <td className="p-4 font-mono text-sm">{payment?.latest_invoice?.number || '-'}</td>
                   </tr>
                 ))}
               </tbody>
