@@ -65,7 +65,7 @@ export default function Sidebar(open: { open: boolean }) {
               </Link>
             );
           })}
-          <div className="bottom-4 ">
+          {/* <div className="bottom-4 ">
             <Button
               onClick={() => navigate("/dashboard/settings")}
               variant="ghost"
@@ -80,7 +80,7 @@ export default function Sidebar(open: { open: boolean }) {
               <Settings className="h-4 w-4 mr-2" />
               {open.open && "Settings"}
             </Button>
-          </div>
+          </div> */}
         </div>
       </nav>
     </div>

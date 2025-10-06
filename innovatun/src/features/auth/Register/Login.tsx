@@ -62,8 +62,7 @@ export default function Login() {
         console.warn("JWT request failed", jwtErr);
       }
       const profile = await fetchUserProfile(formData.email);
-      const emailLower = formData.email.toLowerCase();
-      const isBackendAdmin = profile?.role === "admin" && emailLower === "aljoboyer@gmail.com";
+      const isBackendAdmin = profile?.role === "admin";
       navigate(isBackendAdmin ? "/admin" : fromPath);
     } catch (err) {
       const message = (err as { message?: string })?.message || "Failed to sign in";
@@ -78,7 +77,7 @@ export default function Login() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-blue-50 text-gray-800">
-      <div className="flex flex-col-reverse w-full max-w-5xl p-6 rounded-lg shadow-lg md:flex-row bg-white/90 backdrop-filter backdrop-blur-sm">
+      <div className="flex flex-col-reverse w-full max-w-xl p-6 rounded-lg shadow-lg md:flex-row bg-white/90 backdrop-filter backdrop-blur-sm">
         {/* Left side: Form */}
         <div className="flex-1 p-4 lg:p-8">
           <h1 className="mb-6 text-3xl font-bold text-center text-black">Welcome Back</h1>
@@ -199,9 +198,6 @@ export default function Login() {
           </p>
         </div>
 
-        <div className="items-center justify-center flex-1 hidden p-4 md:flex">
-     
-        </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { Badge } from "../../components/ui/badge";
 import { Search, Filter, Calendar } from "lucide-react";
 import { api } from "../../api";
 import { toast } from "sonner";
+import { GetSubsURL } from "../../api/Urls";
 
 export default function Subscriptions() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -61,16 +62,18 @@ export default function Subscriptions() {
     });
   }, []);
 
-  const fetchSubscriptions = useCallback(async () => {
-    setLoading(true);
+  const fetchSubscriptions = async () => {
+     setLoading(true);
     try {
-      const res = await fetch(`${api.baseUrl}${api.subscriptions}`);
+      const res = await fetch(`${api.baseUrl}${GetSubsURL}`);
       const data = await res.json();
-      if (data?.success && Array.isArray(data.subscriptions)) {
-        setSubscriptions(coerce(data.subscriptions));
-      } else if (Array.isArray(data)) {
-        setSubscriptions(coerce(data));
-      } else {
+      console.log('check =======>', data?.data?.data)
+      setLoading(false)
+
+      if (data?.data?.data?.length > 0 && Array.isArray(data?.data?.data)) {
+        // setSubscriptions(coerce(data?.data?.data));
+        setSubscriptions(data?.data?.data)
+      }else {
         toast.error("Failed to load subscriptions");
         setSubscriptions([]);
       }
@@ -81,21 +84,21 @@ export default function Subscriptions() {
     } finally {
       setLoading(false);
     }
-  }, [coerce]);
+  }
 
   useEffect(() => {
     fetchSubscriptions();
-  }, [fetchSubscriptions]);
+  }, []);
 
   const filteredSubscriptions = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    return subscriptions.filter((s) => {
+    return subscriptions.filter((s: any) => {
       const matchesSearch =
         term === "" ||
-        s.customerEmail.toLowerCase().includes(term) ||
-        s.customerName.toLowerCase().includes(term) ||
-        s.plan.toLowerCase().includes(term);
-      const matchesStatus = statusFilter === "all" || s.status === statusFilter;
+        s?.customer?.email.toLowerCase().includes(term) ||
+        s?.customer?.name.toLowerCase().includes(term) ||
+        s?.plan?.product?.name.toLowerCase().includes(term);
+      const matchesStatus = statusFilter === "all" || s?.plan?.product?.active && statusFilter == 'active' || !s?.plan?.product?.active && statusFilter == 'canceled';
       return matchesSearch && matchesStatus;
     });
   }, [subscriptions, searchTerm, statusFilter]);
@@ -104,6 +107,21 @@ export default function Subscriptions() {
   const trialingSubscriptions = filteredSubscriptions.filter(s => s.status === "trialing").length;
   const canceledSubscriptions = filteredSubscriptions.filter(s => s.status === "canceled").length;
 
+  const getDate = (timestamp: any) => {
+    const date = new Date(timestamp * 1000);
+
+    const onlyDate = date.toISOString().split('T')[0];
+    return onlyDate
+  }
+  const getEndDate = (timestamp: any) => {
+  const date = new Date(timestamp * 1000);
+
+  // Add one month
+  date.setMonth(date.getMonth() + 1);
+
+  const onlyDate = date.toISOString().split('T')[0];
+  return onlyDate;
+};
   return (
     <div className="p-6">
       <div className="mb-8">
@@ -177,8 +195,8 @@ export default function Subscriptions() {
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="trialing">Trialing</SelectItem>
-                <SelectItem value="canceled">Canceled</SelectItem>
+                {/* <SelectItem value="trialing">Trialing</SelectItem> */}
+                <SelectItem value="canceled">InActive</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -213,38 +231,29 @@ export default function Subscriptions() {
                 </tr>
               </thead>
               <tbody>
-                {filteredSubscriptions.map((subscription) => (
+                {filteredSubscriptions.map((subscription: any) => (
                   <tr key={subscription.id} className="border-b hover:bg-gray-50">
                     <td className="p-4">
                       <div>
-                        <div className="font-medium">{subscription.customerName}</div>
-                        <div className="text-sm text-gray-500">{subscription.customerEmail}</div>
+                        <div className="font-medium">{subscription?.customer?.name}</div>
+                        <div className="text-sm text-gray-500">{subscription?.customer?.email}</div>
                       </div>
                     </td>
                     <td className="p-4">
-                      <Badge variant="outline">{subscription.plan}</Badge>
+                      <Badge variant="outline">{subscription?.plan?.product?.name}</Badge>
                     </td>
                     <td className="p-4">
                       <Badge 
                         variant={subscription.status === 'active' ? 'default' : 
                                 subscription.status === 'trialing' ? 'secondary' : 'destructive'}
                       >
-                        {subscription.status}
+                        Active
                       </Badge>
                     </td>
-                    <td className="p-4 font-medium">{subscription.amount} {subscription.currency}</td>
-                    <td className="p-4">{subscription.startDate}</td>
-                    <td className="p-4">{subscription.endDate}</td>
-                    <td className="p-4">
-                      {subscription.nextBillingDate ? (
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-4 w-4 text-gray-400" />
-                          <span>{subscription.nextBillingDate}</span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </td>
+                    <td className="p-4 font-medium">{subscription?.plan?.amount} {subscription?.plan?.currency}</td>
+                    <td className="p-4">{getDate(subscription?.start_date)}</td>
+                    <td className="p-4">{getEndDate(subscription?.start_date)}</td>
+                    <td className="p-4">{getEndDate(subscription?.start_date)}</td>
                   </tr>
                 ))}
               </tbody>
