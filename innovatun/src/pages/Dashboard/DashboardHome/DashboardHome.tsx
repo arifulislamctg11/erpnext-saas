@@ -66,9 +66,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
       <div className="text-2xl font-bold">{value}</div>
       <div className="flex items-center space-x-2 text-xs">
         <div
-          className={`flex items-center ${
-            trend === "up" ? "text-green-600" : "text-red-600"
-          }`}
+          className={`flex items-center ${trend === "up" ? "text-green-600" : "text-red-600"
+            }`}
         >
           {trend === "up" ? (
             <TrendingUp className="h-3 w-3" />
@@ -87,6 +86,7 @@ export default function DashboardHome() {
   const [activeTab, setActiveTab] = useState("outline");
   const [employeeData, setEmployeeData] = useState<any[]>([]);
   const [companyName, setCompanyData] = useState("");
+  const [refetchEmployee, setRefetchEmployee] = useState(true);
   const { user } = useAuth();
   console.log(user?.email);
 
@@ -131,54 +131,33 @@ export default function DashboardHome() {
     };
 
     fetchData();
-  }, [companyName]); // ✅ run only once on mount
+  }, [refetchEmployee, companyName]); // ✅ run only once on mount
 
   console.log(employeeData);
 
   return (
     <div className="flex h-screen  overflow-hidden bg-background">
       {/* Dashboard Content */}
-      <main className="flex-1 p-3   h-screen   bg-gray-300 overflow-y-auto space-y-3">
-        {/* Metrics Grid */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          <MetricCard
-            title="Total Revenue"
-            value="$1,250.00"
-            change="+12.5%"
-            trend="up"
-            description="Trending up this month"
-            icon={<TrendingUp className="h-4 w-4" />}
-          />
-          <MetricCard
-            title="New Customers"
-            value="1,234"
-            change="-20%"
-            trend="down"
-            description="Down 20% this period"
-            icon={<Users className="h-4 w-4" />}
-          />
-          <MetricCard
-            title="Active Accounts"
-            value="45,678"
-            change="+12.5%"
-            trend="up"
-            description="Strong user retention"
-            icon={<UserCheck className="h-4 w-4" />}
-          />
-          <MetricCard
-            title="Growth Rate"
-            value="4.5%"
-            change="+4.5%"
-            trend="up"
-            description="Steady performance increase"
-            icon={<Activity className="h-4 w-4" />}
-          />
-        </div> */}
-        {/* <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">undefined</div>
-          </CardHeader>
-        </Card> */}
+      <main className="flex-1 p-3  h-screen   bg-gray-300 overflow-y-auto space-y-3">
+
+        <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-left">Please check you email to get the user credentials we already have send you a temporary password, please reset your password once you logged in. click here to access your ERP
+              </p>
+            </div>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="http://56.228.18.230:8001/"
+              className="inline-block rounded-2xl bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-pink-500/30 px-8 py-3 text-lg font-semibold text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-purple-300/40"
+            >
+              Login
+            </a>
+
+          </div>
+        </div>
+
         <div className=" mb-10  flex flex-col gap-3">
           {/* Bottom Section with Tabs */}
           <div className="mb-10">
@@ -199,7 +178,7 @@ export default function DashboardHome() {
                         </Link>
                       </div>
                       <div className="flex space-x-2">
-                        <UserFormDialog>
+                        <UserFormDialog companyName={companyName} setRefetchEmployee={setRefetchEmployee}>
                           <Button size="sm">
                             <Plus className="h-4 w-4 " />
                             Add User
@@ -241,8 +220,8 @@ export default function DashboardHome() {
                                             item.status === "Active"
                                               ? "default"
                                               : item.status === "Inactive"
-                                              ? "secondary"
-                                              : "outline"
+                                                ? "secondary"
+                                                : "outline"
                                           }
                                         >
                                           {item.status}
