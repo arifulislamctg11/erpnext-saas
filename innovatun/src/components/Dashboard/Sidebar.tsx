@@ -19,7 +19,7 @@ export default function Sidebar(open: { open: boolean }) {
       )}
     >
       <div className="p-3 shadow-md">
-        <Link to="/dashboard" className="flex items-center space-x-1">
+        <Link to="/" className="flex items-center space-x-1">
           <div className="h-10 w-10 rounded-full flex items-center justify-center">
             <span className="text-primary-foreground font-semibold text-sm">
               <img

@@ -30,10 +30,10 @@ export default function Header() {
       <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-16 h-12  rounded-lg flex items-center justify-center">
+            <Link to="/" className="w-16 h-12  rounded-lg flex items-center justify-center">
               {/* <span className="text-white font-bold text-sm"></span> */}
               <img src={Logo} alt="Innovatun" className=""></img>
-            </div>
+            </Link>
             {/* <span className="text-xl font-bold">Innovatun</span> */}
           </div>
 
