@@ -154,12 +154,14 @@ export default function CurrentPlan() {
                   <p className="text-sm mt-4 text-gray-500">{nextPlanData?.note}</p>
                 </Card>
               </div> :  <div>
-                  <Card
+                 {
+                  currentPlanData &&  <Card
                   
                   className={`w-full lg:w-[500px] p-8  bg-gray-900  text-white shadow-lg relative h-[680px]`}
                 >
                 <h4 className="text-xl lg:text-2xl  text-yellow-400 font-bold">You are already on the highest plan, so an upgrade is not necessary.</h4>
                 </Card>
+                 }
               </div> 
               }
               
