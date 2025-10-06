@@ -169,7 +169,7 @@ export default function AdminSettings() {
                   <div className="text-center mb-2">
                     <h3 className="text-xl lg:text-2xl font-bold">{plan?.name}</h3>
                     <div className="text-4xl font-bold mb-1">
-                    {plan.prices} TND
+                    $ {plan.prices}
                     <span className="text-lg font-normal text-gray-500">
                       / Month
                     </span>

@@ -7,9 +7,11 @@ import { Card } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
 import { Check } from "lucide-react";
 import { Button } from "../../../components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 
 export default function CurrentPlan() {
+  const navigate = useNavigate()
   const plansData = plans;
   const [currentPlanData, setCurrentPlanData] : any= useState(null);
   const [nextPlanData, setNexPlanData] : any= useState(null);
@@ -172,6 +174,12 @@ export default function CurrentPlan() {
               <div className="text-4xl mb-4">📋</div>
               <h3 className="text-lg font-medium mb-2">No Plan Subscribe Yet</h3>
               <p className="text-sm">You haven't subscribed to any plans yet.</p>
+                                
+                <Button
+                onClick={() => navigate('/')}
+                  className='bg-black text-white '>
+                 Go To Home
+                </Button>
             </div>
           </Card>
           }

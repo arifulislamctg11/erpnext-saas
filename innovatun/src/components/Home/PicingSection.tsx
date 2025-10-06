@@ -250,7 +250,7 @@ export default function PicingSection() {
                 <div className="text-center mb-6">
                   <h3 className="text-xl font-semibold mb-2">{plan?.name}</h3>
                   <div className="text-4xl font-bold mb-1">
-                    {plan?.price?.unit_amount} TND
+                     $ {plan?.price?.unit_amount}
                     <span className="text-lg font-normal text-gray-500">
                       /Month
                     </span>
