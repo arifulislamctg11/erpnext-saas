@@ -193,7 +193,7 @@ export default function PicingSection() {
   ];
 
   return (
-    <div>
+    <div id="Pricing">
       <section className="px-6 py-16 bg-gray-50">
         <div className="max-w-[1450px] mx-auto">
           <div className="text-center mb-12">

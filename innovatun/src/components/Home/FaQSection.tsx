@@ -7,7 +7,7 @@ import {
 
 export default function FaQSection() {
   return (
-    <div>
+    <div id='Faq'>
       <section className="px-6 py-16 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
