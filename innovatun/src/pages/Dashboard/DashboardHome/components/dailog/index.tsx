@@ -15,10 +15,10 @@ import TableFrom from "./form"
 
 
 
-export function UserFormDialog() {
+export function UserFormDialog({ companyName, setRefetchEmployee }: { companyName: string, setRefetchEmployee: React.Dispatch<React.SetStateAction<boolean>> }) {
   const [open, setOpen] = useState(false)
 
- 
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -29,7 +29,7 @@ export function UserFormDialog() {
         <DialogHeader>
           <DialogTitle>User Information</DialogTitle>
         </DialogHeader>
-        <TableFrom setOpen={setOpen}/>
+        <TableFrom setOpen={setOpen} companyName={companyName} setRefetchEmployee={setRefetchEmployee} />
       </DialogContent>
     </Dialog>
   )
