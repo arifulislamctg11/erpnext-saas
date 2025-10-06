@@ -62,8 +62,7 @@ export default function Login() {
         console.warn("JWT request failed", jwtErr);
       }
       const profile = await fetchUserProfile(formData.email);
-      const emailLower = formData.email.toLowerCase();
-      const isBackendAdmin = profile?.role === "admin" && emailLower === "aljoboyer@gmail.com";
+      const isBackendAdmin = profile?.role === "admin";
       navigate(isBackendAdmin ? "/admin" : fromPath);
     } catch (err) {
       const message = (err as { message?: string })?.message || "Failed to sign in";
