@@ -104,6 +104,14 @@ export default function Register() {
       toast.success("Account created successfully!", {
         description: "Welcome to ERPNext SaaS!",
       });
+      const res_roles = await fetch(`${api.baseUrl}/set-role`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({email:values.email}),
+      });
 
       // If a plan was selected before registration, redirect to Stripe checkout
       if (selectedPlanId) {
