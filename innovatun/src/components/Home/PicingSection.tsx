@@ -150,9 +150,8 @@ export default function PicingSection() {
 
       const data = await res.json();
       if (data?.url) {
-
-
-
+        localStorage.setItem('innovatunplan', JSON.stringify(selectedPlan))
+        
         toast.success(`Redirecting to payment for ${selectedPlan.name}`, {
           description: `Price: ${selectedPlan?.price?.unit_amount}`
         });
@@ -206,6 +205,7 @@ export default function PicingSection() {
             },
           });
           const formatedRes = await response.json();
+          console.log(formatedRes.products)
           if(formatedRes.products){
             setPlansData(formatedRes?.products)
           }

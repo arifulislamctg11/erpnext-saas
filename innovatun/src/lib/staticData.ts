@@ -466,3 +466,272 @@ export const countries = [
   { value: "Zambia", label: "Zambia" },
   { value: "Zimbabwe", label: "Zimbabwe" }
 ];
+
+export const accountsModules = [
+  {name: 'Accounts', label: 'Accounts'},
+  {name: "Assets", label: "Assets"},
+  {name: "Automation", label: "Automation"},
+  {name: "Bulk_Transaction", label: "Bulk Transaction"},
+  {name: "Buying", label: "Buying"},
+  {name: "Communication", label: "Communication"},
+  {name: "Contacts", label: "Contacts"},
+  {name: "CRM", label: "CRM"},
+  {name: "Custom", label: "Custom"},
+  {name: "Email", label: "Email"},
+  {name: "ERPNext_Integrations", label: "ERPNext Integrations"},
+  {name: "Geo", label: "Geo"},
+  {name: "HR", label: "HR"},
+  {name: "Integrations", label: "Integrations"},
+  {name: "Maintenance", label: "Maintenance"},
+  {name: "Manufacturing", label: "Manufacturing"},
+  {name: "Payroll", label: "Payroll"},
+  {name: "Portal", label: "Portal"},
+  {name: "Printing", label: "Printing"},
+  {name: "Projects", label: "Projects"},
+  {name: "Quality_Management", label: "Quality Management"},
+  {name: "Selling", label:"Selling"},
+  {name: "Social", label:"Social"},
+  {name: "Stock", label:"Stock"},
+  {name: "Subcontracting", label:"Subcontracting"},
+  {name: "Support", label:"Support"},
+];
+
+export const accessRoles = [
+  {
+    id: "Accounts",
+    roles: [
+      "Accounts Manager",
+      "Accounts User",
+      "Auditor",
+      "Expense Approver",
+      "Report Manager",
+      "System Manager"
+    ]
+  },
+  {
+    id: "Assets",
+    roles: [
+      "Accounts Manager",
+      "Accounts User",
+      "System Manager"
+    ]
+  },
+  {
+    id: "Bulk Transaction",
+    roles: [
+      "Accounts Manager",
+      "Sales Manager",
+      "Purchase Manager",
+      "Stock Manager"
+    ]
+  },
+  {
+    id: "Buying",
+    roles: [
+      "Purchase Manager",
+      "Purchase Master Manager",
+      "Purchase User",
+      "Supplier",
+      "Accounts User"
+    ]
+  },
+  {
+    id: "Communication",
+    roles: [
+      "Inbox User",
+      "Support Team",
+      "Customer",
+      "System Manager",
+      "Sales User",
+      "Sales Manager"
+    ]
+  },
+  {
+    id: "Email",
+    roles: [
+      "Inbox User",
+      "Support Team",
+      "Customer",
+      "System Manager",
+      "Sales User"
+    ]
+  },
+  {
+    id: "Contacts",
+    roles: [
+      "Sales User",
+      "Sales Manager",
+      "Customer",
+      "Supplier",
+      "Support Team",
+      "System Manager"
+    ]
+  },
+  {
+    id: "CRM",
+    roles: [
+      "Sales User",
+      "Sales Manager",
+      "Sales Master Manager",
+      "Customer",
+      "Support Team",
+      "Dashboard Manager"
+    ]
+  },
+  {
+    id: "Custom",
+    roles: [
+      "System Manager",
+      "Script Manager",
+      "Workspace Manager",
+      "Report Manager"
+    ]
+  },
+  {
+    id: "Automation",
+    roles: [
+      "System Manager",
+      "Script Manager",
+      "Workspace Manager",
+      "Report Manager"
+    ]
+  },
+  {
+    id: "Desk Module",
+    roles: [
+      "All roles (generic UI access)",
+      "System Manager"
+    ]
+  },
+  {
+    id: "ERPNext Integrations",
+    roles: [
+      "System Manager",
+      "Accounts Manager"
+    ]
+  },
+  {
+    id: "Geo",
+    roles: [
+      "System Manager",
+      "HR Manager",
+      "Sales Manager",
+      "Projects Manager"
+    ]
+  },
+  {
+    id: "HR",
+    roles: [
+      "HR Manager",
+      "HR User",
+      "Employee",
+      "Employee Self Service",
+      "Leave Approver",
+      "Interviewer",
+      "Expense Approver"
+    ]
+  },
+  {
+    id: "Maintenance",
+    roles: [
+      "Maintenance Manager",
+      "Maintenance User",
+      "Support Team"
+    ]
+  },
+  {
+    id: "Manufacturing",
+    roles: [
+      "Manufacturing Manager",
+      "Manufacturing User",
+      "Stock Manager",
+      "Quality Manager"
+    ]
+  },
+  {
+    id: "Payroll",
+    roles: [
+      "HR Manager",
+      "Accounts Manager",
+      "Expense Approver"
+    ]
+  },
+  {
+    id: "Portal",
+    roles: [
+      "Customer",
+      "Supplier",
+      "Website Manager",
+      "Blogger",
+      "Knowledge Base Contributor",
+      "Knowledge Base Editor"
+    ]
+  },
+  {
+    id: "Printing",
+    roles: [
+      "System Manager",
+      "Report Manager",
+      "Workspace Manager"
+    ]
+  },
+  {
+    id: "Projects",
+    roles: [
+      "Projects Manager",
+      "Projects User",
+      "Employee",
+      "Customer"
+    ]
+  },
+  {
+    id: "Quality Management",
+    roles: [
+      "Quality Manager",
+      "Manufacturing Manager",
+      "Stock Manager"
+    ]
+  },
+  {
+    id: "Selling",
+    roles: [
+      "Sales User",
+      "Sales Manager",
+      "Sales Master Manager",
+      "Customer"
+    ]
+  },
+  {
+    id: "Social",
+    roles: [
+      "Blogger",
+      "Newsletter Manager",
+      "Website Manager"
+    ]
+  },
+  {
+    id: "Stock",
+    roles: [
+      "Stock Manager",
+      "Stock User",
+      "Manufacturing Manager",
+      "Purchase User"
+    ]
+  },
+  {
+    id: "Subcontracting",
+    roles: [
+      "Purchase Manager",
+      "Manufacturing Manager",
+      "Stock Manager"
+    ]
+  },
+  {
+    id: "Support",
+    roles: [
+      "Support Team",
+      "Customer",
+      "Employee Self Service"
+    ]
+  }
+];
