@@ -607,7 +607,6 @@ export const accessRoles = [
     id: "ERPNext Integrations",
     roles: [
       "System Manager",
-      "Integration Manager (if exists)",
       "Accounts Manager"
     ]
   },

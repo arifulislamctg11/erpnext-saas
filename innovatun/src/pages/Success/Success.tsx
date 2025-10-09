@@ -41,8 +41,27 @@ const SuccessPage: React.FC = () => {
       const planJson: any = localStorage.getItem('innovatunplan');
       const selectedPlan = JSON.parse(planJson);
       const plan_roles = selectedPlan?.access_roles;
-      const rolesArray = getEnabledRoles(accessRoles, plan_roles)
-      console.log(' rolesArray in succ page ====', rolesArray);
+      const rolesArray = getEnabledRoles(accessRoles, plan_roles);
+      const uniqueArray = [...new Set(rolesArray)];
+      const formatRoles = uniqueArray?.map((item: any) => {
+        const newObj = {role: item};
+        return newObj
+      });
+
+      const roleReqBody = {
+        roles: formatRoles,
+        email: user.email,
+      }
+       const res_roles = await fetch(`${api.baseUrl}/set-role`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              body: JSON.stringify(roleReqBody),
+            });
+      localStorage.removeItem('innovatunplan')
+      
       // Use plan data from URL parameters (primary source)
       let planData = { 
         planName: planName || 'Unknown Plan', 
