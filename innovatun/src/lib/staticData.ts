@@ -466,3 +466,32 @@ export const countries = [
   { value: "Zambia", label: "Zambia" },
   { value: "Zimbabwe", label: "Zimbabwe" }
 ];
+
+export const accountsModules = [
+  {name: 'Accounts', label: 'Accounts'},
+  {name: "Assets", label: "Assets"},
+  {name: "Automation", label: "Automation"},
+  {name: "Bulk_Transaction", label: "Bulk Transaction"},
+  {name: "Buying", label: "Buying"},
+  {name: "Communication", label: "Communication"},
+  {name: "Contacts", label: "Contacts"},
+  {name: "CRM", label: "CRM"},
+  {name: "Custom", label: "Custom"},
+  {name: "Email", label: "Email"},
+  {name: "ERPNext_Integrations", label: "ERPNext Integrations"},
+  {name: "Geo", label: "Geo"},
+  {name: "HR", label: "HR"},
+  {name: "Integrations", label: "Integrations"},
+  {name: "Maintenance", label: "Maintenance"},
+  {name: "Manufacturing", label: "Manufacturing"},
+  {name: "Payroll", label: "Payroll"},
+  {name: "Portal", label: "Portal"},
+  {name: "Printing", label: "Printing"},
+  {name: "Projects", label: "Projects"},
+  {name: "Quality_Management", label: "Quality Management"},
+  {name: "Selling", label:"Selling"},
+  {name: "Social", label:"Social"},
+  {name: "Stock", label:"Stock"},
+  {name: "Subcontracting", label:"Subcontracting"},
+  {name: "Support", label:"Support"},
+];
