@@ -62,8 +62,11 @@ export default function Login() {
         console.warn("JWT request failed", jwtErr);
       }
       const profile = await fetchUserProfile(formData.email);
+      console.log(profile)
       const isBackendAdmin = profile?.role === "admin";
+      console.log(isBackendAdmin)
       navigate(isBackendAdmin ? "/admin" : fromPath);
+      
     } catch (err) {
       const message = (err as { message?: string })?.message || "Failed to sign in";
       setError(message);
@@ -85,7 +88,7 @@ export default function Login() {
           <form onSubmit={handleLogin} aria-label="Login form">
             <div className="mt-4">
               <label htmlFor="email" className="block text-sm font-medium text-start">
-                Email Address
+                Email 
               </label>
               <input
                 id="email"

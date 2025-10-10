@@ -96,9 +96,17 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
       setLoading(false);
       return;
     }
+    if(!currentPlanData?.access_roles ||!currentPlanData){
+       toast.error("Before adding user, you have to subscribe plan");
+      setLoading(false);
+      return;
+
+    }
 
     try {
+
         const plan_roles = currentPlanData?.access_roles;
+        console.log(plan_roles)
         const rolesArray = getEnabledRoles(accessRoles, plan_roles);
         const uniqueArray = [...new Set(rolesArray)];
         const formatRoles = uniqueArray?.map((item: any) => {
@@ -377,7 +385,7 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
           <Input type="text" placeholder="Last Name" name="lastName" className="mb-4" />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Input type="text" placeholder="Email" name="email" className="mb-4" />
+          <Input type="email" placeholder="Email" name="email" className="mb-4" />
           <div className="flex flex-col">
             <Input type="password" placeholder="Password" name="password" className="mb-4" />
             <span className="text-[10px] text-red-700">{passErrorMgs}</span>
