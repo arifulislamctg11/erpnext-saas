@@ -1,7 +1,7 @@
 
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -29,6 +29,7 @@ import {
 } from "../../../components/ui/select";
 import { countries, currencies } from "../../../lib/staticData";
 import { plans } from "../../../components/Home/PicingSection";
+import { GetHomePlansURL } from "../../../api/Urls";
 
 const formSchema = z.object({
   companyName: z.string().min(2, "Company name must be at least 2 characters"),
@@ -72,7 +73,8 @@ export default function Register() {
   const navigate = useNavigate();
   const location = useLocation();
   const { signupWithEmail } = useAuth();
-
+  const [plansData, setPlansData]: any = useState([]);
+  
   // Get the plan selected before redirecting
   const selectedPlanId = location.state?.priceId as string | undefined;
 
@@ -107,7 +109,8 @@ export default function Register() {
      
       // If a plan was selected before registration, redirect to Stripe checkout
       if (selectedPlanId) {
-        const selectedPlan = plans.find((p) => p.priceId === selectedPlanId);
+        const selectedPlan = plansData.find((p: any) => p?.price?.id === selectedPlanId);
+        localStorage.setItem('innovatunplan', JSON.stringify(selectedPlan))
         if (selectedPlan) {
           try {
             const res = await fetch(
@@ -116,15 +119,15 @@ export default function Register() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  priceId: selectedPlan.priceId,
+                  priceId: selectedPlanId,
                   customerEmail: values.email,
-                  planName: selectedPlan.title,
-                  planAmount: selectedPlan.price,
+                  planName: selectedPlan.name,
+                  planAmount: selectedPlan.price?.unit_amount,
                   successUrl: `${
                     window.location.origin
                   }/success?session_id={CHECKOUT_SESSION_ID}&plan_name=${encodeURIComponent(
-                    selectedPlan.title
-                  )}&plan_amount=${encodeURIComponent(selectedPlan.price)}`,
+                    selectedPlan.name
+                  )}&plan_amount=${encodeURIComponent(selectedPlan.price?.unit_amount)}`,
                   cancelUrl: `${window.location.origin}/cancel`,
                 }),
               }
@@ -169,6 +172,29 @@ export default function Register() {
       setIsLoading(false);
     }
   };
+
+      const featchPlans = async () => {
+        try {
+            const response = await fetch(`${api.baseUrl}${GetHomePlansURL}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+              },
+            });
+            const formatedRes = await response.json();
+            console.log(formatedRes.products)
+            if(formatedRes.products){
+              setPlansData(formatedRes?.products)
+            }
+        } catch (error) {
+          console.log('plan fetch err ===>', error)
+        }
+      }
+
+    useEffect(() => {
+      featchPlans()
+    },[]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
