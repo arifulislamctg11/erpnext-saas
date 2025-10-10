@@ -118,7 +118,7 @@ export function Createplan() {
      })
      const access_roles: any = {};
      let count = 0;
-     console.log('check ===>', data)
+    
      for (const item of accountsModules) {
       if(data[item.name]){
            access_roles[item.name] = true;
@@ -350,7 +350,6 @@ export function Createplan() {
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
                                 id={item?.name}
-                                disabled={state?.id ? true : false}
                               />
                             </FormControl>
                             <FormLabel htmlFor="acceptTerms" className="text-gray-700 font-medium">

@@ -16,7 +16,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { api } from "../../../../../api"
 import { useAuth } from "../../../../../contexts/use-auth"
-import { accessRoles } from "../../../../../lib/staticData"
+import { accessRoles, accountsModules } from "../../../../../lib/staticData"
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -105,10 +105,19 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
           const newObj = {role: item};
           return newObj
         });
-  
+        
+        const blockRoles = []
+        for (const item of accountsModules) {
+          if(!plan_roles[item.name]){
+                const neObj = {module: item?.label}
+                blockRoles.push(neObj)
+            }
+        }
+        
         const roleReqBody = {
           roles: formatRoles,
           email: user?.email,
+          blockRoles
         }
       const res = await axios.post(`${baseUrl}/create-user-and-employee`, newData);
 
