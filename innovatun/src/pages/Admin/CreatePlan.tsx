@@ -20,6 +20,8 @@ import { useAuth } from "../../contexts/use-auth";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CreatePlanURL, GetPlansURL, UpdatePlansURL } from "../../api/Urls";
 import { toast } from "sonner";
+import { Checkbox } from "../../components/ui/checkbox";
+import { accountsModules } from "../../lib/staticData";
 
 const formSchema = z.object({
   name: z.string().min(3, "Plan name must be at least 3 characters"),
@@ -35,6 +37,32 @@ const formSchema = z.object({
   feature8: z.string().optional(),
   feature9: z.string().optional(),
   feature10: z.string().optional(),
+  Assets: z.boolean().optional(),
+  Automation: z.boolean().optional(),
+  Bulk_Transaction: z.boolean().optional(),
+  Buying: z.boolean().optional(),
+  Communication: z.boolean().optional(),
+  Contacts: z.boolean().optional(),
+  CRM: z.boolean().optional(),
+  Custom: z.boolean().optional(),
+  Email: z.boolean().optional(),
+  ERPNext_Integrations: z.boolean().optional(),
+  Geo: z.boolean().optional(),
+  HR: z.boolean().optional(),
+  Integrations: z.boolean().optional(),
+  Maintenance: z.boolean().optional(),
+  Manufacturing: z.boolean().optional(),
+  Payroll: z.boolean().optional(),
+  Portal: z.boolean().optional(),
+  Printing: z.boolean().optional(),
+  Projects: z.boolean().optional(),
+  Quality_Management: z.boolean().optional(),
+  Selling: z.boolean().optional(),
+  Social: z.boolean().optional(),
+  Stock: z.boolean().optional(),
+  Subcontracting: z.boolean().optional(),
+  Support: z.boolean().optional(),
+  Accounts : z.boolean().optional()
 });
 
 type ProfileFormData = z.infer<typeof formSchema>;
@@ -49,7 +77,34 @@ export function Createplan() {
 
   const form = useForm<ProfileFormData | any>({
     resolver: zodResolver(formSchema),
-    
+    defaultValues: {
+      Assets: false,
+      Automation: false,
+      Bulk_Transaction: false,
+      Buying: false,
+      Communication: false,
+      Contacts: false,
+      CRM: false,
+      Custom: false,
+      Email: false,
+      ERPNext_Integrations: false,
+      Geo: false,
+      HR: false,
+      Integrations: false,
+      Maintenance: false,
+      Manufacturing: false,
+      Payroll: false,
+      Portal: false,
+      Printing: false,
+      Projects: false,
+      Quality_Management: false,
+      Selling: false,
+      Social: false,
+      Stock: false,
+      Subcontracting: false,
+      Support: false,
+      Accounts: false,
+    }
   });
 
   const onSubmit = async (data: ProfileFormData | any) => {
@@ -61,7 +116,22 @@ export function Createplan() {
         const itm = data[`feature${item}`]
         return itm
      })
-
+     const access_roles: any = {};
+     let count = 0;
+    
+     for (const item of accountsModules) {
+      if(data[item.name]){
+           access_roles[item.name] = true;
+           count += 1
+        }else{
+           access_roles[item.name] = false;
+        }
+     }
+     if(count < 3){
+      setIsLoading(false)
+      setSubmitError('Select minimum three module permission')
+      return
+     }
      const reqBody = {
       name: data?.name,
       price: data?.price,
@@ -69,8 +139,10 @@ export function Createplan() {
       features: [
         data?.featureOne,
         ...featursData
-      ]
+      ],
+      access_roles
      }
+   
       if(state?.id){
           const response = await fetch(`${api.baseUrl}${UpdatePlansURL}`, {
             method: "POST",
@@ -130,6 +202,7 @@ export function Createplan() {
          credentials: "include",
        });
        const formatedRes = await response.json();
+       console.log(formatedRes)
        const formatObj = {
         ...formatedRes?.data,
           price: `${formatedRes?.data?.price}`,
@@ -143,6 +216,7 @@ export function Createplan() {
           feature8: formatedRes?.data?.features[7] || '',
           feature9: formatedRes?.data?.features[8] || '',
           feature10: formatedRes?.data?.features[9] || '',
+          ...formatedRes?.data?.access_roles
        }
        form.reset(formatObj);
   }
@@ -262,7 +336,32 @@ export function Createplan() {
                         />
                       ))
                     }
-
+                  <p className="font-bold text-start">Module Permission:</p>
+                  <div className="grid md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {
+                    accountsModules?.map((item: any) => (
+                      <FormField
+                        control={form.control}
+                        name={item?.name}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center space-x-2">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                id={item?.name}
+                              />
+                            </FormControl>
+                            <FormLabel htmlFor="acceptTerms" className="text-gray-700 font-medium">
+                              {item?.label}
+                            </FormLabel>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ))
+                  }
+                  </div>
                   <Button
                       type="submit"
                       className="w-full md:w-[200px] h-12 bg-black hover:bg-gray-800 text-white font-medium mt-6"

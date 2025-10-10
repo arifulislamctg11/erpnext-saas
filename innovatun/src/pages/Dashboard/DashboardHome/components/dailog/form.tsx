@@ -10,10 +10,13 @@ import { CalendarIcon } from "lucide-react"
 import { cn } from "../../../../../lib/utils"
 import { Input } from "../../../../../components/ui/input"
 import { Button } from "../../../../../components/ui/button"
-import { baseUrl } from "../../../../../api/Urls"
+import { baseUrl, CurrentPlanUrl, GetHomePlansURL } from "../../../../../api/Urls"
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { api } from "../../../../../api"
+import { useAuth } from "../../../../../contexts/use-auth"
+import { accessRoles, accountsModules } from "../../../../../lib/staticData"
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -59,8 +62,23 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
 
   const [loading, setLoading] = useState(false)
   const [passErrorMgs, setPassErrorMgs] = useState('')
+  const { user} = useAuth();
+  const [currentPlanData, setCurrentPlanData] : any= useState(null);
 
-  console.log("from:", companyName)
+  function getEnabledRoles(accessRoles: any, enabledModules: any) {
+    const rolesSet = new Set();
+
+    for (const module of accessRoles) {
+      // Normalize keys: replace _ with space to match accessRoles ids
+      const normalizedKey = module.id.replace(/\s+/g, "_");
+
+      if (enabledModules[normalizedKey] === true) {
+        module.roles.forEach((role: any) => rolesSet.add(role));
+      }
+    }
+
+    return Array.from(rolesSet);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -69,6 +87,7 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
     const formData = new FormData(e.target as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
     const newData = { ...data, companyName: companyName }
+ 
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
@@ -79,7 +98,37 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
     }
 
     try {
+        const plan_roles = currentPlanData?.access_roles;
+        const rolesArray = getEnabledRoles(accessRoles, plan_roles);
+        const uniqueArray = [...new Set(rolesArray)];
+        const formatRoles = uniqueArray?.map((item: any) => {
+          const newObj = {role: item};
+          return newObj
+        });
+        
+        const blockRoles = []
+        for (const item of accountsModules) {
+          if(!plan_roles[item.name]){
+                const neObj = {module: item?.label}
+                blockRoles.push(neObj)
+            }
+        }
+        
+        const roleReqBody = {
+          roles: formatRoles,
+          email: user?.email,
+          blockRoles
+        }
       const res = await axios.post(`${baseUrl}/create-user-and-employee`, newData);
+
+      const res_roles = await fetch(`${api.baseUrl}/set-role`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(roleReqBody),
+          });
       if (res.data.success) {
         setRefetchEmployee(prev => !prev)
         toast.success("User and Employee created successfully");
@@ -92,6 +141,37 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
     }
   }
 
+  const getCurrentPlan = async () => {
+    const response = await fetch(`${api.baseUrl}${CurrentPlanUrl}?email=${user?.email}`, {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+            });
+    const formatedRes = await response.json();
+
+     const plan_response = await fetch(`${api.baseUrl}${GetHomePlansURL}`, {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json",
+                },
+              });
+    const formatedPlanRes = await plan_response.json();
+    
+    if(formatedRes?.data){
+      const findPlan = formatedPlanRes?.products?.find((item : any) => item?.name == formatedRes?.data?.planName)
+      setCurrentPlanData(findPlan);
+
+    }else{
+      setCurrentPlanData(null)
+    }
+  }
+  
+  useEffect(() => {
+    if(user?.email){
+      getCurrentPlan()
+    }
+  },[user?.email])
 
   return (
     <div>

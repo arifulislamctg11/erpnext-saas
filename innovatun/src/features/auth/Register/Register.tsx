@@ -104,7 +104,7 @@ export default function Register() {
       toast.success("Account created successfully!", {
         description: "Welcome to ERPNext SaaS!",
       });
-
+     
       // If a plan was selected before registration, redirect to Stripe checkout
       if (selectedPlanId) {
         const selectedPlan = plans.find((p) => p.priceId === selectedPlanId);
@@ -207,7 +207,7 @@ export default function Register() {
               />
 
               {/* First & Last Name */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="firstName"
@@ -373,7 +373,7 @@ export default function Register() {
                 control={form.control}
                 name="currency"
                 render={({ field }) => (
-                  <FormItem className="w-[300px]">
+                  <FormItem className="sm:w-[300px] w-full">
                     <FormLabel className="text-gray-700 font-medium">
                       Currency
                     </FormLabel>
@@ -381,12 +381,12 @@ export default function Register() {
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <FormControl className="w-[300px]">
+                      <FormControl className="sm:w-[300px] w-full">
                         <SelectTrigger className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0">
                           <SelectValue placeholder="Select currency" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-white w-[250px] sm:w-[300px]">
                         {currencies.map((item) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
@@ -404,7 +404,7 @@ export default function Register() {
                 control={form.control}
                 name="country"
                 render={({ field }) => (
-                  <FormItem className="w-[300px]">
+                  <FormItem className="sm:w-[300px] w-full ">
                     <FormLabel className="text-gray-700 font-medium">
                       Country
                     </FormLabel>
@@ -412,12 +412,12 @@ export default function Register() {
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <FormControl className="w-[300px]">
+                      <FormControl className="sm:w-[300px] w-full">
                         <SelectTrigger className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0">
                           <SelectValue placeholder="Select country" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-white w-[250px] sm:w-[300px]">
                         {countries.map((item) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}

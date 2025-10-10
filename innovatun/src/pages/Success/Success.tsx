@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../../contexts/use-auth";
 import { api } from "../../api";
+import { accessRoles, accountsModules } from "../../lib/staticData";
 
 const SuccessPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -17,10 +18,59 @@ const SuccessPage: React.FC = () => {
     priceId: '' 
   });
 
+  function getEnabledRoles(accessRoles: any, enabledModules: any) {
+  const rolesSet = new Set();
+
+  for (const module of accessRoles) {
+    // Normalize keys: replace _ with space to match accessRoles ids
+    const normalizedKey = module.id.replace(/\s+/g, "_");
+
+    if (enabledModules[normalizedKey] === true) {
+      module.roles.forEach((role: any) => rolesSet.add(role));
+    }
+  }
+
+  return Array.from(rolesSet);
+}
+
+
   const storeSubscription = useCallback(async () => {
     if (!user?.email || !sessionId) return;
 
     try {
+      const planJson: any = localStorage.getItem('innovatunplan');
+      const selectedPlan = JSON.parse(planJson);
+      const plan_roles = selectedPlan?.access_roles;
+      const rolesArray = getEnabledRoles(accessRoles, plan_roles);
+      const uniqueArray = [...new Set(rolesArray)];
+      const formatRoles = uniqueArray?.map((item: any) => {
+        const newObj = {role: item};
+        return newObj
+      });
+
+      const blockRoles = []
+      for (const item of accountsModules) {
+        if(!plan_roles[item.name]){
+              const neObj = {module: item?.label}
+              blockRoles.push(neObj)
+          }
+      }
+
+      const roleReqBody = {
+        roles: formatRoles,
+        email: user.email,
+        blockRoles
+      }
+       const res_roles = await fetch(`${api.baseUrl}/set-role`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              body: JSON.stringify(roleReqBody),
+            });
+      localStorage.removeItem('innovatunplan')
+      
       // Use plan data from URL parameters (primary source)
       let planData = { 
         planName: planName || 'Unknown Plan', 
