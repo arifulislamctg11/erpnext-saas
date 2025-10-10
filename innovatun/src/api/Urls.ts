@@ -1,5 +1,5 @@
-export const baseUrl='http://localhost:5000'
-// export const baseUrl='https://backend-ten-red-40.vercel.app'
+// export const baseUrl='http://localhost:5000'
+export const baseUrl='https://backend-ten-red-40.vercel.app'
 
 export const SendOTPUrl = '/sendotp';
 
