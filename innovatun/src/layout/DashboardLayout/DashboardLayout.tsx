@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(true);
-  console.log("Sidebar open state:", open);
+
   const handleLeft = () => {
     setOpen((prev) => !prev);
   };
