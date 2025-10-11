@@ -31,20 +31,26 @@ import { countries, currencies } from "../../../lib/staticData";
 import { plans } from "../../../components/Home/PicingSection";
 import { GetHomePlansURL, InfoCheckURL } from "../../../api/Urls";
 
-const formSchema = z.object({
-  companyName: z.string().min(2, "Company name must be at least 2 characters"),
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  currency: z.string().min(1, "Please select a currency"),
-  abbr: z.string().min(1, "Please enter abbreviation"),
-  tax_id: z.string().min(1, "Please enter tax ID"),
-  domain: z.string().min(1, "Please enter domain"),
-  date_established: z.string().min(1, "Please enter date of establishment"),
-  country: z.string().min(1, "Please select a country"),
-});
+const formSchema = z
+  .object({
+    companyName: z.string().min(2, "Company name must be at least 2 characters"),
+    username: z.string().min(3, "Username must be at least 3 characters"),
+    firstName: z.string().min(2, "First name must be at least 2 characters"),
+    lastName: z.string().min(2, "Last name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+    currency: z.string().min(1, "Please select a currency"),
+    abbr: z.string().min(1, "Please enter abbreviation"),
+    tax_id: z.string().min(1, "Please enter tax ID"),
+    domain: z.string().min(1, "Please enter domain"),
+    date_established: z.string().min(1, "Please enter date of establishment"),
+    country: z.string().min(1, "Please select a country"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"], 
+  });
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -55,6 +61,7 @@ export default function Register() {
   const [abbrErr, SetAbbrErr] = useState('');
   const [emailErr, SetEmailErr] = useState('');
   const [infoLoading, setInfoLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -73,6 +80,7 @@ export default function Register() {
       tax_id: "",
       domain: "",
       date_established: "",
+      confirmPassword: "",
     },
   });
 
@@ -582,8 +590,39 @@ export default function Register() {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )}
-          />
+                )}
+              />
+
+               {/* Confirm Password Field */}
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 font-medium">
+                        Confirm Password
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type={showConfirm ? "text" : "password"}
+                            className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0 pr-16"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirm((p) => !p)}
+                            className="absolute inset-y-0 right-3 flex items-center text-sm font-medium text-gray-600 hover:text-gray-800"
+                          >
+                            {showConfirm ? "Hide" : "Show"}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
               <Button
                 type="submit"
                 className="w-full h-12 bg-black hover:bg-gray-800 text-white font-medium mt-6"
