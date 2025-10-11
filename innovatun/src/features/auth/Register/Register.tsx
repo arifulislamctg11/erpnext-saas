@@ -54,6 +54,7 @@ export default function Register() {
   const [cmpyErr, SetCmpyErr] = useState('');
   const [abbrErr, SetAbbrErr] = useState('');
   const [emailErr, SetEmailErr] = useState('');
+  const [infoLoading, setInfoLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -77,7 +78,7 @@ export default function Register() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { signupWithEmail } = useAuth();
+  const {isAdmin, user, signupWithEmail } = useAuth();
   const [plansData, setPlansData]: any = useState([]);
   
   // Get the plan selected before redirecting
@@ -226,9 +227,9 @@ export default function Register() {
         value: value
       }
     }
-    console.log('check --->', reqBody)
+   
     if(reqBody){
-     
+        setInfoLoading(true)
         const response = await fetch(`${api.baseUrl}${InfoCheckURL}`, {
         method: "POST",
         headers: {
@@ -240,6 +241,7 @@ export default function Register() {
       const formatedRes = await response.json();
 
       if(reqBody?.name == 'name'){
+        setInfoLoading(false)
         if(formatedRes?.userCmpyInfo?.data?.length > 0){
           SetCmpyErr('Company Already Exists')
           return;
@@ -250,6 +252,7 @@ export default function Register() {
         
       }
     if(reqBody?.name == 'abbr'){
+      setInfoLoading(false)
         if(formatedRes?.userCmpyInfo?.data?.length > 0){
           SetAbbrErr('Abbreviation Already Exists')
           return;
@@ -260,6 +263,7 @@ export default function Register() {
         
       }
       if(reqBody?.name == 'email'){
+        setInfoLoading(false)
         if(formatedRes?.userCmpyInfo?.data?.length > 0){
           SetEmailErr('Email Already Exists')
           return;
@@ -272,6 +276,16 @@ export default function Register() {
     }
   }
 
+  useEffect(() => {
+    if(user?.email){
+      if(isAdmin){
+          navigate('/admin')
+      }else{
+        navigate('/dashboard')
+      }
+   
+    }
+  },[user?.email])
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -573,7 +587,7 @@ export default function Register() {
               <Button
                 type="submit"
                 className="w-full h-12 bg-black hover:bg-gray-800 text-white font-medium mt-6"
-                disabled={isLoading}
+                disabled={isLoading || infoLoading}
               >
                 {isLoading ? "Creating account..." : "Create account"}
               </Button>
