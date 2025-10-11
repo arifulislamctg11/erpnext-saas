@@ -434,7 +434,7 @@ export default function Register() {
                   </FormItem>
                 )}
               />
-                {abbrErr && (
+              {abbrErr && (
                 <p className="text-red-600 text-sm mt-2">{abbrErr}</p>
               )}
               <FormField
