@@ -10,7 +10,7 @@ import { CalendarIcon } from "lucide-react"
 import { cn } from "../../../../../lib/utils"
 import { Input } from "../../../../../components/ui/input"
 import { Button } from "../../../../../components/ui/button"
-import { baseUrl, CurrentPlanUrl, GetHomePlansURL } from "../../../../../api/Urls"
+import { baseUrl, CurrentPlanUrl, GetHomePlansURL, InfoCheckURL } from "../../../../../api/Urls"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -49,21 +49,12 @@ type Props = { setOpen: (open: boolean) => void, companyName: string, setRefetch
 
 type FormValues = z.infer<typeof formSchema>
 export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: Props) {
-  // const form = useForm<FormValues>({
-  //   resolver: zodResolver(formSchema),
-  //   defaultValues: {
-  //     firstName: "",
-  //     lastName: "",
-  //     name: "",
-  //     email: "",
-  //     companyName: "",
-  //   },
-  // })
 
   const [loading, setLoading] = useState(false)
   const [passErrorMgs, setPassErrorMgs] = useState('')
   const { user} = useAuth();
   const [currentPlanData, setCurrentPlanData] : any= useState(null);
+  const [emailErr, SetEmailErr] = useState('');
 
   function getEnabledRoles(accessRoles: any, enabledModules: any) {
     const rolesSet = new Set();
@@ -101,7 +92,10 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
       return;
 
     }
-
+    if(emailErr){
+      setLoading(false);
+      return;
+    }
     try {
 
         const plan_roles = currentPlanData?.access_roles;
@@ -183,6 +177,43 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
     }
   },[user?.email])
 
+
+  const onBlurHandler = async (fieldName: any, value: any) => {
+    
+    let reqBody = null;
+  
+    if(fieldName == 'email' && value){
+      reqBody = {
+        name: "email",
+        value: value
+      }
+    }
+    
+    if(reqBody){
+        setLoading(true)
+        const response = await fetch(`${api.baseUrl}${InfoCheckURL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(reqBody),
+      });
+      const formatedRes = await response.json();
+
+      if(reqBody?.name == 'email'){
+        setLoading(false)
+        if(formatedRes?.userCmpyInfo?.data?.length > 0){
+          SetEmailErr('Email Already Exists')
+          return;
+        }else{
+          SetEmailErr('')
+            return;
+        }
+      }
+    }
+  }
+  
   return (
     <div>
       {/* <Form {...form}>
@@ -383,18 +414,35 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-4">
-          <Input type="text" placeholder="First Name" name="firstName" className="mb-4" />
-          <Input type="text" placeholder="Last Name" name="lastName" className="mb-4" />
+          <div>
+            <label htmlFor="">First Name</label>
+            <Input type="text" placeholder="First Name" name="firstName" className="mb-4 mt-2" />
+          </div>
+          <div className="">
+            <label htmlFor="">Last Name</label>
+            <Input type="text" placeholder="Last Name" name="lastName" className="mb-4 mt-2" />
+          </div>
         </div>
+
         <div className="grid grid-cols-2 gap-4">
-          <Input type="email" placeholder="Email" name="email" className="mb-4" />
+          <div>
+            <label htmlFor="">Email</label>
+            <Input onBlur={(e) => {
+              onBlurHandler('email', e.target.value)
+            }} type="email" placeholder="Email" name="email" className="mb-4" />
+            {emailErr && (
+                <p className="text-red-600 text-sm mt-2">{emailErr}</p>
+              )}
+          </div>
           <div className="flex flex-col">
+            <label htmlFor="">Password</label>
             <Input type="password" placeholder="Password" name="password" className="mb-4" />
             <span className="text-[10px] text-red-700">{passErrorMgs}</span>
           </div>
         </div>
 
         <div className="my-4">
+          <label htmlFor="">Gender</label>
           <Select name="gender" >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select your gander" />
