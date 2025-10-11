@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/use-auth";
 import { api } from "../../../api";
@@ -10,7 +10,7 @@ type LocationState = { from?: { pathname?: string } } | null;
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signinWithEmail} = useAuth();
+  const {isAdmin, user, signinWithEmail} = useAuth();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -74,6 +74,17 @@ export default function Login() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if(user?.email){
+      if(isAdmin){
+          navigate('/admin')
+      }else{
+        navigate('/dashboard')
+      }
+   
+    }
+  },[user?.email])
 
   const inputClass =
     "w-full px-3 py-2 mt-1 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 bg-white border-gray-300";
