@@ -1,7 +1,7 @@
 
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -29,6 +29,7 @@ import {
 } from "../../../components/ui/select";
 import { countries, currencies } from "../../../lib/staticData";
 import { plans } from "../../../components/Home/PicingSection";
+import { GetHomePlansURL, InfoCheckURL } from "../../../api/Urls";
 
 const formSchema = z.object({
   companyName: z.string().min(2, "Company name must be at least 2 characters"),
@@ -50,6 +51,11 @@ type FormData = z.infer<typeof formSchema>;
 export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [cmpyErr, SetCmpyErr] = useState('');
+  const [abbrErr, SetAbbrErr] = useState('');
+  const [emailErr, SetEmailErr] = useState('');
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -72,14 +78,19 @@ export default function Register() {
   const navigate = useNavigate();
   const location = useLocation();
   const { signupWithEmail } = useAuth();
-
+  const [plansData, setPlansData]: any = useState([]);
+  
   // Get the plan selected before redirecting
   const selectedPlanId = location.state?.priceId as string | undefined;
 
   const onSubmit = async (values: FormData) => {
     setIsLoading(true);
     setSubmitError(null);
-
+    if(cmpyErr || emailErr || abbrErr){
+      setIsLoading(false)
+      setSubmitError('')
+      return
+    }
     try {
       // Register user in MongoDB backend
       const response = await fetch(`${api.baseUrl}${api.register}`, {
@@ -107,7 +118,8 @@ export default function Register() {
      
       // If a plan was selected before registration, redirect to Stripe checkout
       if (selectedPlanId) {
-        const selectedPlan = plans.find((p) => p.priceId === selectedPlanId);
+        const selectedPlan = plansData.find((p: any) => p?.price?.id === selectedPlanId);
+        localStorage.setItem('innovatunplan', JSON.stringify(selectedPlan))
         if (selectedPlan) {
           try {
             const res = await fetch(
@@ -116,15 +128,15 @@ export default function Register() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  priceId: selectedPlan.priceId,
+                  priceId: selectedPlanId,
                   customerEmail: values.email,
-                  planName: selectedPlan.title,
-                  planAmount: selectedPlan.price,
+                  planName: selectedPlan.name,
+                  planAmount: selectedPlan.price?.unit_amount,
                   successUrl: `${
                     window.location.origin
                   }/success?session_id={CHECKOUT_SESSION_ID}&plan_name=${encodeURIComponent(
-                    selectedPlan.title
-                  )}&plan_amount=${encodeURIComponent(selectedPlan.price)}`,
+                    selectedPlan.name
+                  )}&plan_amount=${encodeURIComponent(selectedPlan.price?.unit_amount)}`,
                   cancelUrl: `${window.location.origin}/cancel`,
                 }),
               }
@@ -170,6 +182,97 @@ export default function Register() {
     }
   };
 
+  const featchPlans = async () => {
+    try {
+        const response = await fetch(`${api.baseUrl}${GetHomePlansURL}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+        });
+        const formatedRes = await response.json();
+        console.log(formatedRes.products)
+        if(formatedRes.products){
+          setPlansData(formatedRes?.products)
+        }
+    } catch (error) {
+      console.log('plan fetch err ===>', error)
+    }
+  }
+
+  useEffect(() => {
+    featchPlans()
+  },[]);
+
+  const onBlurHandler = async (fieldName: any, value: any) => {
+   
+    let reqBody = null;
+    if(fieldName == 'companyName' && value){
+      reqBody = {
+        name: "name",
+        value: value
+      }
+    }
+    if(fieldName == 'abbr' && value){
+      reqBody = {
+        name: "abbr",
+        value: value
+      }
+    }
+    if(fieldName == 'email' && value){
+      reqBody = {
+        name: "email",
+        value: value
+      }
+    }
+    console.log('check --->', reqBody)
+    if(reqBody){
+     
+        const response = await fetch(`${api.baseUrl}${InfoCheckURL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(reqBody),
+      });
+      const formatedRes = await response.json();
+
+      if(reqBody?.name == 'name'){
+        if(formatedRes?.userCmpyInfo?.data?.length > 0){
+          SetCmpyErr('Company Already Exists')
+          return;
+        }else{
+          SetCmpyErr('')
+           return;
+        }
+        
+      }
+    if(reqBody?.name == 'abbr'){
+        if(formatedRes?.userCmpyInfo?.data?.length > 0){
+          SetAbbrErr('Abbreviation Already Exists')
+          return;
+        }else{
+          SetAbbrErr('')
+           return;
+        }
+        
+      }
+      if(reqBody?.name == 'email'){
+        if(formatedRes?.userCmpyInfo?.data?.length > 0){
+          SetEmailErr('Email Already Exists')
+          return;
+        }else{
+          SetEmailErr('')
+           return;
+        }
+        
+      }
+    }
+  }
+
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-3xl shadow-xl p-4">
@@ -199,13 +302,16 @@ export default function Register() {
                         placeholder="Acme Inc."
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        onBlur={(e) => onBlurHandler(e.target.name, e.target.value)}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
+            {cmpyErr && (
+                <p className="text-red-600 text-sm mt-2">{cmpyErr}</p>
+              )}
               {/* First & Last Name */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
@@ -268,7 +374,7 @@ export default function Register() {
                   </FormItem>
                 )}
               />
-
+          
               <FormField
                 control={form.control}
                 name="email"
@@ -283,13 +389,16 @@ export default function Register() {
                         placeholder="m@example.com"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        onBlur={(e) => onBlurHandler(e.target.name, e.target.value)}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
+            {emailErr && (
+                <p className="text-red-600 text-sm mt-2">{emailErr}</p>
+              )}
               {/* Abbr, Tax ID, Domain, Date Established */}
               <FormField
                 control={form.control}
@@ -304,12 +413,16 @@ export default function Register() {
                         placeholder="Enter abbreviation"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        onBlur={(e) => onBlurHandler(e.target.name, e.target.value)}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+                {abbrErr && (
+                <p className="text-red-600 text-sm mt-2">{abbrErr}</p>
+              )}
               <FormField
                 control={form.control}
                 name="tax_id"
@@ -432,25 +545,31 @@ export default function Register() {
 
               {/* Password */}
               <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700 font-medium">
-                      Password
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-700 font-medium">Password</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0 pr-16"
+                      {...field}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute inset-y-0 right-3 flex items-center text-sm font-medium text-gray-600 hover:text-gray-800"
+                    >
+                      {showPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
               <Button
                 type="submit"
                 className="w-full h-12 bg-black hover:bg-gray-800 text-white font-medium mt-6"
