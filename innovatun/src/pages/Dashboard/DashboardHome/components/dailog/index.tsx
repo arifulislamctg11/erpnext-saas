@@ -15,7 +15,7 @@ import TableFrom from "./form"
 
 
 
-export function UserFormDialog({ companyName, setRefetchEmployee }: { companyName: string, setRefetchEmployee: React.Dispatch<React.SetStateAction<boolean>> }) {
+export function UserFormDialog({employeeCount, companyName, setRefetchEmployee }: { companyName: string,employeeCount: any, setRefetchEmployee: React.Dispatch<React.SetStateAction<boolean>> }) {
   const [open, setOpen] = useState(false)
 
 
@@ -29,7 +29,7 @@ export function UserFormDialog({ companyName, setRefetchEmployee }: { companyNam
         <DialogHeader>
           <DialogTitle>User Information</DialogTitle>
         </DialogHeader>
-        <TableFrom setOpen={setOpen} companyName={companyName} setRefetchEmployee={setRefetchEmployee} />
+        <TableFrom employeeCount={employeeCount} setOpen={setOpen} companyName={companyName} setRefetchEmployee={setRefetchEmployee} />
       </DialogContent>
     </Dialog>
   )
