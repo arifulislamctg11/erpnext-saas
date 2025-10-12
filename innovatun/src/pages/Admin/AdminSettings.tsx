@@ -8,19 +8,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/ta
 import { Badge } from "../../components/ui/badge";
 import { Switch } from "../../components/ui/switch";
 import { Plus, Edit, Trash2, Save, Eye, EyeOff } from "lucide-react";
-import { plans } from "../../components/Home/PicingSection";
 import { useNavigate } from "react-router-dom";
-import { GetAdminSecretURL, GetPlansURL } from "../../api/Urls";
+import { GetAdminSecretURL, GetPlansURL, updateAdminSecret } from "../../api/Urls";
 import { api } from "../../api";
+import { toast } from "sonner";
 
 export default function AdminSettings() {
   const [showSecrets, setShowSecrets] = useState(false);
   const navigate = useNavigate();
-  // Mock data - replace with actual API calls
   const [plansData, setPlansData] = useState([]);
   const [loading, setLoading] = useState(false)
-
-  const [billingSettings, setBillingSettings]: any = useState(null);
+  const [billingLoading, setBillingLoading] = useState(false)
+  const [billingSettings, setBillingSettings]: any = useState({
+    stripe_secret: '',
+    stripe_public: '',
+    api_url: ''
+  });
+  const [stripe_publicErr, setStripe_publicErr] = useState('');
+  const [stripe_secretErr, setStripe_secretErr] = useState('');
 
   const [emailTemplates, setEmailTemplates] = useState([
     {
@@ -72,9 +77,31 @@ export default function AdminSettings() {
     navigate('/admin/createplan');
   };
 
-  const handleSaveBillingSettings = () => {
-    // Implement save functionality
-    console.log("Saving billing settings:", billingSettings);
+  const handleSaveBillingSettings = async () => {
+    if(!billingSettings?.stripe_public){
+      setStripe_publicErr('Public Key is required');
+      return;
+    }
+    if(!billingSettings?.stripe_secret){
+      setStripe_secretErr('Secret Key is required');
+      return;
+    }
+    setBillingLoading(true)
+    const response = await fetch(`${api.baseUrl}${updateAdminSecret}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify(billingSettings)
+    });
+    const formatedRes = await response.json();
+    setBillingLoading(false)
+    if(formatedRes?.message == 'updated successfully!'){
+      toast.success("Updated successfully", { description: '' });
+    }
+
+     
   };
 
   const handleToggleEmailTemplate = (id: number) => {
@@ -104,6 +131,7 @@ export default function AdminSettings() {
       setLoading(false)
     }
   }
+
    const featchAdminSecret = async () => {
     try {
         const response = await fetch(`${api.baseUrl}${GetAdminSecretURL}`, {
@@ -122,6 +150,7 @@ export default function AdminSettings() {
 
     }
   }
+
   useEffect(() => {
     featchPlans()
     featchAdminSecret()
@@ -239,9 +268,15 @@ export default function AdminSettings() {
                   <Label htmlFor="stripePublicKey">Stripe Public Key</Label>
                   <Input
                     id="stripePublicKey"
-                    value={billingSettings?.stripe_public}
-                    disabled={true}
+                    defaultValue={billingSettings?.stripe_public}
+                    onChange={(e) => {
+                        setBillingSettings({...billingSettings, stripe_public: e.target.value});
+                        setStripe_publicErr('')
+                      }}
                   />
+              {stripe_publicErr && (
+                <p className="text-red-600 text-sm mt-2">{stripe_publicErr}</p>
+              )}
                 </div>
                 <div>
                   <Label htmlFor="stripeSecretKey">Stripe Secret Key</Label>
@@ -249,8 +284,11 @@ export default function AdminSettings() {
                     <Input
                       id="stripeSecretKey"
                       type={showSecrets ? "text" : "password"}
-                       value={billingSettings?.stripe_secret}
-                      disabled={true}
+                      defaultValue={billingSettings?.stripe_secret}
+                      onChange={(e) => {
+                        setBillingSettings({...billingSettings, stripe_secret: e.target.value});
+                        setStripe_secretErr('')
+                      }}
                     />
                     <Button
                       type="button"
@@ -266,17 +304,22 @@ export default function AdminSettings() {
                       )}
                     </Button>
                   </div>
+                {stripe_secretErr && (
+                  <p className="text-red-600 text-sm mt-2">{stripe_secretErr}</p>
+                )}
                 </div>
               </div>
               
-              <div>
+              {/* <div>
                 <Label htmlFor="webhookSecret">Api Url</Label>
                 <div className="relative">
                   <Input
                     id="webhookSecret"
                     type={showSecrets ? "text" : "password"}
                     value={billingSettings?.api_url}
-                    disabled={true}
+                    onChange={(e) => {
+                      setBillingSettings({...billingSettings, api_url: e.target.value})
+                    }}
                   />
                   <Button
                     type="button"
@@ -292,9 +335,12 @@ export default function AdminSettings() {
                     )}
                   </Button>
                 </div>
-              </div>
+              </div> */}
 
-              <Button onClick={handleSaveBillingSettings} className="flex items-center space-x-2">
+              <Button 
+              disabled={billingLoading} 
+              onClick={handleSaveBillingSettings} 
+              className="flex items-center space-x-2">
                 <Save className="h-4 w-4" />
                 <span>Save Settings</span>
               </Button>
@@ -375,6 +421,7 @@ export default function AdminSettings() {
             </CardContent>
           </Card>
         </TabsContent>
+
       </Tabs>
     </div>
   );

@@ -1,6 +1,6 @@
-// export const baseUrl='http://localhost:5000'
+export const baseUrl='http://localhost:5000'
 // export const baseUrl='https://backend-ten-red-40.vercel.app'
-export const baseUrl = 'https://erpnext-saas-backend.vercel.app'
+// export const baseUrl = 'https://erpnext-saas-backend.vercel.app'
 
 export const SendOTPUrl = '/sendotp';
 
@@ -27,4 +27,5 @@ export const GetAdminSecretURL = '/admin-secret';
 export const GetSubsURL = '/stripe-subscription';
 
 export const InfoCheckURL = '/user-cmpyinfo-check';
-// user-company
+
+export const updateAdminSecret = '/update-admin-secret'
