@@ -178,7 +178,7 @@ export default function DashboardHome() {
                         </Link>
                       </div>
                       <div className="flex space-x-2">
-                        <UserFormDialog companyName={companyName} setRefetchEmployee={setRefetchEmployee}>
+                        <UserFormDialog employeeCount={employeeData?.length} companyName={companyName} setRefetchEmployee={setRefetchEmployee}>
                           <Button size="sm">
                             <Plus className="h-4 w-4 " />
                             Add User
