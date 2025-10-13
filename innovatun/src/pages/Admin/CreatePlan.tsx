@@ -62,7 +62,12 @@ const formSchema = z.object({
   Stock: z.boolean().optional(),
   Subcontracting: z.boolean().optional(),
   Support: z.boolean().optional(),
-  Accounts : z.boolean().optional()
+  Accounts : z.boolean().optional(),
+  numOfUser: z.string().min(1, "User Count must be at least 1"),
+  numOfQoutation: z.string().min(1, "Number of Quoutation must be at least 1"),
+  numOfInvoice: z.string().min(1, "Number of Invoice must be at least 1"),
+  numOfSupplier: z.string().min(1, "Number of Supplier must be at least 1"),
+  numOfCustomer: z.string().min(1, "Number of Customer must be at least 1"),
 });
 
 type ProfileFormData = z.infer<typeof formSchema>;
@@ -104,6 +109,11 @@ export function Createplan() {
       Subcontracting: false,
       Support: false,
       Accounts: false,
+      numOfUser: '',
+      numOfQoutation: '',
+      numOfInvoice: '',
+      numOfSupplier: '',
+      numOfCustomer: '',
     }
   });
 
@@ -132,6 +142,13 @@ export function Createplan() {
       setSubmitError('Select minimum three module permission')
       return
      }
+     const accessItem = {
+      numOfUser: data?.numOfUser,
+      numOfQoutation: data?.numOfQoutation,
+      numOfInvoice: data?.numOfInvoice,
+      numOfSupplier: data?.numOfSupplier,
+      numOfCustomer: data?.numOfCustomer,
+     }
      const reqBody = {
       name: data?.name,
       price: data?.price,
@@ -140,7 +157,8 @@ export function Createplan() {
         data?.featureOne,
         ...featursData
       ],
-      access_roles
+      access_roles,
+      accessItem
      }
    
       if(state?.id){
@@ -202,7 +220,7 @@ export function Createplan() {
          credentials: "include",
        });
        const formatedRes = await response.json();
-       console.log(formatedRes)
+       
        const formatObj = {
         ...formatedRes?.data,
           price: `${formatedRes?.data?.price}`,
@@ -216,7 +234,12 @@ export function Createplan() {
           feature8: formatedRes?.data?.features[7] || '',
           feature9: formatedRes?.data?.features[8] || '',
           feature10: formatedRes?.data?.features[9] || '',
-          ...formatedRes?.data?.access_roles
+          ...formatedRes?.data?.access_roles,
+          numOfUser: formatedRes?.data?.accessItem?.numOfUser,
+          numOfQoutation: formatedRes?.data?.accessItem?.numOfQoutation,
+          numOfInvoice: formatedRes?.data?.accessItem?.numOfInvoice,
+          numOfSupplier: formatedRes?.data?.accessItem?.numOfSupplier,
+          numOfCustomer: formatedRes?.data?.accessItem?.numOfCustomer,
        }
        form.reset(formatObj);
   }
@@ -252,6 +275,7 @@ export function Createplan() {
                               placeholder="Plan Name"
                               className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                               {...field}
+                              disabled={state?.id ? true : false}
                             />
                           </FormControl>
                           <FormMessage />
@@ -299,6 +323,108 @@ export function Createplan() {
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name="numOfUser"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium">
+                            Number Of User
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Number of user"
+                              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="numOfQoutation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium">
+                            Number Of Quotation
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Number of Quotation"
+                              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                     <FormField
+                      control={form.control}
+                      name="numOfInvoice"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium">
+                            Number Of Invoice
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Number of Invoice"
+                              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                      <FormField
+                      control={form.control}
+                      name="numOfSupplier"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium">
+                            Number Of Supplier
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Number of Supplier"
+                              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="numOfCustomer"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium">
+                            Number Of Customer
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Number of Customer"
+                              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                                        
                   <p className="font-bold text-start">Features:</p>
                     <FormField
                       control={form.control}

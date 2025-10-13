@@ -45,10 +45,10 @@ const formSchema = z.object({
   }),
 })
 
-type Props = { setOpen: (open: boolean) => void, companyName: string, setRefetchEmployee: React.Dispatch<React.SetStateAction<boolean>> }
+type Props = { setOpen: (open: boolean) => void, employeeCount: any, companyName: string, setRefetchEmployee: React.Dispatch<React.SetStateAction<boolean>> }
 
 type FormValues = z.infer<typeof formSchema>
-export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: Props) {
+export default function TableFrom({employeeCount, setOpen, companyName, setRefetchEmployee }: Props) {
 
   const [loading, setLoading] = useState(false)
   const [passErrorMgs, setPassErrorMgs] = useState('')
@@ -78,7 +78,7 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
     const formData = new FormData(e.target as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
     const newData: any = { ...data, companyName: companyName }
- 
+   
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
     if (!passwordRegex.test(newData.password as string)) {
@@ -95,6 +95,10 @@ export default function TableFrom({ setOpen, companyName, setRefetchEmployee }: 
     if(emailErr){
       setLoading(false);
       return;
+    }
+    if(employeeCount > Number(currentPlanData?.accessItem?.numOfUser)){
+      toast.error("You cannot add user because your user limit exceeded");
+      return
     }
     try {
 
