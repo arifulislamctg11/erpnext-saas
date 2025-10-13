@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useAuth } from "../../contexts/use-auth";
 import { api } from "../../api";
 import { accessRoles, accountsModules } from "../../lib/staticData";
+import { ProfileUrl } from "../../api/Urls";
 
 const SuccessPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -38,6 +39,15 @@ const SuccessPage: React.FC = () => {
     if (!user?.email || !sessionId) return;
 
     try {
+      const Userresponse = await fetch(
+          `${api.baseUrl}${ProfileUrl}?email=${user?.email}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        const userdata = await Userresponse.json();
+
       const planJson: any = localStorage.getItem('innovatunplan');
       const selectedPlan = JSON.parse(planJson);
       const plan_roles = selectedPlan?.access_roles;
@@ -126,7 +136,8 @@ const SuccessPage: React.FC = () => {
             status: 'active',
             subscriptionId: sessionId,
             currentPeriodStart: new Date().toISOString(),
-            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            companyName: userdata?.data?.companyName
           }),
         });
 

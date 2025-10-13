@@ -18,8 +18,6 @@ import TableFrom from "./form"
 export function UserFormDialog({employeeCount, companyName, setRefetchEmployee }: { companyName: string,employeeCount: any, setRefetchEmployee: React.Dispatch<React.SetStateAction<boolean>> }) {
   const [open, setOpen] = useState(false)
 
-
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
