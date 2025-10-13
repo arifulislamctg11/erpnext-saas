@@ -78,7 +78,7 @@ export default function TableFrom({employeeCount, setOpen, companyName, setRefet
     const formData = new FormData(e.target as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
     const newData: any = { ...data, companyName: companyName }
-    console.log(employeeCount , currentPlanData?.accessItem?.numOfUser)
+   
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
     if (!passwordRegex.test(newData.password as string)) {

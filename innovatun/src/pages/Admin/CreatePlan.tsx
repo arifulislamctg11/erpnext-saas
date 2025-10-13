@@ -275,6 +275,7 @@ export function Createplan() {
                               placeholder="Plan Name"
                               className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                               {...field}
+                              disabled={state?.id ? true : false}
                             />
                           </FormControl>
                           <FormMessage />
