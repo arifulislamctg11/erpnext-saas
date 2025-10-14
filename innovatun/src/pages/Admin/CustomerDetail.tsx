@@ -5,9 +5,18 @@ import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
-import { ArrowLeft, Mail, Phone, Calendar, CreditCard, FileText , CalendarDays, BookCheck, MapPin, Banknote} from "lucide-react";
+import { ArrowLeft, Mail, Phone, Calendar, CreditCard, FileText , CalendarDays, BookCheck, MapPin, Banknote, Eye} from "lucide-react";
 import { api } from "../../api";
 import { toast } from "sonner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../../components/ui/table";
+import { ProfileUrl } from "../../api/Urls";
 
 export default function CustomerDetail() {
   const { id } = useParams();
@@ -18,6 +27,7 @@ export default function CustomerDetail() {
   const [subscriptions, setSubscriptions] = useState<CustomerSubscription[]>([]);
   const [payments, setPayments] = useState<CustomerPayment[]>([]);
   const [invoices, setInvoices] = useState<CustomerInvoice[]>([]);
+   const [employeeData, setEmployeeData] = useState<any[]>([]);
 
   type CustomerProfile = {
     email: string;
@@ -190,7 +200,24 @@ export default function CustomerDetail() {
     fetchAll();
   }, []);
 
-  
+   useEffect(() => {
+      if(profile?.companyName){
+          const fetchData = async () => {
+            try {
+              const response = await fetch(
+                `${api.baseUrl}/user-company/${profile?.companyName}`
+              );
+              const data = await response.json();
+              setEmployeeData(data?.data || []);
+            } catch (error) {
+              console.error("Error fetching data:", error);
+            }
+          };
+      
+          fetchData();
+      }
+    }, [profile?.companyName]);
+
 
   if (loading) {
     return (
@@ -200,7 +227,6 @@ export default function CustomerDetail() {
     );
   }
 
-  console.log('profile ===>', profile)
   return (
     <div className="p-6">
       
@@ -287,6 +313,7 @@ export default function CustomerDetail() {
           <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
           <TabsTrigger value="payments">Payments</TabsTrigger>
           <TabsTrigger value="invoices">Invoices</TabsTrigger>
+          <TabsTrigger value="employees">Employees</TabsTrigger>
         </TabsList>
 
         
@@ -515,6 +542,76 @@ export default function CustomerDetail() {
                   </div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+          <TabsContent value="employees" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Employee List</CardTitle>
+            </CardHeader>
+            <CardContent>
+                 <div className="border rounded-lg">
+                    <div className="rounded-md border">
+                      <Table className="text-left">
+                        <TableHeader>
+                          <TableRow className="">
+                            <TableHead>User Id</TableHead>
+                            <TableHead>Employee Name</TableHead>
+                            <TableHead>Date of Birth</TableHead>
+                            <TableHead>Gender</TableHead>
+                            <TableHead>Company</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Action</TableHead>
+                          </TableRow>
+                        </TableHeader>
+
+                        <TableBody>
+                          {employeeData.map((item: any, index: number) => {
+                            return (
+                              <TableRow key={index}>
+                                <TableCell className="">
+                                  {item?.user_id}
+                                </TableCell>
+                                <TableCell>{item?.employee_name}</TableCell>
+                                <TableCell>{item?.date_of_birth}</TableCell>
+                                <TableCell>{item?.gender}</TableCell>
+                                <TableCell>{item?.company}</TableCell>
+                                <TableCell>
+                                  <div>
+                                    <Badge
+                                      variant={
+                                        item.status === "Active"
+                                          ? "default"
+                                          : item.status === "Inactive"
+                                            ? "secondary"
+                                            : "outline"
+                                      }
+                                    >
+                                      {item.status}
+                                    </Badge>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                    <Button variant="outline" size="sm">
+                                      <Eye className="h-4 w-4 mr-2" />
+                                      View
+                                    </Button>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+
+                          {/* <TableRow>
+                              <TableCell className="text-center">
+                                No results.
+                              </TableCell>
+                            </TableRow> */}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
             </CardContent>
           </Card>
         </TabsContent>
