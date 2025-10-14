@@ -26,7 +26,7 @@ export default function UserDetail() {
     <div className="p-6">
       
       <div className="mb-8">
-        <div className="flex items-center space-x-4 mb-4">
+        <div className="flex flex-row justify-between items-center space-x-4 mb-4">
           <Button
             variant="outline"
             onClick={() => navigate("/admin/customers")}
@@ -35,6 +35,15 @@ export default function UserDetail() {
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
           </Button>
+          {
+             id ? <Button variant="outline" size="sm">
+                <ShieldBan className="h-4 w-4 mr-2" />
+                Disable
+              </Button> : <Button variant='outline' size="sm">
+                <ShieldCheck className="h-4 w-4 mr-2" />
+                Enable
+              </Button>
+             }
         </div>
       </div>
        <Card>
