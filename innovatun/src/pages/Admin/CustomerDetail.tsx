@@ -5,7 +5,7 @@ import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
-import { ArrowLeft, Mail, Phone, Calendar, CreditCard, FileText } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Calendar, CreditCard, FileText , CalendarDays, BookCheck, MapPin, Banknote} from "lucide-react";
 import { api } from "../../api";
 import { toast } from "sonner";
 
@@ -14,7 +14,7 @@ export default function CustomerDetail() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [profile, setProfile] = useState<CustomerProfile | null>(null);
+  const [profile, setProfile] = useState<CustomerProfile | null | any>(null);
   const [subscriptions, setSubscriptions] = useState<CustomerSubscription[]>([]);
   const [payments, setPayments] = useState<CustomerPayment[]>([]);
   const [invoices, setInvoices] = useState<CustomerInvoice[]>([]);
@@ -118,7 +118,7 @@ export default function CustomerDetail() {
           pObj = (Array.isArray(profileData) ? profileData[0] : (profileData?.customer ?? profileData)) as Record<string, unknown> | undefined;
         }
       } catch { /* fallback below */ }
-
+      
       
       if (!pObj) {
         try {
@@ -137,17 +137,11 @@ export default function CustomerDetail() {
         } catch { /* final fallback below */ }
       }
 
-      
       if (pObj) {
-        const name = String((pObj?.["name"] as string | undefined) ?? "");
         const signupDate = pObj?.["createdAt"] ? new Date(pObj["createdAt"] as any).toISOString().slice(0, 10) : undefined;
         const lastLogin = pObj?.["lastLogin"] ? new Date(pObj["lastLogin"] as any).toISOString().slice(0, 10) : undefined;
-        const status = String((pObj?.["status"] as string | undefined) ?? "active");
         const plan = String((pObj?.["planName"] as string | undefined) ?? (pObj?.["plan"] as string | undefined) ?? "");
-        const totalSpent = parseAmount(pObj?.["totalSpent"]);
-        const phone = String((pObj?.["phone"] as string | undefined) ?? "");
-        const currency = String((pObj?.["currency"] as string | undefined) ?? "USD");
-        setProfile({ email, name, phone, signupDate, lastLogin, status, plan, totalSpent, currency });
+        setProfile({...pObj,plan, name: `${pObj?.firstName} ${pObj?.lastName}`,lastLogin, signupDate});
       } else {
         
         setProfile({ email, name: email, currency: 'USD' });
@@ -166,7 +160,7 @@ export default function CustomerDetail() {
       
       const derivedTotal = coercedSubs.reduce((sum, s) => sum + (Number(s.amount) || 0), 0);
       const derivedCurrency = coercedSubs[0]?.currency || 'USD';
-      setProfile(prev => {
+      setProfile((prev: any) => {
         if (!prev) return prev;
         const current = Number(prev.totalSpent || 0);
         if (current > 0) return prev;
@@ -194,7 +188,7 @@ export default function CustomerDetail() {
 
   useEffect(() => {
     fetchAll();
-  }, [fetchAll]);
+  }, []);
 
   
 
@@ -206,6 +200,7 @@ export default function CustomerDetail() {
     );
   }
 
+  console.log('profile ===>', profile)
   return (
     <div className="p-6">
       
@@ -318,7 +313,7 @@ export default function CustomerDetail() {
                 <div className="flex items-center space-x-3">
                   <Mail className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="text-sm font-medium">Email</p>
+                    <p className="text-sm font-medium text-start">Email</p>
                     <p className="text-sm text-gray-600">{profile?.email}</p>
                   </div>
                 </div>
@@ -344,6 +339,59 @@ export default function CustomerDetail() {
                   <div>
                     <p className="text-sm font-medium">Last Login</p>
                     <p className="text-sm text-gray-600">{profile?.lastLogin}</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Company Information</CardTitle>
+              <CardDescription>
+                Company details and contact information
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src="" alt={profile?.companyName} />
+                  <AvatarFallback>{(profile?.companyName || "").slice(0,2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div>
+                    <div className="text-lg font-semibold text-start">{profile?.companyName} {`(${profile?.abbr})`}</div>
+                  <div className="text-lg font-semibold">{profile?.domain}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center space-x-3">
+                  <CalendarDays className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm font-medium text-start">Established</p>
+                    <p className="text-sm text-gray-600">{profile?.date_established}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <BookCheck className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm font-medium text-start">Tax ID</p>
+                    <p className="text-sm text-gray-600">{profile?.tax_id || '—'}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <MapPin className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm font-medium text-start">Country</p>
+                    <p className="text-sm text-gray-600 text-start">{profile?.country}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <Banknote className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm font-medium text-start">Currency</p>
+                    <p className="text-sm text-gray-600 text-start">{profile?.currency}</p>
                   </div>
                 </div>
               </div>
