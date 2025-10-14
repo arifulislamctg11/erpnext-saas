@@ -27,8 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
-import { countries, currencies } from "../../../lib/staticData";
-import { plans } from "../../../components/Home/PicingSection";
 import { GetHomePlansURL, InfoCheckURL } from "../../../api/Urls";
 
 const formSchema = z
@@ -60,11 +58,13 @@ export default function Register() {
   const [cmpyErr, SetCmpyErr] = useState('');
   const [abbrErr, SetAbbrErr] = useState('');
   const [emailErr, SetEmailErr] = useState('');
+  const [userNameErr, SetUserNameErr] = useState('');
   const [infoLoading, setInfoLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
+  const [countries, setCountries] = useState([])
   const [showPassword, setShowPassword] = useState(false);
-
+  const [currencies, setCurrencies] = useState([])
+  
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -93,9 +93,13 @@ export default function Register() {
   const selectedPlanId = location.state?.priceId as string | undefined;
 
   const onSubmit = async (values: FormData) => {
+    const dateEst = new Date(values?.date_established).getDate();
+    const yrEst = new Date(values?.date_established).getFullYear();
+    const mEst = new Date(values?.date_established).getMonth();
+//  `${dateEst}-${mEst + 1}-${yrEst}`
     setIsLoading(true);
     setSubmitError(null);
-    if(cmpyErr || emailErr || abbrErr){
+    if(cmpyErr || emailErr || abbrErr || userNameErr){
       setIsLoading(false)
       setSubmitError('')
       return
@@ -108,7 +112,7 @@ export default function Register() {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({...values}),
       });
 
       if (!response.ok) {
@@ -210,8 +214,32 @@ export default function Register() {
     }
   }
 
+  const getCountry = async () => {
+      const response = await fetch(`${api.baseUrl}/country`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+      const formatedRes = await response.json();
+      console.log(formatedRes)
+      const formatOp = formatedRes?.data?.data?.map((item: any) => {
+        const newObj = {label: item?.name, value: item?.name}
+        return newObj
+      });
+
+      const formatCurrOp = formatedRes?.courrency?.data?.map((item: any) => {
+        const newObj = {label: item?.name, value: item?.name}
+        return newObj
+      });
+      console.log("formatOp ===>", formatCurrOp);
+      setCurrencies(formatCurrOp)
+      setCountries(formatOp)
+  }
   useEffect(() => {
-    featchPlans()
+    featchPlans();
+    getCountry()
   },[]);
 
   const onBlurHandler = async (fieldName: any, value: any) => {
@@ -232,6 +260,12 @@ export default function Register() {
     if(fieldName == 'email' && value){
       reqBody = {
         name: "email",
+        value: value
+      }
+    }
+    if(fieldName == 'username' && value){
+      reqBody = {
+        name: "username",
         value: value
       }
     }
@@ -259,17 +293,17 @@ export default function Register() {
         }
         
       }
-    if(reqBody?.name == 'abbr'){
-      setInfoLoading(false)
-        if(formatedRes?.userCmpyInfo?.data?.length > 0){
-          SetAbbrErr('Abbreviation Already Exists')
-          return;
-        }else{
-          SetAbbrErr('')
-           return;
+      if(reqBody?.name == 'abbr'){
+        setInfoLoading(false)
+          if(formatedRes?.userCmpyInfo?.data?.length > 0){
+            SetAbbrErr('Abbreviation Already Exists')
+            return;
+          }else{
+            SetAbbrErr('')
+            return;
+          }
+          
         }
-        
-      }
       if(reqBody?.name == 'email'){
         setInfoLoading(false)
         if(formatedRes?.userCmpyInfo?.data?.length > 0){
@@ -277,6 +311,17 @@ export default function Register() {
           return;
         }else{
           SetEmailErr('')
+           return;
+        }
+        
+      }
+      if(reqBody?.name == 'username'){
+        setInfoLoading(false)
+        if(formatedRes?.userCmpyInfo?.data?.length > 0){
+          SetUserNameErr('UserName Already Exists')
+          return;
+        }else{
+          SetUserNameErr('')
            return;
         }
         
@@ -390,13 +435,16 @@ export default function Register() {
                         placeholder="johndoe"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        onBlur={(e) => onBlurHandler(e.target.name, e.target.value)}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-          
+            {userNameErr && (
+                <p className="text-red-600 text-sm mt-2">{userNameErr}</p>
+              )}
               <FormField
                 control={form.control}
                 name="email"
@@ -496,6 +544,7 @@ export default function Register() {
                         placeholder="YYYY-MM-DD"
                         className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
                         {...field}
+                        type="date"
                       />
                     </FormControl>
                     <FormMessage />
@@ -522,7 +571,7 @@ export default function Register() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white w-[250px] sm:w-[300px]">
-                        {currencies.map((item) => (
+                        {currencies.map((item: any) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>
@@ -553,7 +602,7 @@ export default function Register() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white w-[250px] sm:w-[300px]">
-                        {countries.map((item) => (
+                        {countries.map((item: any) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>

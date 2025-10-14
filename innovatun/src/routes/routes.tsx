@@ -29,6 +29,7 @@ import Subscriptions from "../pages/Admin/Subscriptions";
 import AdminSettings from "../pages/Admin/AdminSettings";
 import CustomerDetail from "../pages/Admin/CustomerDetail";
 import { Createplan } from "../pages/Admin/CreatePlan";
+import UserDetail from "../pages/Shared/UserDetails";
 
 const router = createBrowserRouter([
   {
@@ -122,6 +123,7 @@ const router = createBrowserRouter([
           { path: "subscriptions", element: <Subscriptions /> },
           { path: "settings", element: <AdminSettings /> },
           { path: "createplan", element: <Createplan /> },
+          { path: "user/:id", element: <UserDetail /> },
         ],
       },
     ],
