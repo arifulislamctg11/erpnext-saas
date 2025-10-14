@@ -5,7 +5,7 @@ import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
-import { ArrowLeft, Mail, Phone, Calendar, CreditCard, FileText , CalendarDays, BookCheck, MapPin, Banknote, Eye} from "lucide-react";
+import { ArrowLeft, Mail, Phone, Calendar, CreditCard, FileText , CalendarDays, BookCheck, MapPin, Banknote, Eye, ShieldBan, ShieldCheck} from "lucide-react";
 import { api } from "../../api";
 import { toast } from "sonner";
 import {
@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/table";
-import { ProfileUrl } from "../../api/Urls";
+import { Link } from "react-router-dom";
 
 export default function CustomerDetail() {
   const { id } = useParams();
@@ -251,6 +251,15 @@ export default function CustomerDetail() {
             <Badge variant={profile?.status === 'active' ? 'default' : 'secondary'}>
               {profile?.status}
             </Badge>
+             {
+              profile?.status == 'active' ? <Button variant="outline" size="sm">
+                <ShieldBan className="h-4 w-4 mr-2" />
+                Disable
+              </Button> : <Button variant='outline' size="sm">
+                <ShieldCheck className="h-4 w-4 mr-2" />
+                Enable
+              </Button>
+             }
           </div>
         </div>
       </div>
@@ -594,10 +603,12 @@ export default function CustomerDetail() {
                                   </div>
                                 </TableCell>
                                 <TableCell>
-                                    <Button variant="outline" size="sm">
-                                      <Eye className="h-4 w-4 mr-2" />
-                                      View
-                                    </Button>
+                                     <Link to={`/admin/user/${encodeURIComponent(item?.user_id)}`}>
+                                        <Button variant="outline" size="sm">
+                                          <Eye className="h-4 w-4 mr-2" />
+                                          View
+                                        </Button>
+                                      </Link>
                                 </TableCell>
                               </TableRow>
                             );
