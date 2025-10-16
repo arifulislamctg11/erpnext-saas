@@ -5,7 +5,7 @@ import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
-import { ArrowLeft, Mail, Phone, Calendar, CreditCard, FileText , CalendarDays, BookCheck, MapPin, Banknote, Eye, ShieldBan, ShieldCheck} from "lucide-react";
+import { ArrowLeft, Mail, Phone, Calendar, CreditCard, FileText , CalendarDays, BookCheck, MapPin, Banknote, Eye, ShieldBan, ShieldCheck, Mars, Merge} from "lucide-react";
 import { api } from "../../api";
 import { toast } from "sonner";
 import {
@@ -46,14 +46,14 @@ export default function UserDetail() {
         <div className="flex flex-row justify-between items-center space-x-4 mb-4">
           <Button
             variant="outline"
-            onClick={() => navigate("/admin/customers")}
+            onClick={() => navigate(-1)}
             className="flex items-center space-x-2"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
           </Button>
             {
-             id ? <Button variant="outline" size="sm">
+             userDetails?.first_name ? <Button variant="outline" size="sm">
                 <ShieldBan className="h-4 w-4 mr-2" />
                 Disable
               </Button> : <Button variant='outline' size="sm">
@@ -92,26 +92,26 @@ export default function UserDetail() {
                 </div>
                 
                 <div className="flex items-center space-x-3">
-                  <Phone className="h-5 w-5 text-gray-400" />
+                  <Merge className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="text-sm font-medium">Phone</p>
-                    <p className="text-sm text-gray-600">sfasfdsdaf</p>
+                    <p className="text-sm font-medium text-start">Joined</p>
+                    <p className="text-sm text-gray-600">{new Date(userDetails?.creation).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <Mars className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm font-medium">Gender</p>
+                    <p className="text-sm text-gray-600">{userDetails?.gender}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center space-x-3">
                   <Calendar className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="text-sm font-medium">Signup Date</p>
-                    <p className="text-sm text-gray-600"></p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3">
-                  <Calendar className="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm font-medium text-start">Last Login</p>
-                    <p className="text-sm text-gray-600">{new Date(userDetails?.last_login).toLocaleString()}</p>
+                    <p className="text-sm font-medium text-start">Date Of Birth</p>
+                    <p className="text-sm text-gray-600">{userDetails?.birth_date}</p>
                   </div>
                 </div>
               </div>

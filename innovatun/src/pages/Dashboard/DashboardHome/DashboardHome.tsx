@@ -9,7 +9,7 @@ import {
 } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
 import { Tabs, TabsContent } from "../../../components/ui/tabs";
-import { TrendingUp, TrendingDown, Plus, Columns } from "lucide-react";
+import { TrendingUp, TrendingDown, Plus, Columns, Eye } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
 import {
@@ -102,7 +102,7 @@ export default function DashboardHome() {
           }
         );
         const data = await response.json();
-        console.log("hello", data);
+      
         setCompanyData(data?.data?.companyName);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -227,6 +227,14 @@ export default function DashboardHome() {
                                           {item.status}
                                         </Badge>
                                       </div>
+                                    </TableCell>
+                                     <TableCell>
+                                     <Link to={`/dashboard/user/${encodeURIComponent(item?.user_id)}`}>
+                                        <Button variant="outline" size="sm">
+                                          <Eye className="h-4 w-4 mr-2" />
+                                          View
+                                        </Button>
+                                      </Link>
                                     </TableCell>
                                   </TableRow>
                                 );

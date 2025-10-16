@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/use-auth";
 import { api } from "../../../api";
+import { toast } from "sonner";
 
 
 
@@ -42,7 +43,7 @@ export default function Login() {
       const res = await fetch(endpoint);
       if (!res.ok) return null;
       const data = await res.json();
-      return data as { email?: string; role?: string } | null;
+      return data;
     } catch {
       return null;
     }
@@ -54,6 +55,11 @@ export default function Login() {
     setIsLoading(true);
     setError(null);
     try {
+      const profile = await fetchUserProfile(formData.email);
+      if(!profile?.isActive){
+        toast.error('Your Account is disabled')
+        return;
+      }
       await signinWithEmail(formData.email, formData.password);
       try {
         await requestJwt(formData.email);
@@ -61,8 +67,8 @@ export default function Login() {
         
         console.warn("JWT request failed", jwtErr);
       }
-      const profile = await fetchUserProfile(formData.email);
-      console.log(profile)
+      
+      console.log('profile ===>', profile)
       const isBackendAdmin = profile?.role === "admin";
       console.log(isBackendAdmin)
       navigate(isBackendAdmin ? "/admin" : fromPath);
