@@ -74,7 +74,7 @@ export const customersColumns: ColumnDef<Customer>[] = [
     cell: ({ row }) => {
       const status = (row.getValue("status") as string) || "unknown"
       const variant: "default" | "secondary" | "destructive" =
-        status === "active" ? "default" : status === "trial" ? "secondary" : "destructive"
+        status === "Active" ? "default" : status === "trial" ? "secondary" : "destructive"
       return <Badge variant={variant}>{status}</Badge>
     },
   },

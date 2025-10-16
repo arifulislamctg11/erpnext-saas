@@ -217,8 +217,25 @@ export default function CustomerDetail() {
           fetchData();
       }
     }, [profile?.companyName]);
+  
+    const [actionLoading, setActionLoading] = useState(false)
 
-
+  const handleAction = async (status: any) => {
+        setActionLoading(true)
+          const response = await fetch(`${api.baseUrl}/user-enable-disable`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({status, email: id, companyName: profile?.companyName}),
+        });
+        const formatedRes = await response.json();
+        fetchAll()
+        setActionLoading(false)
+        toast.success(`User Successfully ${status ? 'Disabled' : 'Enabled'}`)
+  }
+console.log('testing ===>', profile)
   if (loading) {
     return (
       <div className="p-6">
@@ -248,16 +265,16 @@ export default function CustomerDetail() {
             <p className="text-gray-600 mt-2">{profile?.email}</p>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge variant={profile?.status === 'active' ? 'default' : 'secondary'}>
-              {profile?.status}
+            <Badge variant={profile?.isActive  ? 'default' : 'secondary'}>
+              {profile?.isActive ? 'Active' : 'Inactive'}
             </Badge>
              {
-              profile?.status == 'active' ? <Button variant="outline" size="sm">
+              profile?.isActive? <Button onClick={() => handleAction(false)} variant="outline" size="sm">
                 <ShieldBan className="h-4 w-4 mr-2" />
-                Disable
-              </Button> : <Button variant='outline' size="sm">
+                {actionLoading ? 'Loading...' : 'Disable'}
+              </Button> : <Button onClick={() => handleAction(true)} variant='outline' size="sm">
                 <ShieldCheck className="h-4 w-4 mr-2" />
-                Enable
+                {actionLoading ? "Loading..." : 'Enable'}
               </Button>
              }
           </div>
@@ -395,7 +412,7 @@ export default function CustomerDetail() {
                 </Avatar>
                 <div>
                     <div className="text-lg font-semibold text-start">{profile?.companyName} {`(${profile?.abbr})`}</div>
-                  <div className="text-lg font-semibold">{profile?.domain}</div>
+                  <div className="text-lg font-semibold text-start">{profile?.domain}</div>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -53,7 +53,7 @@ export default function Customers() {
           const nameCandidate = (u.name as string | undefined) ?? `${first}${(first || last ? " " : "")}${last}`;
           const name = (nameCandidate || company || username || "").trim();
           const plan = ((u.planName as string | undefined) ?? (u.plan as string | undefined) ?? "—");
-          const status = (u.status as string | undefined) ?? (((u.isActive as boolean | undefined) ?? false) ? "active" : "inactive");
+          const status = (u.status as string | undefined) ?? (((u.isActive as boolean | undefined) ?? false) ? "Active" : "Inactive");
           const created = (u.createdAt as string | number | Date | undefined);
           const lastLogin = (u.lastLogin as string | number | Date | undefined);
           const totalSpent = Number((u.totalSpent as number | string | undefined) ?? 0);

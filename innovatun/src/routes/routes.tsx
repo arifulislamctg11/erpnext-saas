@@ -106,6 +106,7 @@ const router = createBrowserRouter([
           { path: "current-plan", element: <CurrentPlan /> }, 
           { path: "subscriptions", element: <Subscription /> }, 
           { path: "settings", element: <Settings /> },
+          { path: "user/:id", element: <UserDetail /> },
         ],
       },
       {
