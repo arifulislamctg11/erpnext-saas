@@ -22,7 +22,7 @@ export default function UserDetail() {
   const navigate = useNavigate();
   const [userDetails, setUserDetails]: any = useState(null);
 
-    const getUser = async () => {
+  const getUser = async () => {
       const response = await fetch(`${api.baseUrl}/single-user?email=${id}`, {
         method: "GET",
         headers: {
@@ -34,11 +34,29 @@ export default function UserDetail() {
       console.log(formatedRes?.data?.data);
       setUserDetails(formatedRes?.data?.data)
   }
+  
   useEffect(() => {
     getUser()
   },[]);
 
+    const [actionLoading, setActionLoading] = useState(false)
 
+  const handleAction = async (status: any) => {
+        setActionLoading(true)
+          const response = await fetch(`${api.baseUrl}/user-enable-disable`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({status, employeeId: userDetails?.employee, isEmployee: true}),
+        });
+        const formatedRes = await response.json();
+        getUser()
+        setActionLoading(false)
+        toast.success(`Employee Successfully ${status}`)
+  }
+  
   return (
     <div className="p-6">
       
@@ -52,15 +70,20 @@ export default function UserDetail() {
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
           </Button>
-            {
-             userDetails?.first_name ? <Button variant="outline" size="sm">
-                <ShieldBan className="h-4 w-4 mr-2" />
-                Disable
-              </Button> : <Button variant='outline' size="sm">
-                <ShieldCheck className="h-4 w-4 mr-2" />
-                Enable
-              </Button>
-             }
+            <div className="flex flex-row">
+               <Button variant='default'style={{marginRight: '10px'}} size="sm">
+                  {userDetails?.status}
+                </Button>
+                {
+                userDetails?.status == "Active" ? <Button disabled={actionLoading} onClick={() => handleAction('Inactive')} variant="outline" size="sm">
+                  <ShieldBan className="h-4 w-4 mr-2" />
+                  Disable
+                </Button> : <Button disabled={actionLoading} onClick={() => handleAction('Active')} variant='outline' size="sm">
+                  <ShieldCheck className="h-4 w-4 mr-2" />
+                  Enable
+                </Button>
+                }
+            </div>
         </div>
       </div>
       {
@@ -78,7 +101,7 @@ export default function UserDetail() {
                   <AvatarFallback>{(userDetails?.first_name).slice(0,2).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <div className="text-lg font-semibold">{userDetails?.full_name}</div>
+                  <div className="text-lg font-semibold">{userDetails?.employee_name}</div>
                   <div className="text-sm text-gray-500"></div>
                 </div>
               </div>
@@ -87,7 +110,7 @@ export default function UserDetail() {
                   <Mail className="h-5 w-5 text-gray-400" />
                   <div>
                     <p className="text-sm font-medium text-start">Email</p>
-                    <p className="text-sm text-gray-600">{userDetails?.email}</p>
+                    <p className="text-sm text-gray-600">{userDetails?.user_id}</p>
                   </div>
                 </div>
                 
@@ -111,7 +134,7 @@ export default function UserDetail() {
                   <Calendar className="h-5 w-5 text-gray-400" />
                   <div>
                     <p className="text-sm font-medium text-start">Date Of Birth</p>
-                    <p className="text-sm text-gray-600">{userDetails?.birth_date}</p>
+                    <p className="text-sm text-gray-600">{userDetails?.date_of_birth}</p>
                   </div>
                 </div>
               </div>
