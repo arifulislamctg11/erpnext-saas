@@ -571,7 +571,7 @@ export default function Register() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white w-[250px] sm:w-[300px]">
-                        {currencies.map((item: any) => (
+                        {currencies?.map((item: any) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>
@@ -602,7 +602,7 @@ export default function Register() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white w-[250px] sm:w-[300px]">
-                        {countries.map((item: any) => (
+                        {countries?.map((item: any) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>

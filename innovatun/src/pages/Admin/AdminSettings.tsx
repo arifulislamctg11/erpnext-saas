@@ -15,6 +15,7 @@ import { toast } from "sonner";
 
 export default function AdminSettings() {
   const [showSecrets, setShowSecrets] = useState(false);
+    const [showApiSecrets, setApiShowSecrets] = useState(false);
   const navigate = useNavigate();
   const [plansData, setPlansData] = useState([]);
   const [loading, setLoading] = useState(false)
@@ -22,10 +23,18 @@ export default function AdminSettings() {
   const [billingSettings, setBillingSettings]: any = useState({
     stripe_secret: '',
     stripe_public: '',
-    api_url: ''
+  });
+  const [billingSettings2, setBillingSettings2]: any = useState({
+    api_url: '',
+    api_token: '',
+    api_secret: '',
+    api_key: ''
   });
   const [stripe_publicErr, setStripe_publicErr] = useState('');
   const [stripe_secretErr, setStripe_secretErr] = useState('');
+  const [urlErr, setUrlErr] = useState('');
+  const [apiKeyErr, setApiKeyErr] = useState('');
+  const [apiSecretErr, setApiSecretErr] = useState('');
 
   const [emailTemplates, setEmailTemplates] = useState([
     {
@@ -86,6 +95,18 @@ export default function AdminSettings() {
       setStripe_secretErr('Secret Key is required');
       return;
     }
+    if(!billingSettings2?.api_url){
+      setUrlErr('Api Key is required');
+      return;
+    }
+    if(!billingSettings2?.api_key){
+      setApiKeyErr('API Key is required');
+      return;
+    }
+    if(!billingSettings2?.api_secret){
+      setApiSecretErr('API Secret is required');
+      return;
+    }
     setBillingLoading(true)
     const response = await fetch(`${api.baseUrl}${updateAdminSecret}`, {
       method: "POST",
@@ -93,7 +114,7 @@ export default function AdminSettings() {
         "Content-Type": "application/json",
         "Accept": "application/json",
       },
-      body: JSON.stringify(billingSettings)
+      body: JSON.stringify({...billingSettings, ...billingSettings2, api_token: `${billingSettings2?.api_key}:${billingSettings2?.api_secret}`})
     });
     const formatedRes = await response.json();
     setBillingLoading(false)
@@ -143,7 +164,19 @@ export default function AdminSettings() {
         });
         const formatedRes = await response.json();
         if(formatedRes.result){
-          setBillingSettings(formatedRes?.result[0])
+          const Bill1 = {
+            _id: formatedRes?.result[0]?._id,
+            stripe_secret: formatedRes?.result[0]?.stripe_secret,
+            stripe_public: formatedRes?.result[0]?.stripe_public,
+          }
+            const Bill2 = {
+            api_url: formatedRes?.result[0]?.api_url,
+            api_key: formatedRes?.result[0]?.api_key,
+            api_secret: formatedRes?.result[0]?.api_secret,
+
+          }
+          setBillingSettings(Bill1)
+          setBillingSettings2(Bill2)
         }else{
         }
     } catch (error) {
@@ -309,36 +342,90 @@ export default function AdminSettings() {
                 )}
                 </div>
               </div>
-              
-              {/* <div>
+              <Button 
+              // disabled={billingLoading} 
+              onClick={handleSaveBillingSettings} 
+              className="flex items-center space-x-2">
+                <Save className="h-4 w-4" />
+                <span>Save Settings</span>
+              </Button>
+            </CardContent>
+          </Card>
+            <Card>
+            <CardHeader>
+              <CardTitle>API Configuration</CardTitle>
+              <CardDescription>
+                Configure API  credentials
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div>
                 <Label htmlFor="webhookSecret">Api Url</Label>
                 <div className="relative">
                   <Input
                     id="webhookSecret"
-                    type={showSecrets ? "text" : "password"}
-                    value={billingSettings?.api_url}
+                    type="text"
+                    value={billingSettings2?.api_url}
                     onChange={(e) => {
-                      setBillingSettings({...billingSettings, api_url: e.target.value})
+                      setBillingSettings2({...billingSettings2, api_url: e.target.value})
+                      setUrlErr('')
                     }}
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowSecrets(!showSecrets)}
-                  >
-                    {showSecrets ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
                 </div>
-              </div> */}
+                {urlErr && (
+                  <p className="text-red-600 text-sm mt-2">{urlErr}</p>
+                )}
+              </div>
 
+              <div>
+                <Label htmlFor="webhookSecret">Api Key</Label>
+                <div className="relative">
+                  <Input
+                    id="webhookSecret"
+                    type="text"
+                    value={billingSettings2?.api_key}
+                    onChange={(e) => {
+                      setBillingSettings2({...billingSettings2, api_key: e.target.value})
+                      setApiKeyErr('')
+                    }}
+                  />
+                </div>
+                {apiKeyErr && (
+                  <p className="text-red-600 text-sm mt-2">{apiKeyErr}</p>
+                )}
+              </div>
+             <div>
+                  <Label htmlFor="stripeSecretKey">Api Secret</Label>
+                  <div className="relative">
+                    <Input
+                      id="stripeSecretKey"
+                      type={showApiSecrets ? "text" : "password"}
+                      defaultValue={billingSettings2?.api_secret}
+                      onChange={(e) => {
+                        setBillingSettings2({...billingSettings2, api_secret: e.target.value});
+                        setApiSecretErr('')
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setApiShowSecrets(!showApiSecrets)}
+                    >
+                      {showApiSecrets ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                {apiSecretErr && (
+                  <p className="text-red-600 text-sm mt-2">{apiSecretErr}</p>
+                )}
+                </div>
               <Button 
-              disabled={billingLoading} 
+              
               onClick={handleSaveBillingSettings} 
               className="flex items-center space-x-2">
                 <Save className="h-4 w-4" />
