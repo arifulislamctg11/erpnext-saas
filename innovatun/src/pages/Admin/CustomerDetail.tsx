@@ -228,14 +228,14 @@ export default function CustomerDetail() {
             "Content-Type": "application/json",
             "Accept": "application/json",
           },
-          body: JSON.stringify({status, email: id, companyName: profile?.companyName}),
+          body: JSON.stringify({status, email: id, companyName: profile?.companyName,  isEmployee: false}),
         });
         const formatedRes = await response.json();
         fetchAll()
         setActionLoading(false)
         toast.success(`User Successfully ${status ? 'Disabled' : 'Enabled'}`)
   }
-console.log('testing ===>', profile)
+
   if (loading) {
     return (
       <div className="p-6">
@@ -620,7 +620,7 @@ console.log('testing ===>', profile)
                                   </div>
                                 </TableCell>
                                 <TableCell>
-                                     <Link to={`/admin/user/${encodeURIComponent(item?.user_id)}`}>
+                                     <Link to={`/admin/user/${encodeURIComponent(item?.name)}`}>
                                         <Button variant="outline" size="sm">
                                           <Eye className="h-4 w-4 mr-2" />
                                           View
