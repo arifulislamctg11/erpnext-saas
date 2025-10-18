@@ -229,7 +229,7 @@ export default function DashboardHome() {
                                       </div>
                                     </TableCell>
                                      <TableCell>
-                                     <Link to={`/dashboard/user/${encodeURIComponent(item?.user_id)}`}>
+                                     <Link to={`/dashboard/user/${encodeURIComponent(item?.name)}`}>
                                         <Button variant="outline" size="sm">
                                           <Eye className="h-4 w-4 mr-2" />
                                           View
