@@ -22,7 +22,7 @@ import {
 } from "../../../components/ui/table";
 import { api } from "../../../api";
 import { useAuth } from "../../../contexts/use-auth";
-import { ProfileUrl } from "../../../api/Urls";
+import { GetAdminSecretURL, ProfileUrl } from "../../../api/Urls";
 import { Link } from "react-router-dom";
 import { UserFormDialog } from "./components/dailog";
 
@@ -88,7 +88,7 @@ export default function DashboardHome() {
   const [companyName, setCompanyData] = useState("");
   const [refetchEmployee, setRefetchEmployee] = useState(true);
   const { user } = useAuth();
-  console.log(user?.email);
+  const [apiUrl, setApiUrl]: any = useState();
 
   useEffect(() => {
     //  if (!user?.email) return;
@@ -111,9 +111,7 @@ export default function DashboardHome() {
 
     userData();
   }, [user?.email]);
-  console.log("company name", companyName);
 
-  console.log(employeeData);
   useEffect(() => {
     if (!companyName) return; // don’t fetch until we have a value
 
@@ -133,7 +131,31 @@ export default function DashboardHome() {
     fetchData();
   }, [refetchEmployee, companyName]); // ✅ run only once on mount
 
-  console.log(employeeData);
+     const featchAdminSecret = async () => {
+      try {
+          const response = await fetch(`${api.baseUrl}${GetAdminSecretURL}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+          });
+          const formatedRes = await response.json();
+          if(formatedRes.result){
+            const apiUrlStr = formatedRes.result[0]?.api_url;
+            const base = new URL(apiUrlStr).origin;
+            setApiUrl(base)
+          }else{
+          }
+      } catch (error) {
+  
+      }
+    }
+  
+    useEffect(() => {
+      featchAdminSecret()
+    },[]);
+
 
   return (
     <div className="flex h-screen  overflow-hidden bg-background">
@@ -149,7 +171,7 @@ export default function DashboardHome() {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="http://56.228.18.230:8001/"
+              href={apiUrl}
               className="inline-block rounded-2xl bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-pink-500/30 px-8 py-3 text-lg font-semibold text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-purple-300/40"
             >
               Login
