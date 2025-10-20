@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-10-21 04:40:59.678778",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "price",
+  "number_of_user",
+  "number_of_quotation",
+  "number_of_invoice",
+  "number_of_supplier",
+  "number_of_customer",
+  "max_upload_size_mb"
+ ],
+ "fields": [
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price"
+  },
+  {
+   "fieldname": "number_of_user",
+   "fieldtype": "Float",
+   "label": "Number of User"
+  },
+  {
+   "fieldname": "number_of_quotation",
+   "fieldtype": "Data",
+   "label": "Number of Quotation "
+  },
+  {
+   "fieldname": "number_of_invoice",
+   "fieldtype": "Data",
+   "label": "Number of Invoice"
+  },
+  {
+   "fieldname": "number_of_supplier",
+   "fieldtype": "Data",
+   "label": "Number of Supplier "
+  },
+  {
+   "fieldname": "number_of_customer",
+   "fieldtype": "Data",
+   "label": "Number of Customer"
+  },
+  {
+   "fieldname": "max_upload_size_mb",
+   "fieldtype": "Data",
+   "label": "Max Upload Size (MB)"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-10-21 05:01:16.517353",
+ "modified_by": "Administrator",
+ "module": "Erpnext Saas",
+ "name": "Plans",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
