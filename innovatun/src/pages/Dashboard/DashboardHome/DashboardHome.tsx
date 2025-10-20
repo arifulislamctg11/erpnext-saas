@@ -168,7 +168,8 @@ export default function DashboardHome() {
               <p className="text-green-100 text-left">Please check you email to get the user credentials we already have send you a temporary password, please reset your password once you logged in. click here to access your ERP
               </p>
             </div>
-            <a
+            {
+              apiUrl && <a
               target="_blank"
               rel="noopener noreferrer"
               href={apiUrl}
@@ -176,7 +177,7 @@ export default function DashboardHome() {
             >
               Login
             </a>
-
+            }            
           </div>
         </div>
 
