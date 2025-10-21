@@ -1,0 +1,42 @@
+[
+  {
+    "doctype": "Server Script",
+    "name": "Customer limit by Plan",
+    "enabled": 1,
+    "script_type": "DocType Event",
+    "reference_doctype": "Customer",
+    "doctype_event": "Before Insert",
+    "module": "Erpnext Saas",
+    "script": "# Doctype: Customer\n# Script Type: Before Insert\n\ncompany = doc.custom_company\nif not company:\n    frappe.throw(\"Company must be selected.\")\n\n# Get company document\ncompany_doc = frappe.get_doc(\"Company\", company)\n\n# Check if company has a subscribed plan\nif not company_doc.custom_subscribed_plan:\n    frappe.throw(\"This company has no plan assigned.\")\n\n# Get the plan document\nplan = frappe.get_doc(\"Plans\", company_doc.custom_subscribed_plan)\n\n# Count how many customers already exist for this company\nexisting_customers = frappe.db.count(\"Customer\", {\"custom_company\": company})\n\n# Convert string to integer for comparison\nlimit = int(plan.number_if_customer or 0)\n\n# Compare with plan limit\nif existing_customers >= limit:\n    frappe.throw(f\"You have reached the maximum customer limit ({limit}) for your plan.\")"
+  },
+  {
+    "doctype": "Server Script",
+    "name": "Sales Invoice limit by plan",
+    "enabled": 1,
+    "script_type": "DocType Event",
+    "reference_doctype": "Sales Invoice",
+    "doctype_event": "Before Insert",
+    "module": "Erpnext Saas",
+    "script": "# Doctype: Sales Invoice\n# Script Type: Before Insert\n\ncompany = doc.company or doc.custom_company\nif not company:\n    frappe.throw(\"Company must be selected.\")\n\n# Get company document\ncompany_doc = frappe.get_doc(\"Company\", company)\n\n# Check if company has a subscribed plan\nif not company_doc.custom_subscribed_plan:\n    frappe.throw(\"This company has no plan assigned.\")\n\n# Get the plan document\nplan = frappe.get_doc(\"Plans\", company_doc.custom_subscribed_plan)\n\n# Count how many invoices already exist for this company\nexisting_invoices = frappe.db.count(\"Sales Invoice\", {\"company\": company})\n\n# Convert string to integer for comparison\nlimit = int(plan.number_of_invoice or 0)\n\n# Compare with plan limit\nif existing_invoices >= limit:\n    frappe.throw(f\"You have reached the maximum invoice limit ({limit}) for your plan.\")"
+  },
+  {
+    "doctype": "Server Script",
+    "name": "Quotation Limit by Plan",
+    "enabled": 1,
+    "script_type": "DocType Event",
+    "reference_doctype": "Quotation",
+    "doctype_event": "Before Insert",
+    "module": "Erpnext Saas",
+    "script": "# Doctype: Quotation\n# Script Type: Before Insert\n\ncompany = doc.custom_company\nif not company:\n    frappe.throw(\"Company must be selected.\")\n\n# Get company document\ncompany_doc = frappe.get_doc(\"Company\", company)\n\n# Check if company has a subscribed plan\nif not company_doc.custom_subscribed_plan:\n    frappe.throw(\"This company has no plan assigned.\")\n\n# Get the plan document\nplan = frappe.get_doc(\"Plans\", company_doc.custom_subscribed_plan)\n\n# Count how many quotations already exist for this company\nexisting_quotations = frappe.db.count(\"Quotation\", {\"custom_company\": company})\n\n# Convert string to integer for comparison\nlimit = int(plan.number_of_quotation or 0)\n\n# Compare with plan limit\nif existing_quotations >= limit:\n    frappe.throw(f\"You have reached the maximum quotation limit ({limit}) for your plan.\")"
+  },
+  {
+    "doctype": "Server Script",
+    "name": "Supplier Limit by Plan",
+    "enabled": 1,
+    "script_type": "DocType Event",
+    "reference_doctype": "Supplier",
+    "doctype_event": "Before Insert",
+    "module": "Erpnext Saas",
+    "script": "# Doctype: Supplier\n# Script Type: Before Insert\n\ncompany = doc.custom_company\nif not company:\n    frappe.throw(\"Company must be selected.\")\n\n# Get company document\ncompany_doc = frappe.get_doc(\"Company\", company)\n\n# Check if company has a subscribed plan\nif not company_doc.custom_subscribed_plan:\n    frappe.throw(\"This company has no plan assigned.\")\n\n# Get the plan document\nplan = frappe.get_doc(\"Plans\", company_doc.custom_subscribed_plan)\n\n# Count how many suppliers already exist for this company\nexisting_suppliers = frappe.db.count(\"Supplier\", {\"custom_company\": company})\n\n# Convert string to integer for comparison\nlimit = int(plan.number_of_supplier or 0)\n\n# Compare with plan limit\nif existing_suppliers >= limit:\n    frappe.throw(f\"You have reached the maximum supplier limit ({limit}) for your plan.\")"
+  }
+]
