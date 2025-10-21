@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "prompt",
  "creation": "2025-10-21 04:40:59.678778",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -53,10 +54,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-21 05:01:16.517353",
+ "modified": "2025-10-21 06:16:29.896299",
  "modified_by": "Administrator",
  "module": "Erpnext Saas",
  "name": "Plans",
+ "naming_rule": "Set by user",
  "owner": "Administrator",
  "permissions": [
   {
