@@ -71,15 +71,6 @@ const SuccessPage: React.FC = () => {
         email: user.email,
         blockRoles
       }
-       const res_roles = await fetch(`${api.baseUrl}/set-role`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-              },
-              body: JSON.stringify(roleReqBody),
-            });
-      localStorage.removeItem('innovatunplan')
       
       // Use plan data from URL parameters (primary source)
       let planData = { 
@@ -120,6 +111,27 @@ const SuccessPage: React.FC = () => {
 
       // Store subscription in MongoDB
       try {
+        const addErDetailsRes = await fetch(`${api.baseUrl}/add-erp-details?email=${user.email}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+            });
+        const addErDetailsResFormat: any = await addErDetailsRes.json();
+        if(addErDetailsResFormat?.success){
+          const res_roles = await fetch(`${api.baseUrl}/set-role`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Accept: "application/json",
+                },
+                body: JSON.stringify(roleReqBody),
+              });
+          localStorage.removeItem('innovatunplan')
+        }
+
+
         const response = await fetch(`${api.baseUrl}${api.subscriptions}`, {
           method: "POST",
           headers: {
@@ -141,6 +153,7 @@ const SuccessPage: React.FC = () => {
           }),
         });
 
+        navigate("/dashboard/subscriptions");
         if (response.ok) {
           console.log('Subscription stored successfully in MongoDB');
         } else {
@@ -184,12 +197,6 @@ const SuccessPage: React.FC = () => {
       description: `You have successfully subscribed to ${planData.planName}! Redirecting to dashboard...`,
     });
     
-    // Navigate to dashboard after showing toast
-    const timer = setTimeout(() => {
-      navigate("/dashboard/subscriptions");
-    }, 3000);
-    
-    return () => clearTimeout(timer);
   }, [navigate, user, storeSubscription, planData, planName, planAmount]);
 
   return (
