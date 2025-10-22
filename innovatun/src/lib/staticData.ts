@@ -505,7 +505,7 @@ export const accessRoles = [
       "Auditor",
       "Expense Approver",
       "Report Manager",
-      "System Manager"
+      
     ]
   },
   {
@@ -513,7 +513,7 @@ export const accessRoles = [
     roles: [
       "Accounts Manager",
       "Accounts User",
-      "System Manager"
+      
     ]
   },
   {
@@ -541,7 +541,7 @@ export const accessRoles = [
       "Inbox User",
       "Support Team",
       "Customer",
-      "System Manager",
+      
       "Sales User",
       "Sales Manager"
     ]
@@ -552,7 +552,7 @@ export const accessRoles = [
       "Inbox User",
       "Support Team",
       "Customer",
-      "System Manager",
+      
       "Sales User"
     ]
   },
@@ -564,7 +564,7 @@ export const accessRoles = [
       "Customer",
       "Supplier",
       "Support Team",
-      "System Manager"
+      
     ]
   },
   {
@@ -581,7 +581,7 @@ export const accessRoles = [
   {
     id: "Custom",
     roles: [
-      "System Manager",
+      
       "Script Manager",
       "Workspace Manager",
       "Report Manager"
@@ -590,7 +590,7 @@ export const accessRoles = [
   {
     id: "Automation",
     roles: [
-      "System Manager",
+      
       "Script Manager",
       "Workspace Manager",
       "Report Manager"
@@ -600,20 +600,20 @@ export const accessRoles = [
     id: "Desk Module",
     roles: [
       "All roles (generic UI access)",
-      "System Manager"
+      
     ]
   },
   {
     id: "ERPNext Integrations",
     roles: [
-      "System Manager",
+      
       "Accounts Manager"
     ]
   },
   {
     id: "Geo",
     roles: [
-      "System Manager",
+      
       "HR Manager",
       "Sales Manager",
       "Projects Manager"
@@ -670,7 +670,7 @@ export const accessRoles = [
   {
     id: "Printing",
     roles: [
-      "System Manager",
+      
       "Report Manager",
       "Workspace Manager"
     ]
