@@ -43,6 +43,9 @@ const formSchema = z
     tax_id: z.string().min(1, "Please enter tax ID"),
     domain: z.string().min(1, "Please enter domain"),
     date_established: z.string().min(1, "Please enter date of establishment"),
+    date_of_birth: z.string().min(1, "Please enter date of Birth"),
+    date_of_joining: z.string().min(1, "Please enter date of Joining"),
+    gender: z.string().min(1, "Please enter gender"),
     country: z.string().min(1, "Please select a country"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -81,6 +84,9 @@ export default function Register() {
       domain: "",
       date_established: "",
       confirmPassword: "",
+      date_of_birth: "",
+      date_of_joining: "",
+      gender: ""
     },
   });
 
@@ -446,6 +452,80 @@ export default function Register() {
                       <p className="text-red-600 text-sm mt-2">{emailErr}</p>
                     )}
 
+                    <FormField
+                      control={form.control}
+                      name="date_of_birth"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium mt-2">
+                            Date of Birth
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="YYYY-MM-DD"
+                              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                              {...field}
+                              type="date"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="date_of_joining"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium mt-2">
+                            Date of Joining
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="YYYY-MM-DD"
+                              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
+                              {...field}
+                              type="date"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem className="sm:w-[300px] w-full">
+                          <FormLabel className="text-gray-700 font-medium mt-2">
+                            Gender
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl className="sm:w-[300px] w-full">
+                              <SelectTrigger className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0">
+                                <SelectValue placeholder="Select gender" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-white w-[250px] sm:w-[300px]">
+                               <SelectItem value="male">
+                                  Male
+                                </SelectItem>
+                                
+                                <SelectItem value="female">
+                                  Female
+                                </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     {/* Password */}
                     <FormField
                     control={form.control}
@@ -619,7 +699,6 @@ export default function Register() {
                         </FormItem>
                       )}
                     />
-
                     {/* Currency */}
                     <FormField
                       control={form.control}
