@@ -100,7 +100,7 @@ export function ProfileSettings() {
     });
 
      const formatedCmpltRes = await profile_cmplt_res.json();
-     if(formatedCmpltRes?.data?.email){
+     if(formatedCmpltRes?.data?.Company_Creation){
         setCompletionItems([
               { id: "photo", label: "Company Creation", completed: true },
               { id: "email", label: "User Creation", completed: true },
@@ -115,6 +115,7 @@ export function ProfileSettings() {
           { id: "phone", label: "Employee Creation", completed: false },
           { id: "bio", label: "Assignment", completed: false },
         ])
+         setCompletionPercentage(0)
      }
   }
 

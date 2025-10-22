@@ -1,5 +1,5 @@
-// export const baseUrl='http://localhost:5000'
-export const baseUrl = 'https://erpnext-saas-backend.vercel.app'
+export const baseUrl='http://localhost:5000'
+// export const baseUrl = 'https://erpnext-saas-backend.vercel.app'
 
 export const SendOTPUrl = '/sendotp';
 
